@@ -16,10 +16,10 @@ if ($conn) {
 # Port 5000 not listening — relaunch.
 try {
     Start-Process -WindowStyle Hidden `
-                  -FilePath 'C:\xampp\htdocs\pythonw.exe' `
-                  -ArgumentList 'app.py' `
+                  -FilePath "$env:ComSpec" `
+                  -ArgumentList '/c "cd /d C:\xampp\htdocs\Claude && C:\xampp\htdocs\python.exe app.py >> flask_boot.log 2>&1"' `
                   -WorkingDirectory 'C:\xampp\htdocs\Claude'
-    "[$ts] health_check: port 5000 dead, relaunched pythonw app.py" |
+    "[$ts] health_check: port 5000 dead, relaunched python.exe app.py with boot-log redirection" |
         Out-File -Append -FilePath $logPath -Encoding utf8
 } catch {
     "[$ts] health_check: launch FAILED: $($_.Exception.Message)" |
