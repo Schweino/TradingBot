@@ -1,0 +1,41 @@
+MONDAY READY DIGEST - 2026-05-04
+============================================
+Bot status reachable: True
+Bot running now: False (in_window=False)
+Broker flat: True
+No watched open orders: True
+Config frozen: True
+Config changed since freeze: False
+No-surprises checklist OK: True
+Passive alert count: 0
+Feed health score: None
+Broker execution score: 100
+Era: vNext_2026_05_04
+Monday scorecard verdict: too_early_no_trades
+
+Run at 08:35 CT: python smoke_check.py --mode post-open
+
+Watch first:
+- postmortem/MONDAY_REVIEW_START_HERE_2026-05-04.json
+- postmortem/trade_alerts_2026-05-04.json
+- postmortem/why_no_trade_2026-05-04.json
+- postmortem/market_open_monitor_2026-05-04.json
+- postmortem/first_hour_review_2026-05-04.json
+- postmortem/world_class_dashboard_2026-05-04.json
+- postmortem/feed_health_score_2026-05-04.json
+- postmortem/broker_execution_score_2026-05-04.json
+- postmortem/monday_scorecard_2026-05-04.json
+- postmortem/ws_scalp_replay_2026-05-04.json
+- postmortem/current_engine_regrade_2026-05-04.json
+- postmortem/regime_specific_scorecards_2026-05-04.json
+- postmortem/near_miss_winners_2026-05-04.json
+- postmortem/exit_quality_score_2026-05-04.json
+- postmortem/daily_review_gate_2026-05-04.json
+- postmortem/rule_lifecycle_dashboard_2026-05-04.json
+- postmortem/false_positive_negative_2026-05-04.json
+- postmortem/replay_confidence_2026-05-04.json
+- postmortem/NOW_STATUS_2026-05-04.json
+- postmortem/market_context_scoreboard_2026-05-04.json
+- postmortem/strategy_conclusion_gate_2026-05-04.json
+
+Strategy note: do not change live rules before Monday data unless there is a safety issue.

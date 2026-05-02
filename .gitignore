@@ -1,0 +1,40 @@
+# Secrets
+.env
+.env.*
+.gdocs_service_account.json
+*service_account*.json
+.claude/
+
+# Runtime state and logs
+mock_trader_state.json
+*.log
+*.err
+proc_heartbeat.json
+scalp_state.json
+signal_debug.json
+watcher_prefs.json
+.last_refit.txt
+tick_logs/
+
+# Large/generated trading artifacts
+postmortem/
+audit/
+archive/
+data_cache_*.pkl
+backtest_*.csv
+repro_*.csv
+*.csv
+*.out
+*.bak-*
+*_report*.json
+REVIEW_PACKET*.json
+_*.json
+resp.json
+CODEX_CONTEXT.md
+REVIEW_INDEX_LATEST.json
+
+# Python/runtime
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage

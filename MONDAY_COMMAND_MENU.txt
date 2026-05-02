@@ -1,0 +1,26 @@
+Monday command menu for 2026-05-04
+========================================
+
+status: python ops.py status 2026-05-04 --json
+pre_open: python ops.py pre-open 2026-05-04 --json
+start_intraday_monitor: python ops.py monitor 2026-05-04 --json
+post_open_0835_ct: python ops.py post-open 2026-05-04 --json
+refresh_once: python ops.py intraday 2026-05-04 --json
+pre_flat_1450_ct: python ops.py pre-flat 2026-05-04 --json
+post_market: python ops.py post-close 2026-05-04 --json
+
+Files to inspect first:
+- postmortem/MONDAY_REVIEW_START_HERE_2026-05-04.json
+- postmortem/monday_live_review_2026-05-04.json
+- postmortem/first_hour_review_2026-05-04.json
+- postmortem/world_class_dashboard_2026-05-04.json
+- postmortem/feed_health_score_2026-05-04.json
+- postmortem/broker_execution_score_2026-05-04.json
+- postmortem/era_scorecard_2026-05-04.json
+- postmortem/monday_scorecard_2026-05-04.json
+- postmortem/market_context_scoreboard_2026-05-04.json
+- postmortem/strategy_conclusion_gate_2026-05-04.json
+- postmortem/why_no_trade_2026-05-04.json
+- postmortem/trade_alerts_2026-05-04.json
+- postmortem/known_risks_2026-05-04.json
+- postmortem/promotion_queue.json

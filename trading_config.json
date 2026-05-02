@@ -1,0 +1,170 @@
+{
+  "tickers": ["CLSK", "MARA", "RIOT"],
+  "btc_beta": {
+    "CLSK": 1.066,
+    "MARA": 0.967,
+    "RIOT": 1.2
+  },
+  "trade_size_pct": 0.25,
+  "min_balance": 50.0,
+  "min_conviction": ["MEDIUM", "HIGH"],
+  "session": {
+    "timezone": "America/Chicago",
+    "start_hour": 8,
+    "start_minute": 30,
+    "end_hour": 15,
+    "end_minute": 0,
+    "entry_cutoff_hour": 14,
+    "entry_cutoff_minute": 45,
+    "flatten_hour": 14,
+    "flatten_minute": 55
+  },
+  "conditional_stop_min": 7,
+  "entry_fill_timeout_sec": 60,
+  "max_entry_spread_pct": 0.12,
+  "quote_stale_sec": 5.0,
+  "broker_api_degraded_threshold": 3,
+  "health_heartbeat_enabled": true,
+  "health_heartbeat_sec": 30,
+  "smart_entry": {
+    "min_activity_z": 1.0,
+    "vwap_chop_sigma": 0.3,
+    "relative_strength_min": 0.1,
+    "btc_conflict_reject": true,
+    "range_extension_reject_pct": 0.92,
+    "btc_max_stale_sec": 20,
+    "btc_quote_max_stale_sec": 10,
+    "stock_max_stale_sec": 10,
+    "flow_fade_min_delta_pct": 4.0,
+    "flow_fade_requires_exhaustion": true,
+    "state_machine_enabled": true,
+    "state_machine_min_confirm_sec": 2,
+    "state_machine_max_confirm_sec": 30,
+    "execution_quality_min": 55,
+    "spread_quality_gate_enabled": true,
+    "spread_gate_elevated_pct": 0.08,
+    "spread_gate_hard_pct": 0.12,
+    "spread_gate_min_entry_quality_score": 70,
+    "spread_gate_min_signal_score": 6,
+    "miner_basket_enabled": true,
+    "miner_basket_min_confirming": 1,
+    "miner_basket_penalty": 1,
+    "miner_basket_bonus": 1,
+    "btc_chop_penalty_enabled": true,
+    "realized_vol_chop_penalty_enabled": true,
+    "live_quality_gate_enabled": true,
+    "live_quality_min_score": 60,
+    "side_score_gap_min": 1.0,
+    "pre_submit_check_enabled": true,
+    "pre_submit_max_adverse_move_pct": 0.12,
+    "pre_submit_max_spread_pct": 0.12,
+    "pre_submit_max_quote_age_sec": 3,
+    "btc_impulse_abort_enabled": true,
+    "btc_impulse_abort_15s_pct": 0.18,
+    "btc_impulse_abort_60s_pct": 0.35,
+    "btc_lead_lag_min_pct": 0.08,
+    "btc_chase_max_pct": 0.45,
+    "setup_cooldown_sec": {
+      "momentum_breakout": 20,
+      "btc_relative_strength": 20,
+      "vwap_reclaim_breakdown": 45,
+      "trend_pullback": 45,
+      "flow_exhaustion_fade": 60
+    },
+    "session_min_score_adjust": {
+      "open": 0,
+      "midday": 1,
+      "late": 1
+    },
+    "min_score_by_setup": {
+      "momentum_breakout": 4,
+      "btc_relative_strength": 4,
+      "vwap_reclaim_breakdown": 5,
+      "trend_pullback": 5,
+      "flow_exhaustion_fade": 5
+    }
+  },
+  "adaptive_management": {
+    "adaptive_brackets_enabled": true,
+    "profit_protect_enabled": true,
+    "profit_protect_trigger_pct": 0.45,
+    "profit_protect_giveback_pct": 0.55,
+    "breakeven_after_sec": 180,
+    "breakeven_min_green_pct": 0.2,
+    "adverse_exit_pct": 0.55,
+    "adverse_exit_pct_by_ticker": {
+      "CLSK": 0.5,
+      "MARA": 0.45,
+      "RIOT": 0.6
+    },
+    "broker_disaster_stop_pct_by_ticker": {
+      "CLSK": 0.018,
+      "MARA": 0.018,
+      "RIOT": 0.02
+    },
+    "failed_followthrough_after_sec": 120,
+    "failed_followthrough_min_mfe_pct": 0.12,
+    "short_conviction_decay_enabled": true,
+    "short_conviction_min_age_sec": 20,
+    "short_conviction_min_score": 3,
+    "short_conviction_max_green_pct": 0.06,
+    "short_conviction_min_adverse_pct": -0.08,
+    "short_conviction_low_mfe_pct": 0.12,
+    "short_conviction_flow_buy_pct": 62.0,
+    "short_conviction_flow_delta_pct": 4.0,
+    "short_conviction_btc_mom15_pct": 0.08,
+    "short_conviction_btc_mom60_pct": 0.12,
+    "long_conviction_decay_enabled": true,
+    "long_conviction_min_age_sec": 30,
+    "long_conviction_min_score": 3,
+    "long_conviction_max_green_pct": 0.05,
+    "long_conviction_min_adverse_pct": -0.08,
+    "long_conviction_low_mfe_pct": 0.12,
+    "long_conviction_flow_buy_pct": 40.0,
+    "long_conviction_flow_delta_pct": -4.0,
+    "long_conviction_btc_mom15_pct": -0.08,
+    "long_conviction_btc_mom60_pct": -0.12,
+    "setup_loss_pause_count": 2,
+    "setup_loss_pause_min": 90,
+    "market_regime_filter_enabled": true,
+    "max_consecutive_losses": 2,
+    "risk_off_cooldown_min": 30,
+    "risk_off_ignore_reasons": ["manual_stop", "session_end", "external_broker_exit"],
+    "max_daily_loss_pct": 1.0,
+    "drawdown_size_cut_pct": 0.5,
+    "drawdown_size_cut_trade_size_pct": 0.12,
+    "bad_slippage_reduce_enabled": true,
+    "bad_slippage_threshold_pct": 0.12,
+    "bad_slippage_count": 2,
+    "bad_slippage_lookback_trades": 8,
+    "bad_slippage_size_multiplier": 0.5,
+    "shadow_exit_policies_enabled": true,
+    "shadow_exit_policies": {
+      "failed_followthrough_90s": {
+        "failed_after_sec": 90,
+        "failed_min_mfe_pct": 0.12
+      },
+      "trail_after_half_pct": {
+        "profit_trigger_pct": 0.5,
+        "profit_giveback_pct": 0.35
+      }
+    },
+    "setup_size_multiplier": {
+      "momentum_breakout": 1.0,
+      "btc_relative_strength": 1.0,
+      "vwap_reclaim_breakdown": 0.85,
+      "trend_pullback": 0.8,
+      "flow_exhaustion_fade": 0.75
+    }
+  },
+  "rvol_min": 1.5,
+  "rvol_lookback": 20,
+  "ticker_cfg": {
+    "CLSK": {"sl": 0.05, "tp": 0.01, "btc_mode": "baseline"},
+    "MARA": {"sl": 0.05, "tp": 0.01, "btc_mode": "baseline"},
+    "RIOT": {"sl": 0.05, "tp": 0.02, "btc_mode": "agree"}
+  },
+  "wash_sale_blackouts": [
+    ["2026-12-01", "2026-12-31"]
+  ]
+}
