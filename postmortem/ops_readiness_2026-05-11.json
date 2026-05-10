@@ -1,0 +1,294 @@
+{
+  "ok": true,
+  "command_name": "readiness",
+  "day": "2026-05-11",
+  "created_at_ct": "2026-05-09T20:56:31-05:00",
+  "checks": [
+    {
+      "command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "smoke_check.py",
+        "--mode",
+        "no-surprises"
+      ],
+      "effective_command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "smoke_check.py",
+        "--mode",
+        "no-surprises"
+      ],
+      "returncode": 0,
+      "ok": true,
+      "timeout_sec": null,
+      "timed_out": false,
+      "kill_result": null,
+      "elapsed_seconds": 3.192,
+      "output": "{\"cmd\": [\"C:\\\\xampp\\\\htdocs\\\\python.exe\", \"smoke_check.py\", \"--mode\", \"no-surprises\"], \"event\": \"start\", \"run_id\": \"20260509_205616_readiness_smoke_no_surprises_9d2701a7\"}\r\nOK: config tickers\r\nOK: config has ticker_cfg\r\nOK: flatten cutoff configured - 14:55\r\nOK: no stale engine tokens in mock_trader.py\r\nOK: no stale engine tokens in daily_postmortem.py\r\nOK: mock status reachable\r\nOK: mock trader inactive outside market window is acceptable - running=True in_window=False\r\nOK: no internal open positions\r\nOK: no broker exposure block - null\r\nOK: broker api not degraded - null\r\nOK: kill switch disabled - {}\r\nOK: status flatten cutoff - 14:55\r\nOK: alpaca equity present - 95981.67\r\nOK: pending_entries empty\r\nOK: state broker exposure clear - null\r\nOK: direct broker check degraded to app flat status - direct Alpaca unavailable: HTTPSConnectionPool(host='paper-api.alpaca.markets', port=443): Max retries exceeded with url: /v2/positions (Caused by NewConnectionError(\"HTTPSConnection(host='paper-api.alpaca.markets', port=443): Failed to establish a new connection: [WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions\")); app_positions=0; app_broker_exposure_block=None; app_broker_api_degraded=None\r\nOK: compile mock_trader.py\r\nOK: compile ws_scalp.py\r\nOK: compile local_server.py\r\nOK: compile runtime_guard.py\r\nOK: compile run_supervisor.py\r\nOK: compile worker_policy.py\r\nOK: compile process_monitor.py\r\nOK: compile alpaca_trading.py\r\nOK: compile routes_mock.py\r\nOK: compile daily_postmortem.py\r\nOK: compile gdocs_writer.py\r\nOK: compile review_artifacts.py\r\nOK: compile tick_replay.py\r\nOK: compile event_store.py\r\nOK: compile weekend_readiness.py\r\nOK: compile live_monitor.py\r\nOK: compile monday_close_packet.py\r\nOK: compile daily_close_packet.py\r\nOK: compile automation_ops.py\r\nOK: compile canonical_command_registry.py\r\nOK: compile artifact_version_registry.py\r\nOK: compile execution_action_engine.py\r\nOK: compile execution_intent_engine.py\r\nOK: compile execution_kernel.py\r\nOK: compile execution_state_reducer.py\r\nOK: compile execution_adapters.py\r\nOK: compile contract_gate.py\r\nOK: compile shadow_variant_engine.py\r\nOK: compile candidate_lifecycle.py\r\nOK: compile certify_step2_cache.py\r\nOK: compile step2_cache_catalog.py\r\nOK: compile canonical_decision_packet.py\r\nOK: compile parity_verdict_engine.py\r\nOK: compile market_data_integrity_gate.py\r\nOK: compile market_data_freshness_guard.py\r\nOK: compile config_change_journal.py\r\nOK: compile rollback_drill.py\r\nOK: compile order_lifecycle_reconciliation.py\r\nOK: compile daily_parity_scorecard.py\r\nOK: compile step2_evaluation_envelope.py\r\nOK: compile candidate_decision_brief.py\r\nOK: compile candidate_reproducibility_gate.py\r\nOK: compile candidate_robustness_report.py\r\nOK: compile promotion_candidate_quarantine.py\r\nOK: compile promotion_manifest.py\r\nOK: compile promotion_preflight_bundle.py\r\nOK: compile baseline_drift_sentinel.py\r\nOK: compile step2_adaptive_hunter.py\r\nOK: compile deterministic_live_replay.py\r\nOK: compile promotion_evidence_packet.py\r\nOK: compile promote_active_profile.py\r\nOK: compile architecture_drift_gate.py\r\nOK: compile golden_parity_suite.py\r\nOK: compile live_step2_execution_harness.py\r\nOK: compile promotion_gate.py\r\nOK: compile promotion_safety.py\r\nOK: compile canonical_opportunity_ledger.py\r\nOK: compile compiled_tape_lineage.py\r\nOK: compile compiled_chunk_store.py\r\nOK: compile incremental_market_store.py\r\nOK: compile live_execution_replay_schema.py\r\nOK: compile live_signal_step2_parity.py\r\nOK: compile live_step2_feed.py\r\nOK: compile live_step2_parity_report.py\r\nOK: compile prepare_step2_live_cache.py\r\nOK: compile refresh_intraday_step2.py\r\nOK: compile intraday_parity_sentinel.py\r\nOK: compile opportunity_outcome_cache.py\r\nOK: compile parity_diff_classifier.py\r\nOK: compile replay_state_checkpoints.py\r\nOK: compile step2_cache_layers.py\r\nOK: compile step2_decision_parity.py\r\nOK: compile step2_execution_contract.py\r\nOK: compile step2_latency_model.py\r\nOK: compile step2_parity_contract.py\r\nOK: compile step2_rebuild_planner.py\r\nOK: compile step2_today_compiled.py\r\nOK: compile step2_warm_scorer.py\r\nOK: compile step2_warm_scorer_ops.py\r\nOK: compile unified_decision_ledger.py\r\nOK: compile ops.py\r\nOK: compile state_compactor.py\r\nOK: compile engine_replay.py\r\nOK: compile review_packet.py\r\nOK: compile monday_ops.py\r\nOK: compile daily_ops.py\r\nOK: compile promotion_review.py\r\nOK: compile schedule_helpers.py\r\nOK: compile promotion_queue.py\r\nOK: compile market_calendar.py\r\nOK: compile engine_validation.py\r\nOK: compile engine_scoreboard.py\r\nOK: compile eod_integrity_check.py\r\nOK: compile refit_betas.py\r\nOK: architecture drift gate - []\r\nOK: weekend readiness artifact refresh skipped - pass --refresh-artifacts to write files\r\n{\"event\": \"finish\", \"returncode\": 0, \"run_id\": \"20260509_205616_readiness_smoke_no_surprises_9d2701a7\"}\r\n",
+      "run_id": "20260509_205616_readiness_smoke_no_surprises_9d2701a7",
+      "manifest_path": "C:\\xampp\\htdocs\\Claude\\runtime\\runs\\20260509_205616_readiness_smoke_no_surprises_9d2701a7.json",
+      "log_path": "C:\\xampp\\htdocs\\Claude\\logs\\runs\\20260509_205616_readiness_smoke_no_surprises_9d2701a7.log",
+      "worker_policy": {
+        "default_max_workers": 6,
+        "configured_max_workers": 6,
+        "env_var": "CLAUDE_MAX_WORKERS",
+        "env_value": null,
+        "note": "CLAUDE_MAX_WORKERS may lower the session cap. It cannot raise the cap above DEFAULT_MAX_WORKERS until the project default changes."
+      },
+      "worker_arg_changes": []
+    },
+    {
+      "command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "architecture_drift_gate.py",
+        "--json"
+      ],
+      "effective_command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "architecture_drift_gate.py",
+        "--json"
+      ],
+      "returncode": 0,
+      "ok": true,
+      "timeout_sec": null,
+      "timed_out": false,
+      "kill_result": null,
+      "elapsed_seconds": 0.829,
+      "output": "Claude\\\\postmortem\\\\promotions\\\\manifests\\\\20260509_200049_1778374849293_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_recorded_current_067a31da0fc4.json\",\r\n          \"name\": \"active_profile_manifest_path_matches_manifest\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        },\r\n        {\r\n          \"actual\": \"c93c182840bd746d5638fe399795353ce7005e7a65d7cf95034e0b281dda4e11\",\r\n          \"expected\": \"c93c182840bd746d5638fe399795353ce7005e7a65d7cf95034e0b281dda4e11\",\r\n          \"name\": \"latest_pointer_hash_matches_manifest\",\r\n          \"ok\": true,\r\n          \"severity\": \"warning\"\r\n        },\r\n        {\r\n          \"actual\": \"067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9\",\r\n          \"expected\": \"067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9\",\r\n          \"name\": \"latest_pointer_profile_hash_matches_active\",\r\n          \"ok\": true,\r\n          \"severity\": \"warning\"\r\n        },\r\n        {\r\n          \"actual\": {\r\n            \"evidence_packet_ok\": null,\r\n            \"validation_ok\": true\r\n          },\r\n          \"expected\": true,\r\n          \"name\": \"promotion_evidence_validation_ok\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        },\r\n        {\r\n          \"expected\": true,\r\n          \"name\": \"promotion_gate_ok\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        },\r\n        {\r\n          \"expected\": true,\r\n          \"name\": \"promotion_lifecycle_gate_ok\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        },\r\n        {\r\n          \"expected\": \"approval actor\",\r\n          \"name\": \"promotion_quarantine_approval_present\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        },\r\n        {\r\n          \"expected\": \"approved_for_live|promoted\",\r\n          \"name\": \"promotion_quarantine_status_final\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        },\r\n        {\r\n          \"expected\": true,\r\n          \"name\": \"post_promotion_canary_ok\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        },\r\n        {\r\n          \"actual\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotions\\\\rollback_snapshots\\\\20260509_200049_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_rollback.json\",\r\n          \"expected\": \"existing rollback snapshot\",\r\n          \"name\": \"rollback_snapshot_exists\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        },\r\n        {\r\n          \"actual\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotions\\\\active_scoring_profiles\\\\20260509_200049_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00.json\",\r\n          \"expected\": \"existing promotion registry\",\r\n          \"name\": \"promotion_registry_exists\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        },\r\n        {\r\n          \"actual\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotion_evidence\\\\20260509_200049_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00.json\",\r\n          \"expected\": \"existing evidence packet\",\r\n          \"name\": \"promotion_evidence_packet_exists\",\r\n          \"ok\": true,\r\n          \"severity\": \"critical\"\r\n        }\r\n      ],\r\n      \"created_at_ct\": \"2026-05-09T20:56:20-05:00\",\r\n      \"critical_failure_count\": 0,\r\n      \"enforced\": true,\r\n      \"failed_checks\": [],\r\n      \"latest_pointer\": {\r\n        \"candidate\": {\r\n          \"baseline\": {\r\n            \"active_step2_pnl\": null,\r\n            \"delta_pct_vs_active\": null,\r\n            \"delta_vs_active\": null,\r\n            \"target_pnl\": null\r\n          },\r\n          \"family_id\": \"8a90ca7d504e\",\r\n          \"model_id\": \"dfa69561535c1be9f685\",\r\n          \"profile_hash\": \"067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9\",\r\n          \"selected_rank\": 1,\r\n          \"selected_step2_pnl\": null,\r\n          \"selected_variant\": \"pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00\",\r\n          \"source_artifact\": \"current_live_config\",\r\n          \"step2\": {\r\n            \"by_day\": null,\r\n            \"by_side\": null,\r\n            \"by_ticker\": null,\r\n            \"losses\": 0,\r\n            \"pnl\": null,\r\n            \"skipped\": null,\r\n            \"trades\": 0,\r\n            \"win_rate_pct\": null,\r\n            \"wins\": 0\r\n          },\r\n          \"weight_count\": 50\r\n        },\r\n        \"live_profile_hash\": \"067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9\",\r\n        \"manifest_hash\": \"c93c182840bd746d5638fe399795353ce7005e7a65d7cf95034e0b281dda4e11\",\r\n        \"manifest_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotions\\\\manifests\\\\20260509_200049_1778374849293_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_recorded_current_067a31da0fc4.json\",\r\n        \"schema_version\": 1,\r\n        \"source\": \"promotion_manifest_latest\",\r\n        \"status\": \"recorded_current\",\r\n        \"updated_at_ct\": \"2026-05-09T20:00:49-05:00\"\r\n      },\r\n      \"legacy\": false,\r\n      \"manifest_hash\": \"c93c182840bd746d5638fe399795353ce7005e7a65d7cf95034e0b281dda4e11\",\r\n      \"manifest_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotions\\\\manifests\\\\20260509_200049_1778374849293_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_recorded_current_067a31da0fc4.json\",\r\n      \"ok\": true,\r\n      \"schema_version\": 1,\r\n      \"source\": \"promotion_manifest_integrity\",\r\n      \"status\": \"ok\",\r\n      \"warning_failure_count\": 0\r\n    },\r\n    \"schema_version\": 1\r\n  },\r\n  \"created_at_ct\": \"2026-05-09T20:56:20-05:00\",\r\n  \"day\": null,\r\n  \"deduction\": \"This is a structural parity gate. It catches code-path drift before a profitable Step 2 candidate is trusted by Live.\",\r\n  \"failed_checks\": [],\r\n  \"failed_count\": 0,\r\n  \"ok\": true,\r\n  \"path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\architecture_drift\\\\architecture_drift_gate_2026-05-09.json\",\r\n  \"schema_version\": 1,\r\n  \"source\": \"architecture_drift_gate\"\r\n}\r\n{\"event\": \"finish\", \"returncode\": 0, \"run_id\": \"20260509_205619_readiness_architecture_drift_068eb082\"}\r\n",
+      "run_id": "20260509_205619_readiness_architecture_drift_068eb082",
+      "manifest_path": "C:\\xampp\\htdocs\\Claude\\runtime\\runs\\20260509_205619_readiness_architecture_drift_068eb082.json",
+      "log_path": "C:\\xampp\\htdocs\\Claude\\logs\\runs\\20260509_205619_readiness_architecture_drift_068eb082.log",
+      "worker_policy": {
+        "default_max_workers": 6,
+        "configured_max_workers": 6,
+        "env_var": "CLAUDE_MAX_WORKERS",
+        "env_value": null,
+        "note": "CLAUDE_MAX_WORKERS may lower the session cap. It cannot raise the cap above DEFAULT_MAX_WORKERS until the project default changes."
+      },
+      "worker_arg_changes": []
+    },
+    {
+      "command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "pre_market_parity_gate.py",
+        "2026-05-11",
+        "--json"
+      ],
+      "effective_command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "pre_market_parity_gate.py",
+        "2026-05-11",
+        "--json"
+      ],
+      "returncode": 0,
+      "ok": true,
+      "timeout_sec": null,
+      "timed_out": false,
+      "kill_result": null,
+      "elapsed_seconds": 8.339,
+      "output": "nt\": 0,\r\n      \"legacy\": false,\r\n      \"manifest_hash\": \"c93c182840bd746d5638fe399795353ce7005e7a65d7cf95034e0b281dda4e11\",\r\n      \"manifest_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotions\\\\manifests\\\\20260509_200049_1778374849293_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_recorded_current_067a31da0fc4.json\",\r\n      \"ok\": true,\r\n      \"status\": \"ok\"\r\n    },\r\n    \"warning_failure_count\": 1\r\n  },\r\n  \"schema_version\": 1,\r\n  \"semantic_config\": {\r\n    \"compiled_tape_sections\": [\r\n      \"signal_generation\",\r\n      \"path_outcomes\",\r\n      \"compiled_execution\",\r\n      \"market_data_contract\"\r\n    ],\r\n    \"compiled_tape_semantic_hash\": \"9ad8f5cc2c61f9e4eae50cc7fe28dd2319f1e63d8bea295eb4e358fb1822edac\",\r\n    \"config_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\trading_config.json\",\r\n    \"config_sha256\": \"57a7efde311ef76c59df66ec07c80ac8f5233565f94f9d899935b6a14c2b3b24\",\r\n    \"created_at_ct\": \"2026-05-09T20:56:20-05:00\",\r\n    \"layer_sections\": {\r\n      \"compiled_step2\": [\r\n        \"compiled_execution\",\r\n        \"market_data_contract\"\r\n      ],\r\n      \"live_signal_parity\": [\r\n        \"active_scoring_profile\",\r\n        \"compiled_execution\",\r\n        \"path_outcomes\",\r\n        \"live_runtime\",\r\n        \"market_data_contract\"\r\n      ],\r\n      \"market_events\": [\r\n        \"market_data_contract\"\r\n      ],\r\n      \"path_outcomes\": [\r\n        \"path_outcomes\",\r\n        \"compiled_execution\",\r\n        \"market_data_contract\"\r\n      ],\r\n      \"signal_features\": [\r\n        \"signal_generation\",\r\n        \"market_data_contract\"\r\n      ]\r\n    },\r\n    \"schema_version\": 1,\r\n    \"section_hashes\": {\r\n      \"active_scoring_profile\": \"067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9\",\r\n      \"compiled_execution\": \"78240ba1427000332b48309a5311e160ff3ebefb5885996355192f087948e54c\",\r\n      \"full_config\": \"9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392\",\r\n      \"live_runtime\": \"9cfe5b8681973848074cd30f21e940cd981e8b7ebc96f72b821906c0c7a454b9\",\r\n      \"market_data_contract\": \"47354fd25f8f3b7189d2016c9784e7a822e0a886b47681b4e0446e839bd8988b\",\r\n      \"path_outcomes\": \"daea4f3c11638d0236d0e16cd7a5e2e02744b247b78fc44d5b6ce228699f140a\",\r\n      \"signal_generation\": \"9a69320363377e01a474ef114cdba5e88a457381603f9be006445e236309cd54\"\r\n    }\r\n  },\r\n  \"state_rollover\": {\r\n    \"actions\": [],\r\n    \"actor\": \"live_state_rollover.py\",\r\n    \"after\": {\r\n      \"balance\": 98752.28,\r\n      \"broker_api_degraded_day\": null,\r\n      \"broker_api_degraded_present\": false,\r\n      \"daily_budget_date\": null,\r\n      \"pending_count\": 0,\r\n      \"position_count\": 0,\r\n      \"setup_pause_count\": 0,\r\n      \"skipped_signal_cache_count\": 0,\r\n      \"stale_open_positions\": [],\r\n      \"stale_pending_entries\": [],\r\n      \"stale_setup_pauses\": [],\r\n      \"start_balance\": 100000.0,\r\n      \"state_market_day\": \"2026-05-11\",\r\n      \"target_day\": \"2026-05-11\",\r\n      \"trade_count\": 500,\r\n      \"trade_history_hash\": \"08f62119bf9f025d491b03004b36ea4fceef7bdc4dfa8ccf98250b70dd715bd7\"\r\n    },\r\n    \"applied\": false,\r\n    \"before\": {\r\n      \"balance\": 98752.28,\r\n      \"broker_api_degraded_day\": null,\r\n      \"broker_api_degraded_present\": false,\r\n      \"daily_budget_date\": null,\r\n      \"pending_count\": 0,\r\n      \"position_count\": 0,\r\n      \"setup_pause_count\": 0,\r\n      \"skipped_signal_cache_count\": 0,\r\n      \"stale_open_positions\": [],\r\n      \"stale_pending_entries\": [],\r\n      \"stale_setup_pauses\": [],\r\n      \"start_balance\": 100000.0,\r\n      \"state_market_day\": \"2026-05-09\",\r\n      \"target_day\": \"2026-05-11\",\r\n      \"trade_count\": 500,\r\n      \"trade_history_hash\": \"08f62119bf9f025d491b03004b36ea4fceef7bdc4dfa8ccf98250b70dd715bd7\"\r\n    },\r\n    \"blocked_stale_broker_pending_entries\": [],\r\n    \"checks\": [\r\n      {\r\n        \"actual\": 500,\r\n        \"expected\": 500,\r\n        \"name\": \"durable_trade_count_preserved\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"actual\": \"08f62119bf9f025d491b03004b36ea4fceef7bdc4dfa8ccf98250b70dd715bd7\",\r\n        \"expected\": \"08f62119bf9f025d491b03004b36ea4fceef7bdc4dfa8ccf98250b70dd715bd7\",\r\n        \"name\": \"durable_trade_history_hash_preserved\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"actual\": 98752.28,\r\n        \"expected\": 98752.28,\r\n        \"name\": \"balance_preserved\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"actual\": 100000.0,\r\n        \"expected\": 100000.0,\r\n        \"name\": \"start_balance_preserved\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"actual\": \"2026-05-11\",\r\n        \"expected\": \"2026-05-11\",\r\n        \"name\": \"state_market_day_matches_target\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"actual\": [],\r\n        \"expected\": [],\r\n        \"name\": \"no_stale_pending_entries_after_rollover\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"actual\": [],\r\n        \"expected\": [],\r\n        \"name\": \"no_stale_setup_pauses_after_rollover\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"expected\": \"None|2026-05-11\",\r\n        \"name\": \"daily_budget_reset_or_current\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"actual\": [],\r\n        \"expected\": [],\r\n        \"name\": \"no_prior_day_open_positions\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"actual\": [],\r\n        \"expected\": [],\r\n        \"name\": \"no_stale_broker_identified_pending_entries\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      }\r\n    ],\r\n    \"created_at_ct\": \"2026-05-09T20:56:28-05:00\",\r\n    \"critical_failure_count\": 0,\r\n    \"failed_checks\": [],\r\n    \"ok\": true,\r\n    \"reason\": \"state_file_check\",\r\n    \"schema_version\": 1,\r\n    \"source\": \"live_state_rollover\",\r\n    \"target_day\": \"2026-05-11\"\r\n  }\r\n}\r\n{\"event\": \"finish\", \"returncode\": 0, \"run_id\": \"20260509_205620_readiness_pre_market_parity_d05580a0\"}\r\n",
+      "run_id": "20260509_205620_readiness_pre_market_parity_d05580a0",
+      "manifest_path": "C:\\xampp\\htdocs\\Claude\\runtime\\runs\\20260509_205620_readiness_pre_market_parity_d05580a0.json",
+      "log_path": "C:\\xampp\\htdocs\\Claude\\logs\\runs\\20260509_205620_readiness_pre_market_parity_d05580a0.log",
+      "worker_policy": {
+        "default_max_workers": 6,
+        "configured_max_workers": 6,
+        "env_var": "CLAUDE_MAX_WORKERS",
+        "env_value": null,
+        "note": "CLAUDE_MAX_WORKERS may lower the session cap. It cannot raise the cap above DEFAULT_MAX_WORKERS until the project default changes."
+      },
+      "worker_arg_changes": []
+    },
+    {
+      "command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "promotion_preflight_bundle.py",
+        "--no-write",
+        "--json"
+      ],
+      "effective_command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "promotion_preflight_bundle.py",
+        "--no-write",
+        "--json"
+      ],
+      "returncode": 0,
+      "ok": true,
+      "timeout_sec": null,
+      "timed_out": false,
+      "kill_result": null,
+      "elapsed_seconds": 0.668,
+      "output": "    \"severity\": \"critical\"\r\n      },\r\n      {\r\n        \"actual\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\config_change_journal\\\\snapshots\\\\20260509_200137_before_9ec092cf769e.json\",\r\n        \"expected\": \"existing rollback snapshot\",\r\n        \"name\": \"config_journal_rollback_snapshot_exists\",\r\n        \"ok\": true,\r\n        \"severity\": \"warning\"\r\n      },\r\n      {\r\n        \"actual\": \"bcae76eddf742470b8719b3e0d0fc361fd8f6ab9aff5c7588b52c9a47fa85842\",\r\n        \"expected\": \"bcae76eddf742470b8719b3e0d0fc361fd8f6ab9aff5c7588b52c9a47fa85842\",\r\n        \"name\": \"latest_pointer_hash_matches_entry\",\r\n        \"ok\": true,\r\n        \"severity\": \"warning\"\r\n      },\r\n      {\r\n        \"actual\": \"9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392\",\r\n        \"expected\": \"9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392\",\r\n        \"name\": \"latest_pointer_config_hash_matches_current\",\r\n        \"ok\": true,\r\n        \"severity\": \"critical\"\r\n      }\r\n    ],\r\n    \"created_at_ct\": \"2026-05-09T20:56:29-05:00\",\r\n    \"critical_failure_count\": 0,\r\n    \"current_config_hash\": \"9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392\",\r\n    \"enforced\": true,\r\n    \"failed_checks\": [],\r\n    \"latest_entry\": {\r\n      \"action\": \"record_current_baseline\",\r\n      \"actor\": \"codex\",\r\n      \"after_config_hash\": \"9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392\",\r\n      \"artifacts\": {\r\n        \"config\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\trading_config.json\"\r\n      },\r\n      \"before_config_hash\": \"9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392\",\r\n      \"changed_path_count\": 0,\r\n      \"created_at_ct\": \"2026-05-09T20:01:37-05:00\",\r\n      \"event_hash\": \"bcae76eddf742470b8719b3e0d0fc361fd8f6ab9aff5c7588b52c9a47fa85842\",\r\n      \"reason\": \"Point active profile at clean promotion evidence packet\",\r\n      \"rollback_snapshot_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\config_change_journal\\\\snapshots\\\\20260509_200137_before_9ec092cf769e.json\",\r\n      \"semantic_section_deltas\": []\r\n    },\r\n    \"latest_pointer\": {\r\n      \"action\": \"record_current_baseline\",\r\n      \"actor\": \"codex\",\r\n      \"after_config_hash\": \"9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392\",\r\n      \"changed_path_count\": 0,\r\n      \"current_config_hash\": \"9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392\",\r\n      \"event_hash\": \"bcae76eddf742470b8719b3e0d0fc361fd8f6ab9aff5c7588b52c9a47fa85842\",\r\n      \"journal_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\config_change_journal\\\\config_change_journal.jsonl\",\r\n      \"reason\": \"Point active profile at clean promotion evidence packet\",\r\n      \"rollback_snapshot_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\config_change_journal\\\\snapshots\\\\20260509_200137_before_9ec092cf769e.json\",\r\n      \"schema_version\": 1,\r\n      \"semantic_section_deltas\": [],\r\n      \"source\": \"config_change_journal_latest\",\r\n      \"updated_at_ct\": \"2026-05-09T20:01:37-05:00\"\r\n    },\r\n    \"legacy\": false,\r\n    \"ok\": true,\r\n    \"schema_version\": 1,\r\n    \"source\": \"config_change_journal_integrity\",\r\n    \"status\": \"ok\",\r\n    \"warning_failure_count\": 0\r\n  },\r\n  \"contract_gate\": {\r\n    \"critical_failure_count\": 0,\r\n    \"hashes\": {\r\n      \"live_execution_kernel_hash\": \"4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0\",\r\n      \"step2_execution_contract_hash\": \"3032b852c47d585a64e1ae1a00c74b61425c9f0bd7b88dbfd06ff837921c7217\",\r\n      \"step2_parity_contract_hash\": \"4bdeb34b4c01d4c0c3c6ccdbd60fd78da7e51f30d8e930b8f836e27d8d1adaa9\"\r\n    },\r\n    \"ok\": true\r\n  },\r\n  \"created_at_ct\": \"2026-05-09T20:56:29-05:00\",\r\n  \"critical_failure_count\": 0,\r\n  \"deduction\": \"Promotion may proceed only when this preflight can connect candidate identity, Step 2 evidence, data integrity, current config hash, rollback snapshot, and Live/Step2 contracts.\",\r\n  \"latency_model\": {\r\n    \"bytes\": 881,\r\n    \"exists\": true,\r\n    \"path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\latency_model\\\\step2_latency_model.json\",\r\n    \"sha256\": \"30e791a05fdefc7b7f236bd756050f926130dfaa95ecda96bf2eae74907d91ba\"\r\n  },\r\n  \"live\": {\r\n    \"active_profile\": {\r\n      \"bias\": 0.35291,\r\n      \"enabled\": true,\r\n      \"hash\": \"067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9\",\r\n      \"name\": \"pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00\",\r\n      \"profile_type\": \"linear\",\r\n      \"promoted_at\": \"2026-05-09\",\r\n      \"promotion_reason\": \"Refresh current live profile baseline after promotion evidence gate repair\",\r\n      \"route_count\": 0,\r\n      \"weight_count\": 50\r\n    },\r\n    \"config_file_sha256\": \"57a7efde311ef76c59df66ec07c80ac8f5233565f94f9d899935b6a14c2b3b24\",\r\n    \"config_hash\": \"9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392\",\r\n    \"config_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\trading_config.json\",\r\n    \"execution_kernel_hash\": \"4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0\",\r\n    \"same_ticker_reentry_cooldown_sec\": 5,\r\n    \"step2_execution_contract_hash\": \"3032b852c47d585a64e1ae1a00c74b61425c9f0bd7b88dbfd06ff837921c7217\",\r\n    \"step2_parity_contract_hash\": \"4bdeb34b4c01d4c0c3c6ccdbd60fd78da7e51f30d8e930b8f836e27d8d1adaa9\",\r\n    \"trade_size_pct\": 0.25\r\n  },\r\n  \"market_data_integrity\": {},\r\n  \"ok\": true,\r\n  \"preflight_hash\": \"1d2c02c9f58f0038088e3578fd232b6d27ab6fd1aae94288eb5d6d48a0dbdf30\",\r\n  \"promotion_evidence_packet\": {\r\n    \"ok\": true,\r\n    \"output\": null,\r\n    \"packet_hash\": \"06bff973296b5b699d979626e2d8e8311b4678daf2d52f8dd9d7dc3fd46f0025\"\r\n  },\r\n  \"rollback_snapshot\": {\r\n    \"bytes\": 15054,\r\n    \"exists\": true,\r\n    \"path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\config_change_journal\\\\snapshots\\\\20260509_200137_before_9ec092cf769e.json\",\r\n    \"sha256\": \"255bfefc0aff75c283e739e8ef27edc4aff9ce612f719a8b09ea235ab457d39f\"\r\n  },\r\n  \"schema_version\": 1,\r\n  \"source\": \"promotion_preflight_bundle\",\r\n  \"warning_failure_count\": 0\r\n}\r\n{\"event\": \"finish\", \"returncode\": 0, \"run_id\": \"20260509_205628_readiness_promotion_preflight_1e19d460\"}\r\n",
+      "run_id": "20260509_205628_readiness_promotion_preflight_1e19d460",
+      "manifest_path": "C:\\xampp\\htdocs\\Claude\\runtime\\runs\\20260509_205628_readiness_promotion_preflight_1e19d460.json",
+      "log_path": "C:\\xampp\\htdocs\\Claude\\logs\\runs\\20260509_205628_readiness_promotion_preflight_1e19d460.log",
+      "worker_policy": {
+        "default_max_workers": 6,
+        "configured_max_workers": 6,
+        "env_var": "CLAUDE_MAX_WORKERS",
+        "env_value": null,
+        "note": "CLAUDE_MAX_WORKERS may lower the session cap. It cannot raise the cap above DEFAULT_MAX_WORKERS until the project default changes."
+      },
+      "worker_arg_changes": []
+    },
+    {
+      "command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "rollback_drill.py",
+        "--no-write",
+        "--json"
+      ],
+      "effective_command": [
+        "C:\\xampp\\htdocs\\python.exe",
+        "rollback_drill.py",
+        "--no-write",
+        "--json"
+      ],
+      "returncode": 0,
+      "ok": true,
+      "timeout_sec": null,
+      "timed_out": false,
+      "kill_result": null,
+      "elapsed_seconds": 0.483,
+      "output": "\": false,\r\n        \"expected\": false,\r\n        \"name\": \"step2_parity.use_step2_brs_long_guard\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": 0,\r\n        \"expected\": 0,\r\n        \"name\": \"step2_parity.max_trades_per_day\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": 0,\r\n        \"expected\": 0,\r\n        \"name\": \"step2_parity.max_trades_per_ticker_day\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": true,\r\n        \"expected\": true,\r\n        \"name\": \"step2_parity.one_open_position_per_ticker\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": false,\r\n        \"expected\": false,\r\n        \"name\": \"step2_parity.conditional_time_stop_enabled\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": true,\r\n        \"expected\": true,\r\n        \"name\": \"step2_parity.bypass_strategy_gates\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": 5,\r\n        \"expected\": \">= 0\",\r\n        \"name\": \"step2_parity.same_ticker_reentry_cooldown_non_negative\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": \"4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0\",\r\n        \"name\": \"execution_kernel_hash_present\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": \"4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0\",\r\n        \"expected\": \"4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0\",\r\n        \"name\": \"execution_contract_hash_consistent\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": true,\r\n        \"expected\": true,\r\n        \"name\": \"active_scoring_profile.enabled\",\r\n        \"ok\": true\r\n      },\r\n      {\r\n        \"actual\": 50,\r\n        \"expected\": \"> 0\",\r\n        \"name\": \"active_scoring_profile.weights_present\",\r\n        \"ok\": true\r\n      }\r\n    ],\r\n    \"created_at_ct\": \"2026-05-09T20:56:29-05:00\",\r\n    \"execution_kernel_hash\": \"4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0\",\r\n    \"execution_mode\": \"step2_signal_scan_live\",\r\n    \"ok\": true,\r\n    \"schema_version\": 1,\r\n    \"status\": \"ok\",\r\n    \"step2_parity_contract\": {\r\n      \"admission_mode\": \"all\",\r\n      \"bypass_strategy_gates\": true,\r\n      \"conditional_stop_min\": 7,\r\n      \"conditional_time_stop_enabled\": false,\r\n      \"contract_version\": 1,\r\n      \"execution_kernel_contract\": {\r\n        \"admission_mode\": 0,\r\n        \"allocation_scope\": \"per_ticker_equal_weight\",\r\n        \"conditional_time_stop_enabled\": false,\r\n        \"conviction_decay_enabled\": false,\r\n        \"entry_rounding\": \"nearest_cent_half_up\",\r\n        \"execution_kernel_hash\": \"4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0\",\r\n        \"latency_mode\": \"entry-exit\",\r\n        \"latency_percentile\": \"p75\",\r\n        \"loss_cluster_cooldown_sec\": 0,\r\n        \"loss_cluster_count\": 0,\r\n        \"loss_cluster_window_sec\": 0,\r\n        \"max_trades_per_day\": 0,\r\n        \"max_trades_per_ticker_day\": 0,\r\n        \"min_exec_score\": 0.0,\r\n        \"one_open_trade_per_ticker\": true,\r\n        \"price_rounding\": \"nearest_cent_half_up\",\r\n        \"profit_protection_enabled\": false,\r\n        \"require_conviction\": false,\r\n        \"risk_off_enabled\": false,\r\n        \"same_ticker_reentry_cooldown_sec\": 5,\r\n        \"schema_version\": 1,\r\n        \"setup_state_enabled\": false,\r\n        \"stop_loss_cooldown_sec\": 0,\r\n        \"stop_loss_rounding\": \"nearest_cent_half_up\",\r\n        \"strict_tp_sl\": true,\r\n        \"take_profit_rounding\": \"nearest_cent_half_up\",\r\n        \"trade_size_pct\": 0.25,\r\n        \"use_live_long_gate\": false,\r\n        \"use_live_short_guard\": false,\r\n        \"use_step2_brs_long_guard\": false\r\n      },\r\n      \"execution_kernel_hash\": \"4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0\",\r\n      \"loss_cluster_cooldown_sec\": 0,\r\n      \"loss_cluster_count\": 0,\r\n      \"loss_cluster_window_sec\": 0,\r\n      \"max_trades_per_day\": 0,\r\n      \"max_trades_per_ticker_day\": 0,\r\n      \"min_exec_score\": 0.0,\r\n      \"one_open_position_per_ticker\": true,\r\n      \"require_conviction\": false,\r\n      \"same_ticker_reentry_cooldown_sec\": 5,\r\n      \"setup_state_enabled\": false,\r\n      \"sizing_mode\": \"compounded_internal_balance\",\r\n      \"state_max_confirm_sec\": 30.0,\r\n      \"state_min_confirm_sec\": 2.0,\r\n      \"stop_loss_cooldown_sec\": 0,\r\n      \"strict_tp_sl_exits\": false,\r\n      \"use_live_long_gate\": false,\r\n      \"use_live_short_guard\": false,\r\n      \"use_step2_brs_long_guard\": false\r\n    },\r\n    \"step2_parity_contract_hash\": \"4bdeb34b4c01d4c0c3c6ccdbd60fd78da7e51f30d8e930b8f836e27d8d1adaa9\"\r\n  },\r\n  \"target_profile\": {\r\n    \"enabled\": true,\r\n    \"hash\": \"067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9\",\r\n    \"name\": \"pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00\",\r\n    \"weight_count\": 50\r\n  },\r\n  \"target_promotion_evidence\": {\r\n    \"failed_count\": 0,\r\n    \"ok\": true,\r\n    \"promotion_evidence_packet_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotion_evidence\\\\20260509_200122_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00.json\",\r\n    \"promotion_registry_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotions\\\\active_scoring_profiles\\\\20260509_200049_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00.json\",\r\n    \"rollback_snapshot_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotions\\\\rollback_snapshots\\\\20260509_200049_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_rollback.json\"\r\n  },\r\n  \"target_promotion_manifest\": {\r\n    \"critical_failure_count\": 0,\r\n    \"legacy\": false,\r\n    \"manifest_hash\": \"c93c182840bd746d5638fe399795353ce7005e7a65d7cf95034e0b281dda4e11\",\r\n    \"manifest_path\": \"C:\\\\xampp\\\\htdocs\\\\Claude\\\\postmortem\\\\promotions\\\\manifests\\\\20260509_200049_1778374849293_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_recorded_current_067a31da0fc4.json\",\r\n    \"ok\": true,\r\n    \"status\": \"ok\"\r\n  },\r\n  \"warning_failure_count\": 1\r\n}\r\n{\"event\": \"finish\", \"returncode\": 0, \"run_id\": \"20260509_205629_readiness_rollback_drill_fab52cdb\"}\r\n",
+      "run_id": "20260509_205629_readiness_rollback_drill_fab52cdb",
+      "manifest_path": "C:\\xampp\\htdocs\\Claude\\runtime\\runs\\20260509_205629_readiness_rollback_drill_fab52cdb.json",
+      "log_path": "C:\\xampp\\htdocs\\Claude\\logs\\runs\\20260509_205629_readiness_rollback_drill_fab52cdb.log",
+      "worker_policy": {
+        "default_max_workers": 6,
+        "configured_max_workers": 6,
+        "env_var": "CLAUDE_MAX_WORKERS",
+        "env_value": null,
+        "note": "CLAUDE_MAX_WORKERS may lower the session cap. It cannot raise the cap above DEFAULT_MAX_WORKERS until the project default changes."
+      },
+      "worker_arg_changes": []
+    },
+    {
+      "ok": true,
+      "command_name": "readiness_frozen_identity",
+      "day": "2026-05-11",
+      "created_at_ct": "2026-05-09T20:56:29-05:00",
+      "checks": [
+        {
+          "name": "mock_status_reachable_for_identity",
+          "ok": true,
+          "actual": null,
+          "expected": "reachable /mock/status"
+        },
+        {
+          "name": "active_profile_hash_present",
+          "ok": true,
+          "actual": "067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9",
+          "expected": "active scoring profile hash"
+        },
+        {
+          "name": "execution_kernel_hash_frozen_since_boot",
+          "ok": true,
+          "actual": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
+          "expected": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0"
+        },
+        {
+          "name": "step2_parity_contract_hash_frozen_since_boot",
+          "ok": true,
+          "actual": "4bdeb34b4c01d4c0c3c6ccdbd60fd78da7e51f30d8e930b8f836e27d8d1adaa9",
+          "expected": "4bdeb34b4c01d4c0c3c6ccdbd60fd78da7e51f30d8e930b8f836e27d8d1adaa9"
+        },
+        {
+          "name": "step2_execution_contract_hash_frozen_since_boot",
+          "ok": true,
+          "actual": "3032b852c47d585a64e1ae1a00c74b61425c9f0bd7b88dbfd06ff837921c7217",
+          "expected": "3032b852c47d585a64e1ae1a00c74b61425c9f0bd7b88dbfd06ff837921c7217"
+        },
+        {
+          "name": "strategy_config_hash_frozen_since_boot",
+          "ok": true,
+          "actual": "57a7efde311ef76c59df66ec07c80ac8f5233565f94f9d899935b6a14c2b3b24",
+          "expected": "57a7efde311ef76c59df66ec07c80ac8f5233565f94f9d899935b6a14c2b3b24"
+        },
+        {
+          "name": "promotion_manifest_integrity_ok",
+          "ok": true,
+          "actual": {
+            "ok": true,
+            "critical_failure_count": 0,
+            "manifest_path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotions\\manifests\\20260509_200049_1778374849293_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_recorded_current_067a31da0fc4.json"
+          },
+          "expected": "valid active promotion manifest"
+        },
+        {
+          "name": "config_provenance_ok",
+          "ok": true,
+          "actual": {
+            "action": "record_current_baseline",
+            "actor": "codex",
+            "changed_path_count": 0,
+            "created_at_ct": "2026-05-09T20:01:37-05:00",
+            "critical_failure_count": 0,
+            "current_config_hash": "9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392",
+            "event_hash": "bcae76eddf742470b8719b3e0d0fc361fd8f6ab9aff5c7588b52c9a47fa85842",
+            "failed_checks": [],
+            "journal_path": "C:\\xampp\\htdocs\\Claude\\postmortem\\config_change_journal\\config_change_journal.jsonl",
+            "legacy": false,
+            "ok": true,
+            "reason": "Point active profile at clean promotion evidence packet",
+            "rollback_snapshot_path": "C:\\xampp\\htdocs\\Claude\\postmortem\\config_change_journal\\snapshots\\20260509_200137_before_9ec092cf769e.json",
+            "schema_version": 1,
+            "semantic_section_deltas": [],
+            "source": "config_change_journal_provenance",
+            "status": "ok",
+            "warning_failure_count": 0
+          },
+          "expected": "valid config provenance or unavailable"
+        }
+      ],
+      "identity": {
+        "active_profile_hash": "067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9",
+        "execution_kernel_hash": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
+        "step2_parity_contract_hash": "4bdeb34b4c01d4c0c3c6ccdbd60fd78da7e51f30d8e930b8f836e27d8d1adaa9",
+        "step2_execution_contract_hash": "3032b852c47d585a64e1ae1a00c74b61425c9f0bd7b88dbfd06ff837921c7217",
+        "strategy_config_hash": "57a7efde311ef76c59df66ec07c80ac8f5233565f94f9d899935b6a14c2b3b24",
+        "promotion_manifest_path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotions\\manifests\\20260509_200049_1778374849293_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_recorded_current_067a31da0fc4.json",
+        "promotion_manifest_hash": "c93c182840bd746d5638fe399795353ce7005e7a65d7cf95034e0b281dda4e11"
+      }
+    },
+    {
+      "ok": true,
+      "command_name": "readiness_process_singleton",
+      "day": "2026-05-11",
+      "created_at_ct": "2026-05-09T20:56:31-05:00",
+      "port_5000_pids": [
+        29728
+      ],
+      "checks": [
+        {
+          "name": "exactly_one_port_5000_listener",
+          "ok": true,
+          "actual": [
+            29728
+          ],
+          "expected": "one live app listener"
+        },
+        {
+          "name": "mock_status_reachable",
+          "ok": true,
+          "actual": null,
+          "expected": "reachable /mock/status"
+        },
+        {
+          "name": "mock_engine_running",
+          "ok": true,
+          "actual": true,
+          "expected": true
+        }
+      ]
+    }
+  ],
+  "require_direct_broker": false,
+  "worker_policy": {
+    "default_max_workers": 6,
+    "configured_max_workers": 6,
+    "env_var": "CLAUDE_MAX_WORKERS",
+    "env_value": null,
+    "note": "CLAUDE_MAX_WORKERS may lower the session cap. It cannot raise the cap above DEFAULT_MAX_WORKERS until the project default changes."
+  },
+  "artifact": "C:\\xampp\\htdocs\\Claude\\postmortem\\ops_readiness_2026-05-11.json"
+}

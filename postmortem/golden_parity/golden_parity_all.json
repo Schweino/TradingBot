@@ -1,0 +1,221 @@
+{
+  "created_at_ct": "2026-05-09T20:56:21-05:00",
+  "days": [
+    "2026-05-08"
+  ],
+  "deduction": "Golden parity checks compare already-produced artifacts. They are a promotion safety rail, not a replacement for producing fresh Step 2 artifacts.",
+  "ok": true,
+  "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\golden_parity\\golden_parity_all.json",
+  "results": [
+    {
+      "artifact_registry": {
+        "execution_kernel_hash": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
+        "exists": true,
+        "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\artifact_registry\\artifact_registry_2026-05-08.json",
+        "registry_hash": "c893ff73d15a374d592de10aaeac6716f255eaf4d7d1ac35962b61031a6ce3a5"
+      },
+      "canonical_decision_packets": {
+        "exists": true,
+        "live_packets": 226,
+        "mismatch_count": 0,
+        "ok": true,
+        "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_decision_packets\\2026-05-08\\canonical_packet_diff_2026-05-08.json",
+        "step2_packets": 1205
+      },
+      "checks": [
+        {
+          "actual": true,
+          "expected": true,
+          "name": "step2_artifact_exists",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": 979.42,
+          "expected": null,
+          "name": "step2_pnl",
+          "ok": true,
+          "skipped": true
+        },
+        {
+          "actual": 380,
+          "expected": null,
+          "name": "step2_trades",
+          "ok": true,
+          "skipped": true
+        },
+        {
+          "actual": 241,
+          "expected": null,
+          "name": "step2_wins",
+          "ok": true,
+          "skipped": true
+        },
+        {
+          "actual": 139,
+          "expected": null,
+          "name": "step2_losses",
+          "ok": true,
+          "skipped": true
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "live_signal_artifact_exists",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": -258.6944,
+          "expected": null,
+          "name": "live_signal_pnl",
+          "ok": true,
+          "skipped": true
+        },
+        {
+          "actual": 288,
+          "expected": null,
+          "name": "live_signal_entered",
+          "ok": true,
+          "skipped": true
+        },
+        {
+          "actual": 917,
+          "expected": null,
+          "name": "live_signal_skipped",
+          "ok": true,
+          "skipped": true
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "artifact_registry_exists",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "execution_lifecycle_summary_exists",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "name": "execution_lifecycle_no_anomalies",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "name": "execution_lifecycle_no_open_trades",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "execution_lifecycle_state_hash_present",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "contract_gate_report_exists",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "contract_gate_ok",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "canonical_packet_diff_exists",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "canonical_packet_schema_ok",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "step2_kernel_hash_present",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": true,
+          "expected": true,
+          "name": "registry_kernel_hash_present",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
+          "expected": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
+          "name": "step2_registry_kernel_hash_match",
+          "ok": true,
+          "tolerance": 0.0
+        },
+        {
+          "actual": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
+          "expected": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
+          "name": "live_signal_registry_kernel_hash_match",
+          "ok": true,
+          "tolerance": 0.0
+        }
+      ],
+      "contract_gate": {
+        "critical_failure_count": 0,
+        "exists": true,
+        "ok": true,
+        "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\contract_gate\\contract_gate_2026-05-08.json"
+      },
+      "current_default_execution_kernel_hash": "ab8c5719661808d208dfe8c54c0dd550aae7ec8eda1426f2ce6a015ed858864a",
+      "day": "2026-05-08",
+      "execution_lifecycle": {
+        "anomaly_count": 0,
+        "authoritative_state_hash": "e5f0ed7245e1878000a4e9e6d7a55951eb42c44fc1fcc0ec04fbe7eeb1e450ea",
+        "exists": true,
+        "open_trade_count": 0,
+        "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\execution_lifecycle\\2026-05-08\\execution_lifecycle_2026-05-08.summary.json",
+        "rows": 5082
+      },
+      "live_signal": {
+        "entered": 288,
+        "execution_kernel_hash": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
+        "exists": true,
+        "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\step2_decision_parity\\step2_decision_parity_2026-05-08.summary.json",
+        "pnl": -258.6944,
+        "rows": 1205,
+        "skipped": 917
+      },
+      "ok": true,
+      "step2": {
+        "execution_kernel_hash": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
+        "exists": true,
+        "losses": 139,
+        "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\backtests\\step2_today_compiled\\step2_today_compiled_2026-05-08.json",
+        "pnl": 979.42,
+        "served_by": "local_step2_today_compiled",
+        "step2_parity_contract_hash": "4bdeb34b4c01d4c0c3c6ccdbd60fd78da7e51f30d8e930b8f836e27d8d1adaa9",
+        "trades": 380,
+        "wins": 241
+      }
+    }
+  ],
+  "schema_version": 1
+}

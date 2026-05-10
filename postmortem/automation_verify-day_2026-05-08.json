@@ -1,0 +1,498 @@
+{
+  "phase": "verify-day",
+  "day": "2026-05-08",
+  "created_at_ct": "2026-05-09T20:57:24-05:00",
+  "dry_run": false,
+  "validate_only": false,
+  "ok": true,
+  "market_calendar": {
+    "day": "2026-05-08",
+    "is_trading_day": true,
+    "reason": "regular_session"
+  },
+  "steps": [
+    {
+      "command": [
+        "verify-artifact",
+        "pre-open"
+      ],
+      "ok": true,
+      "artifact": "C:\\xampp\\htdocs\\Claude\\postmortem\\automation_pre-open_2026-05-08.json",
+      "artifact_exists": true,
+      "artifact_ok": true,
+      "ledger_ok": true,
+      "ledger_status": "backfilled"
+    },
+    {
+      "command": [
+        "verify-artifact",
+        "post-open"
+      ],
+      "ok": true,
+      "artifact": "C:\\xampp\\htdocs\\Claude\\postmortem\\automation_post-open_2026-05-08.json",
+      "artifact_exists": true,
+      "artifact_ok": true,
+      "ledger_ok": true,
+      "ledger_status": "backfilled"
+    },
+    {
+      "command": [
+        "verify-artifact",
+        "intraday"
+      ],
+      "ok": true,
+      "artifact": "C:\\xampp\\htdocs\\Claude\\postmortem\\automation_intraday_2026-05-08.json",
+      "artifact_exists": true,
+      "artifact_ok": true,
+      "ledger_ok": true,
+      "ledger_status": "backfilled"
+    },
+    {
+      "command": [
+        "verify-artifact",
+        "pre-flat"
+      ],
+      "ok": true,
+      "artifact": "C:\\xampp\\htdocs\\Claude\\postmortem\\automation_pre-flat_2026-05-08.json",
+      "artifact_exists": true,
+      "artifact_ok": true,
+      "ledger_ok": true,
+      "ledger_status": "backfilled"
+    },
+    {
+      "command": [
+        "verify-artifact",
+        "post-close"
+      ],
+      "ok": true,
+      "artifact": "C:\\xampp\\htdocs\\Claude\\postmortem\\automation_post-close_2026-05-08.json",
+      "artifact_exists": true,
+      "artifact_ok": true,
+      "ledger_ok": true,
+      "ledger_status": "backfilled"
+    },
+    {
+      "command": [
+        "verify-file",
+        "session_checkpoint_2026-05-08_post_open_auto.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\session_checkpoint_2026-05-08_post_open_auto.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "session_checkpoint_2026-05-08_pre_flat_auto.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\session_checkpoint_2026-05-08_pre_flat_auto.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "sip_per-second_bars_CLSK-MARA-RIOT_2026-05-08.events.json.gz"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\data_cache\\alpaca_engine_replay_tapes\\sip_per-second_bars_CLSK-MARA-RIOT_2026-05-08.events.json.gz"
+    },
+    {
+      "command": [
+        "verify-file",
+        "sip_per-second_bars_CLSK-MARA-RIOT_2026-05-08.events.json.gz"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\data_cache\\live_intraday_tapes\\sip_per-second_bars_CLSK-MARA-RIOT_2026-05-08.events.json.gz"
+    },
+    {
+      "command": [
+        "verify-file",
+        "manifest.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\data_cache\\incremental_market_store\\2026-05-08\\manifest.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "step2_freshness_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\step2_freshness\\step2_freshness_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "intraday_vs_canonical_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\step2_freshness\\intraday_vs_canonical_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "monday_close_packet_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\monday_close_packet_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "review_index_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\review_index_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "live_step2_parity_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\live_step2_parity\\live_step2_parity_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "live_step2_parity_2026-05-08.txt"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\live_step2_parity\\live_step2_parity_2026-05-08.txt"
+    },
+    {
+      "command": [
+        "verify-file",
+        "step2_cache_layers_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\cache_layers\\step2_cache_layers_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "step2_cache_certification_2026-05-08_CLSK-MARA-RIOT.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\cache_certifications\\step2_cache_certification_2026-05-08_CLSK-MARA-RIOT.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "execution_replay_inputs_2026-05-08.jsonl"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\execution_replay_inputs\\execution_replay_inputs_2026-05-08.jsonl"
+    },
+    {
+      "command": [
+        "verify-file",
+        "canonical_opportunities_2026-05-08.jsonl"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_opportunities\\canonical_opportunities_2026-05-08.jsonl"
+    },
+    {
+      "command": [
+        "verify-file",
+        "canonical_opportunities_2026-05-08.summary.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_opportunities\\canonical_opportunities_2026-05-08.summary.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "parity_diff_classifier_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\parity_diff_classifier\\parity_diff_classifier_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "artifact_registry_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\artifact_registry\\artifact_registry_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "step2_decision_parity_2026-05-08.jsonl"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\step2_decision_parity\\step2_decision_parity_2026-05-08.jsonl"
+    },
+    {
+      "command": [
+        "verify-file",
+        "step2_decision_parity_2026-05-08.summary.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\step2_decision_parity\\step2_decision_parity_2026-05-08.summary.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "parity_sentinel_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\parity_sentinel\\parity_sentinel_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "PARITY_SENTINEL_LATEST.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\parity_sentinel\\PARITY_SENTINEL_LATEST.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "manifest.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\backtests\\compiled_decision_tapes\\compiled_step2_live_mockparity_CLSK-MARA-RIOT_2026-05-08_intraday\\manifest.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "chunk_manifest.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\backtests\\compiled_decision_tapes\\compiled_step2_live_mockparity_CLSK-MARA-RIOT_2026-05-08_intraday\\chunks\\chunk_manifest.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "step2_today_compiled_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\backtests\\step2_today_compiled\\step2_today_compiled_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "step2_rebuild_plan_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\rebuild_plans\\step2_rebuild_plan_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "step2_current_trace_2026-05-08.jsonl"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\unified_decision_ledger\\2026-05-08\\step2_current_trace_2026-05-08.jsonl"
+    },
+    {
+      "command": [
+        "verify-file",
+        "step2_current_trace_2026-05-08.summary.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\unified_decision_ledger\\2026-05-08\\step2_current_trace_2026-05-08.summary.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "live_signal_parity_2026-05-08.jsonl"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\unified_decision_ledger\\2026-05-08\\live_signal_parity_2026-05-08.jsonl"
+    },
+    {
+      "command": [
+        "verify-file",
+        "live_signal_parity_2026-05-08.summary.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\unified_decision_ledger\\2026-05-08\\live_signal_parity_2026-05-08.summary.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "live_decision_source_2026-05-08.jsonl"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\unified_decision_ledger\\2026-05-08\\live_decision_source_2026-05-08.jsonl"
+    },
+    {
+      "command": [
+        "verify-file",
+        "shadow_step2_2026-05-08.jsonl"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\intraday_shadow_step2\\2026-05-08\\shadow_step2_2026-05-08.jsonl"
+    },
+    {
+      "command": [
+        "verify-file",
+        "shadow_step2_2026-05-08.summary.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\intraday_shadow_step2\\2026-05-08\\shadow_step2_2026-05-08.summary.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "execution_lifecycle_2026-05-08.jsonl"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\execution_lifecycle\\2026-05-08\\execution_lifecycle_2026-05-08.jsonl"
+    },
+    {
+      "command": [
+        "verify-file",
+        "execution_lifecycle_2026-05-08.summary.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\execution_lifecycle\\2026-05-08\\execution_lifecycle_2026-05-08.summary.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "order_lifecycle_reconciliation_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\order_lifecycle_reconciliation\\order_lifecycle_reconciliation_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "order_lifecycle_reconciliation_2026-05-08.txt"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\order_lifecycle_reconciliation\\order_lifecycle_reconciliation_2026-05-08.txt"
+    },
+    {
+      "command": [
+        "verify-file",
+        "parity_verdict_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\parity_verdict\\parity_verdict_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "parity_verdict_2026-05-08.txt"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\parity_verdict\\parity_verdict_2026-05-08.txt"
+    },
+    {
+      "command": [
+        "verify-file",
+        "market_data_integrity_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\market_data_integrity\\market_data_integrity_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "market_data_integrity_2026-05-08.txt"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\market_data_integrity\\market_data_integrity_2026-05-08.txt"
+    },
+    {
+      "command": [
+        "verify-file",
+        "market_data_freshness_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\market_data_freshness\\market_data_freshness_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "market_data_freshness_2026-05-08.txt"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\market_data_freshness\\market_data_freshness_2026-05-08.txt"
+    },
+    {
+      "command": [
+        "verify-file",
+        "daily_parity_scorecard_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\daily_parity_scorecard\\daily_parity_scorecard_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "daily_parity_scorecard_2026-05-08.txt"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\daily_parity_scorecard\\daily_parity_scorecard_2026-05-08.txt"
+    },
+    {
+      "command": [
+        "verify-file",
+        "baseline_drift_sentinel_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\baseline_drift\\baseline_drift_sentinel_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "artifact_dag_2026-05-08.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\artifact_dag\\artifact_dag_2026-05-08.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "golden_parity_all.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\golden_parity\\golden_parity_all.json"
+    },
+    {
+      "command": [
+        "verify-file",
+        "NOW_STATUS.json"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\NOW_STATUS.json"
+    },
+    {
+      "command": [
+        "write-day-health"
+      ],
+      "ok": true,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\automation_day_health_2026-05-08.json"
+    }
+  ],
+  "now_status": {
+    "state": "calm",
+    "safe": {
+      "status_reachable": true,
+      "running": true,
+      "in_window": false,
+      "broker_exposure_block": null,
+      "broker_lifecycle_block": null,
+      "broker_api_degraded": null,
+      "pending_entries": {},
+      "open_position_count": 0
+    },
+    "review_gate": {
+      "verdict": "insufficient_data",
+      "checks_passed": 3,
+      "checks_total": 6
+    },
+    "alerts": []
+  },
+  "daily_review_gate": {
+    "verdict": "insufficient_data",
+    "checks_passed": 3,
+    "checks_total": 6
+  }
+}

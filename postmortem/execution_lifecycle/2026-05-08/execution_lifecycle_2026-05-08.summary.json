@@ -1,0 +1,41 @@
+{
+  "anomalies": [],
+  "authoritative_state": {
+    "last_closed_at": {
+      "CLSK": 1778270020,
+      "MARA": 1778269559,
+      "RIOT": 1778269751
+    },
+    "open_position_count": 0,
+    "pending_entry_count": 0,
+    "schema_version": 1,
+    "state_hash": "e5f0ed7245e1878000a4e9e6d7a55951eb42c44fc1fcc0ec04fbe7eeb1e450ea"
+  },
+  "created_at_ct": "2026-05-09T20:57:04-05:00",
+  "day": "2026-05-08",
+  "inferred_trade_event_count": 285,
+  "open_trade_count": 0,
+  "open_trades": [],
+  "orphan_event_count": 2524,
+  "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\execution_lifecycle\\2026-05-08\\execution_lifecycle_2026-05-08.jsonl",
+  "rows": 5082,
+  "schema_version": 1,
+  "stage_counts": {
+    "broker_flat": 6,
+    "cancelled": 1,
+    "closed": 285,
+    "execution_result": 573,
+    "exit_filled": 65,
+    "exit_requested": 216,
+    "exit_submitted": 101,
+    "filled": 265,
+    "intent_created": 573,
+    "opened": 288,
+    "rejected": 917,
+    "reserved": 297,
+    "signal_seen": 1205,
+    "state_persistence_failed": 2,
+    "submitted": 288
+  },
+  "trade_count": 288
+}

@@ -1,0 +1,131 @@
+﻿{
+    "schema_version":  1,
+    "day":  "2026-05-08",
+    "created_at_local":  "2026-05-09T21:03:30.1279916-05:00",
+    "purpose":  "Preserve the Friday 2026-05-08 audit/parity/procedural backfill repair set without committing large telemetry blobs.",
+    "source":  "codex_repair_snapshot",
+    "verification":  {
+                         "verify_day_ok":  true,
+                         "golden_parity_ok":  true,
+                         "monday_readiness_2026_05_11_ok":  true,
+                         "canonical_shared_entry_packets":  1205,
+                         "canonical_mismatch_count":  0,
+                         "parity_verdict":  "PARITY_OK",
+                         "parity_promotion_safe":  true,
+                         "execution_lifecycle_open_trade_count":  0,
+                         "execution_lifecycle_anomaly_count":  0,
+                         "intraday_sentinel_ok":  false,
+                         "intraday_sentinel_severity":  "critical",
+                         "intraday_sentinel_live_pnl":  -817.95,
+                         "intraday_sentinel_step2_pnl":  -258.6944,
+                         "intraday_sentinel_gap_live_minus_step2":  -559.2556,
+                         "note":  "Backfills are explicitly labeled. The remaining critical sentinel finding is an execution/outcome divergence, not a missing-artifact issue."
+                     },
+    "files":  [
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\backfill_live_audit_artifacts.py",
+                      "exists":  true,
+                      "sha256":  "42d1808b8ae161f83add0a6fe4114702042eed1ebe9cefbfad687d405dd116bb",
+                      "bytes":  32783,
+                      "last_write_time":  "2026-05-09T20:47:54.6294031-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\backfill_automation_procedure_artifacts.py",
+                      "exists":  true,
+                      "sha256":  "6f186a266d49ef2bfbafe6d093957549180ff17fd74114643d771ba0121ed1e5",
+                      "bytes":  9955,
+                      "last_write_time":  "2026-05-09T20:55:49.6649781-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\live_signal_step2_parity.py",
+                      "exists":  true,
+                      "sha256":  "d70aee3381549c858848551f78d409960698c804513fc589b6d2cc46621fcb70",
+                      "bytes":  18365,
+                      "last_write_time":  "2026-05-09T20:44:46.0435857-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\canonical_decision_packet.py",
+                      "exists":  true,
+                      "sha256":  "c22b278fc62cd2049bb69af71b0978690cbd5312484296b9a5174f4cb5bebb8c",
+                      "bytes":  32038,
+                      "last_write_time":  "2026-05-09T20:45:49.2796173-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\live_audit_backfill\\live_audit_backfill_2026-05-08.json",
+                      "exists":  true,
+                      "sha256":  "f8eb7b9ecbd8c0be30d45a8d113a6fe505d491582cc5e236ff0793ab1a202686",
+                      "bytes":  6140,
+                      "last_write_time":  "2026-05-09T20:48:08.7133999-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\automation_procedure_backfill\\automation_procedure_backfill_2026-05-08.json",
+                      "exists":  true,
+                      "sha256":  "5177cb47b5a88ba93c8606cadae010838418a3cabd66fb5a4a6dda7feae26e4f",
+                      "bytes":  1163,
+                      "last_write_time":  "2026-05-09T20:55:57.8231507-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\automation_verify-day_2026-05-08.json",
+                      "exists":  true,
+                      "sha256":  "7db14637556e11c1757b03686d276453bb0b990347373299546cf6176a79c860",
+                      "bytes":  15227,
+                      "last_write_time":  "2026-05-09T20:57:24.9244884-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\review_index_2026-05-08.json",
+                      "exists":  true,
+                      "sha256":  "cae629481e5a11e36aafae5e047998aef3c92abf459545f02c8e6374cc2317f9",
+                      "bytes":  127700,
+                      "last_write_time":  "2026-05-09T20:55:57.8178176-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\artifact_registry\\artifact_registry_2026-05-08.json",
+                      "exists":  true,
+                      "sha256":  "9fd6f765c9e5c901b8a6befc3ea07767efbfebc6debd19ba7d689968a8902a56",
+                      "bytes":  25650,
+                      "last_write_time":  "2026-05-09T20:57:11.7457971-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\parity_verdict\\parity_verdict_2026-05-08.json",
+                      "exists":  true,
+                      "sha256":  "f8cde314ecb114e286827940339a3e990fa2e34d8ffc9d3219eb195d12e78faa",
+                      "bytes":  2104,
+                      "last_write_time":  "2026-05-09T20:56:59.4116651-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\parity_sentinel\\parity_sentinel_2026-05-08.json",
+                      "exists":  true,
+                      "sha256":  "e823c6b42605b0f70063259b8186c7e84a148b3615415a530f6d73bf7d55e38f",
+                      "bytes":  6589,
+                      "last_write_time":  "2026-05-09T20:57:04.6486861-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_decision_packets\\2026-05-08\\canonical_packet_diff_2026-05-08.json",
+                      "exists":  true,
+                      "sha256":  "07e50e82de155d111424eb4d57dde17ffb298776712e96b27bbbeaaa09c03b81",
+                      "bytes":  1416,
+                      "last_write_time":  "2026-05-09T20:56:59.0443339-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\execution_lifecycle\\2026-05-08\\execution_lifecycle_2026-05-08.summary.json",
+                      "exists":  true,
+                      "sha256":  "fa259fe6ca21293f4b90ec62ea658c7161ea71692eea666ff939ec762a273db7",
+                      "bytes":  1118,
+                      "last_write_time":  "2026-05-09T20:57:04.6486861-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\golden_parity\\golden_parity_all.json",
+                      "exists":  true,
+                      "sha256":  "8925cd9322b4aa430ec0a0f16238d324d5490963e5e0afbb17fa1fd03bfcb9bb",
+                      "bytes":  6967,
+                      "last_write_time":  "2026-05-09T20:56:21.6450020-05:00"
+                  },
+                  {
+                      "path":  "C:\\xampp\\htdocs\\Claude\\postmortem\\ops_readiness_2026-05-11.json",
+                      "exists":  true,
+                      "sha256":  "63e4f5ae1bf36a8f73ad70384110f69e89e242aa0f5b30a3e4921939e9926fce",
+                      "bytes":  43625,
+                      "last_write_time":  "2026-05-09T20:56:31.7911467-05:00"
+                  }
+              ]
+}
