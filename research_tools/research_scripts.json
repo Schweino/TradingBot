@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "research_only": true,
+  "deduction": "These entry points may create or evaluate variants, but they are not part of live trading unless a separate promotion command updates trading_config.json.",
+  "scripts": [
+    "step2_adaptive_hunter.py",
+    "step2_targeted_probe.py",
+    "step2_gradient_probe.py",
+    "step2_local_hill_hunter.py",
+    "step2_ensemble_probe.py",
+    "step2_confidence_gate_probe.py",
+    "step2_pair_sweep.py",
+    "step2_feature_grid.py",
+    "step2_cooldown_sweep.py"
+  ],
+  "live_critical": [
+    "mock_trader.py",
+    "ws_scalp.py",
+    "trading_config.json",
+    "step2_parity_contract.py",
+    "step2_execution_contract.py",
+    "execution_kernel.py",
+    "automation_ops.py"
+  ]
+}

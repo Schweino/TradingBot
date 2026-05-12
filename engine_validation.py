@@ -1177,6 +1177,8 @@ def exit_policy_candidate_config(day: str, lookback: int = 5) -> dict:
         days_seen = int(row.get('days_seen') or 0)
         days_pos = int(row.get('days_positive') or 0)
         hurt_winner_delta = float(row.get('hurt_winner_delta') or 0)
+        hurt_winners = int(row.get('hurt_winners') or 0)
+        winner_damage_ok = hurt_winners == 0 and hurt_winner_delta >= 0
         base = {
             'type': 'exit_policy_candidate',
             'policy': policy,
@@ -1188,7 +1190,8 @@ def exit_policy_candidate_config(day: str, lookback: int = 5) -> dict:
                 and days_seen >= 2
                 and days_pos >= 2
                 and matched >= 10
-                and delta > 0):
+                and delta > 0
+                and winner_damage_ok):
             candidates.append({
                 **base,
                 'recommendation': (
@@ -1196,17 +1199,20 @@ def exit_policy_candidate_config(day: str, lookback: int = 5) -> dict:
                 ),
                 'shadow_logging': 'Already eligible for live shadow logging if configured.',
                 'risk_note': (
-                    'Review hurt_winners/hurt_winner_delta before promotion; positive net delta alone is not enough.'
-                    if hurt_winner_delta < 0 else
-                    'No material winner-damage warning in the replay window.'
+                    'No winner-damage warning in the replay window.'
                 ),
             })
         elif delta or matched:
+            blocker = (
+                ' Winner damage must be zero before promotion.'
+                if not winner_damage_ok else ''
+            )
             watch.append({
                 **base,
                 'why_not_promoted': (
                     'Needs known policy mapping, at least 2 replay days, 2 positive days, '
-                    '10 matched trades, and positive net delta.'
+                    '10 matched trades, positive net delta, and zero winner damage.'
+                    + blocker
                 ),
             })
     return {

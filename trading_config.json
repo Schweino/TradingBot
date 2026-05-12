@@ -1,170 +1,340 @@
 {
-  "tickers": ["CLSK", "MARA", "RIOT"],
-  "btc_beta": {
-    "CLSK": 1.066,
-    "MARA": 0.967,
-    "RIOT": 1.2
-  },
-  "trade_size_pct": 0.25,
-  "min_balance": 50.0,
-  "min_conviction": ["MEDIUM", "HIGH"],
-  "session": {
-    "timezone": "America/Chicago",
-    "start_hour": 8,
-    "start_minute": 30,
-    "end_hour": 15,
-    "end_minute": 0,
-    "entry_cutoff_hour": 14,
-    "entry_cutoff_minute": 45,
-    "flatten_hour": 14,
-    "flatten_minute": 55
-  },
-  "conditional_stop_min": 7,
-  "entry_fill_timeout_sec": 60,
-  "max_entry_spread_pct": 0.12,
-  "quote_stale_sec": 5.0,
-  "broker_api_degraded_threshold": 3,
-  "health_heartbeat_enabled": true,
-  "health_heartbeat_sec": 30,
-  "smart_entry": {
-    "min_activity_z": 1.0,
-    "vwap_chop_sigma": 0.3,
-    "relative_strength_min": 0.1,
-    "btc_conflict_reject": true,
-    "range_extension_reject_pct": 0.92,
-    "btc_max_stale_sec": 20,
-    "btc_quote_max_stale_sec": 10,
-    "stock_max_stale_sec": 10,
-    "flow_fade_min_delta_pct": 4.0,
-    "flow_fade_requires_exhaustion": true,
-    "state_machine_enabled": true,
-    "state_machine_min_confirm_sec": 2,
-    "state_machine_max_confirm_sec": 30,
-    "execution_quality_min": 55,
-    "spread_quality_gate_enabled": true,
-    "spread_gate_elevated_pct": 0.08,
-    "spread_gate_hard_pct": 0.12,
-    "spread_gate_min_entry_quality_score": 70,
-    "spread_gate_min_signal_score": 6,
-    "miner_basket_enabled": true,
-    "miner_basket_min_confirming": 1,
-    "miner_basket_penalty": 1,
-    "miner_basket_bonus": 1,
-    "btc_chop_penalty_enabled": true,
-    "realized_vol_chop_penalty_enabled": true,
-    "live_quality_gate_enabled": true,
-    "live_quality_min_score": 60,
-    "side_score_gap_min": 1.0,
-    "pre_submit_check_enabled": true,
-    "pre_submit_max_adverse_move_pct": 0.12,
-    "pre_submit_max_spread_pct": 0.12,
-    "pre_submit_max_quote_age_sec": 3,
-    "btc_impulse_abort_enabled": true,
-    "btc_impulse_abort_15s_pct": 0.18,
-    "btc_impulse_abort_60s_pct": 0.35,
-    "btc_lead_lag_min_pct": 0.08,
-    "btc_chase_max_pct": 0.45,
-    "setup_cooldown_sec": {
-      "momentum_breakout": 20,
-      "btc_relative_strength": 20,
-      "vwap_reclaim_breakdown": 45,
-      "trend_pullback": 45,
-      "flow_exhaustion_fade": 60
-    },
-    "session_min_score_adjust": {
-      "open": 0,
-      "midday": 1,
-      "late": 1
-    },
-    "min_score_by_setup": {
-      "momentum_breakout": 4,
-      "btc_relative_strength": 4,
-      "vwap_reclaim_breakdown": 5,
-      "trend_pullback": 5,
-      "flow_exhaustion_fade": 5
-    }
-  },
-  "adaptive_management": {
-    "adaptive_brackets_enabled": true,
-    "profit_protect_enabled": true,
-    "profit_protect_trigger_pct": 0.45,
-    "profit_protect_giveback_pct": 0.55,
-    "breakeven_after_sec": 180,
-    "breakeven_min_green_pct": 0.2,
-    "adverse_exit_pct": 0.55,
-    "adverse_exit_pct_by_ticker": {
-      "CLSK": 0.5,
-      "MARA": 0.45,
-      "RIOT": 0.6
-    },
-    "broker_disaster_stop_pct_by_ticker": {
-      "CLSK": 0.018,
-      "MARA": 0.018,
-      "RIOT": 0.02
-    },
-    "failed_followthrough_after_sec": 120,
-    "failed_followthrough_min_mfe_pct": 0.12,
-    "short_conviction_decay_enabled": true,
-    "short_conviction_min_age_sec": 20,
-    "short_conviction_min_score": 3,
-    "short_conviction_max_green_pct": 0.06,
-    "short_conviction_min_adverse_pct": -0.08,
-    "short_conviction_low_mfe_pct": 0.12,
-    "short_conviction_flow_buy_pct": 62.0,
-    "short_conviction_flow_delta_pct": 4.0,
-    "short_conviction_btc_mom15_pct": 0.08,
-    "short_conviction_btc_mom60_pct": 0.12,
-    "long_conviction_decay_enabled": true,
-    "long_conviction_min_age_sec": 30,
-    "long_conviction_min_score": 3,
-    "long_conviction_max_green_pct": 0.05,
-    "long_conviction_min_adverse_pct": -0.08,
-    "long_conviction_low_mfe_pct": 0.12,
-    "long_conviction_flow_buy_pct": 40.0,
-    "long_conviction_flow_delta_pct": -4.0,
-    "long_conviction_btc_mom15_pct": -0.08,
-    "long_conviction_btc_mom60_pct": -0.12,
-    "setup_loss_pause_count": 2,
-    "setup_loss_pause_min": 90,
-    "market_regime_filter_enabled": true,
-    "max_consecutive_losses": 2,
-    "risk_off_cooldown_min": 30,
-    "risk_off_ignore_reasons": ["manual_stop", "session_end", "external_broker_exit"],
-    "max_daily_loss_pct": 1.0,
-    "drawdown_size_cut_pct": 0.5,
-    "drawdown_size_cut_trade_size_pct": 0.12,
-    "bad_slippage_reduce_enabled": true,
-    "bad_slippage_threshold_pct": 0.12,
-    "bad_slippage_count": 2,
-    "bad_slippage_lookback_trades": 8,
-    "bad_slippage_size_multiplier": 0.5,
-    "shadow_exit_policies_enabled": true,
-    "shadow_exit_policies": {
-      "failed_followthrough_90s": {
-        "failed_after_sec": 90,
-        "failed_min_mfe_pct": 0.12
-      },
-      "trail_after_half_pct": {
-        "profit_trigger_pct": 0.5,
-        "profit_giveback_pct": 0.35
-      }
-    },
-    "setup_size_multiplier": {
-      "momentum_breakout": 1.0,
-      "btc_relative_strength": 1.0,
-      "vwap_reclaim_breakdown": 0.85,
-      "trend_pullback": 0.8,
-      "flow_exhaustion_fade": 0.75
-    }
-  },
-  "rvol_min": 1.5,
-  "rvol_lookback": 20,
-  "ticker_cfg": {
-    "CLSK": {"sl": 0.05, "tp": 0.01, "btc_mode": "baseline"},
-    "MARA": {"sl": 0.05, "tp": 0.01, "btc_mode": "baseline"},
-    "RIOT": {"sl": 0.05, "tp": 0.02, "btc_mode": "agree"}
-  },
-  "wash_sale_blackouts": [
-    ["2026-12-01", "2026-12-31"]
-  ]
+    "execution_mode":  "step2_signal_scan_live",
+    "execution_mode_promoted_at":  "2026-05-07",
+    "execution_mode_promotion_reason":  "Promote full Step 2 signal-scan admission behavior to live mock engine: raw detect_signal admission, one open position per ticker, strict TP/SL exits, and strategy gates bypassed; broker/mechanical safety remains.",
+    "step2_parity":  {
+                         "contract_version":  1,
+                         "admission_mode":  "all",
+                         "require_conviction":  false,
+                         "min_exec_score":  0.0,
+                         "use_live_long_gate":  false,
+                         "use_live_short_guard":  false,
+                         "setup_state_enabled":  false,
+                         "state_min_confirm_sec":  2.0,
+                         "state_max_confirm_sec":  30.0,
+                         "stop_loss_cooldown_sec":  0,
+                         "loss_cluster_window_sec":  0,
+                         "loss_cluster_count":  0,
+                         "loss_cluster_cooldown_sec":  0,
+                         "use_step2_brs_long_guard":  false,
+                         "same_ticker_reentry_cooldown_sec":  5,
+                         "max_trades_per_day":  0,
+                         "max_trades_per_ticker_day":  0,
+                         "one_open_position_per_ticker":  true,
+                         "sizing_mode":  "compounded_internal_balance",
+                         "conditional_time_stop_enabled":  false,
+                         "conditional_stop_min":  7,
+                         "strict_tp_sl_exits":  false,
+                         "bypass_strategy_gates":  true
+                     },
+    "tickers":  [
+                    "CLSK",
+                    "MARA",
+                    "RIOT"
+                ],
+    "btc_beta":  {
+                     "CLSK":  1.066,
+                     "MARA":  0.967,
+                     "RIOT":  1.2
+                 },
+    "trade_size_pct":  0.25,
+    "min_balance":  50.0,
+    "min_conviction":  [
+                           "MEDIUM",
+                           "HIGH"
+                       ],
+    "session":  {
+                    "timezone":  "America/Chicago",
+                    "start_hour":  8,
+                    "start_minute":  30,
+                    "end_hour":  15,
+                    "end_minute":  0,
+                    "entry_cutoff_hour":  14,
+                    "entry_cutoff_minute":  45,
+                    "flatten_hour":  14,
+                    "flatten_minute":  55
+                },
+    "conditional_stop_min":  7,
+    "entry_fill_timeout_sec":  60,
+    "max_entry_spread_pct":  0.12,
+    "quote_stale_sec":  5.0,
+    "broker_api_degraded_threshold":  3,
+    "health_heartbeat_enabled":  true,
+    "health_heartbeat_sec":  30,
+    "btc_proxy_symbols":  [
+
+                          ],
+    "market_microstructure":  {
+                                  "halt_stale_sec":  30,
+                                  "luld_spread_risk_pct":  0.5,
+                                  "luld_stale_sec":  12,
+                                  "ssr_drop_pct":  -10,
+                                  "asset_info_ttl_sec":  300
+                              },
+    "transaction_costs":  {
+                              "sec_fee_rate":  2.78E-05,
+                              "finra_taf_per_share":  0.000166,
+                              "finra_taf_cap":  8.3,
+                              "note":  "Configurable estimates for postmortem net-P\u0026L review; broker statements remain source of truth."
+                          },
+    "retention":  {
+                      "raw_tick_keep_days":  30,
+                      "raw_tick_keep_market_days":  30,
+                      "compact_artifact_keep_days":  180,
+                      "postmortem_summary_keep_days":  365,
+                      "delete_enabled":  true,
+                      "raw_tick_delete_enabled":  true
+                  },
+    "smart_entry":  {
+                        "min_activity_z":  1.0,
+                        "vwap_chop_sigma":  0.3,
+                        "relative_strength_min":  0.1,
+                        "btc_conflict_reject":  true,
+                        "range_extension_reject_pct":  0.92,
+                        "btc_max_stale_sec":  20,
+                        "btc_quote_max_stale_sec":  10,
+                        "stock_max_stale_sec":  10,
+                        "flow_fade_min_delta_pct":  4.0,
+                        "flow_fade_requires_exhaustion":  true,
+                        "gate_timeline_interval_sec":  15,
+                        "no_signal_snapshot_interval_sec":  30,
+                        "active_scoring_profile":  {
+                                                       "enabled":  false,
+                                                       "name":  "disabled_after_quote_aware_migration",
+                                                       "disabled_at":  "2026-05-11",
+                                                       "disabled_reason":  "Pre-quote-aware Step 2 profile removed after quote_aware_exit_v1 invalidated legacy projected P/L.",
+                                                       "required_exit_replay_model":  "quote_aware_exit_v1"
+                                                   },
+                        "active_scoring_router":  {
+                                                      "enabled":  false,
+                                                      "name":  "disabled_active_scoring_router",
+                                                      "promotion_reason":  "Reserved for routed Step 2 profiles. When enabled, Live uses this route-aware profile and falls back to active_scoring_profile weights when weights are omitted here.",
+                                                      "fallback_profile_ref":  "active_scoring_profile",
+                                                      "bias":  0.0,
+                                                      "weights":  {
+
+                                                                  },
+                                                      "routes":  [
+
+                                                                 ],
+                                                      "route_safety":  {
+                                                                           "max_routes":  20,
+                                                                           "min_route_opportunities":  10,
+                                                                           "min_route_trades":  0,
+                                                                           "max_route_opportunity_share_pct":  85.0,
+                                                                           "max_skip_share_pct":  70.0
+                                                                       }
+                                                  },
+                        "long_entry_quality_gate":  {
+                                                        "enabled":  false,
+                                                        "name":  "ticker_negative_below_vwap_btc_not_bull",
+                                                        "promoted_at":  "2026-05-04",
+                                                        "promotion_reason":  "Mock-trading promotion after causal SIP replay 2026-04-06 to 2026-05-01 improved full P/L from 7911.03 to 9801.16.",
+                                                        "ticker_session_return_below_pct":  -0.5,
+                                                        "require_below_vwap":  true,
+                                                        "btc_bullish_regimes":  [
+                                                                                    "bull",
+                                                                                    "bull_momentum",
+                                                                                    "impulse_up"
+                                                                                ]
+                                                    },
+                        "short_recovery_guard":  {
+                                                     "enabled":  false,
+                                                     "name":  "shadow_long_or_bull_recovery_blocks_short",
+                                                     "promoted_at":  "2026-05-04",
+                                                     "promotion_reason":  "Paper-only intraday guard after 2026-05-04 losses clustered in shorts against bullish recovery context.",
+                                                     "shadow_long_gap_min":  6.0,
+                                                     "min_bullish_flags":  4,
+                                                     "min_session_range_pos":  0.25,
+                                                     "require_btc_not_bearish":  true
+                                                 },
+                        "dual_side_shadow_enabled":  true,
+                        "rolling_spread_window_sec":  300,
+                        "rolling_spread_abnormal_multiple":  2.0,
+                        "quote_locked_crossed_penalty":  25,
+                        "condition_metadata_penalty":  10,
+                        "state_machine_enabled":  false,
+                        "state_machine_min_confirm_sec":  2,
+                        "state_machine_max_confirm_sec":  30,
+                        "execution_quality_min":  0,
+                        "spread_quality_gate_enabled":  false,
+                        "spread_gate_elevated_pct":  0.08,
+                        "spread_gate_hard_pct":  0.12,
+                        "spread_gate_min_entry_quality_score":  70,
+                        "spread_gate_min_signal_score":  6,
+                        "miner_basket_enabled":  true,
+                        "miner_basket_min_confirming":  1,
+                        "miner_basket_penalty":  1,
+                        "miner_basket_bonus":  1,
+                        "btc_chop_penalty_enabled":  true,
+                        "realized_vol_chop_penalty_enabled":  true,
+                        "live_quality_gate_enabled":  false,
+                        "live_quality_min_score":  60,
+                        "side_score_gap_min":  1.0,
+                        "pre_submit_check_enabled":  false,
+                        "pre_submit_max_adverse_move_pct":  0.12,
+                        "pre_submit_max_spread_pct":  0.12,
+                        "pre_submit_max_quote_age_sec":  3,
+                        "btc_impulse_abort_enabled":  false,
+                        "btc_impulse_abort_15s_pct":  0.18,
+                        "btc_impulse_abort_60s_pct":  0.35,
+                        "btc_lead_lag_min_pct":  0.08,
+                        "btc_chase_max_pct":  0.45,
+                        "setup_cooldown_sec":  {
+                                                   "momentum_breakout":  20,
+                                                   "btc_relative_strength":  20,
+                                                   "vwap_reclaim_breakdown":  45,
+                                                   "trend_pullback":  45,
+                                                   "flow_exhaustion_fade":  60
+                                               },
+                        "session_min_score_adjust":  {
+                                                         "open":  0,
+                                                         "midday":  1,
+                                                         "late":  1
+                                                     },
+                        "min_score_by_setup":  {
+                                                   "momentum_breakout":  4,
+                                                   "btc_relative_strength":  4,
+                                                   "vwap_reclaim_breakdown":  5,
+                                                   "trend_pullback":  5,
+                                                   "flow_exhaustion_fade":  5
+                                               }
+                    },
+    "adaptive_management":  {
+                                "adaptive_brackets_enabled":  true,
+                                "fixed_brackets_enabled":  true,
+                                "fixed_brackets_name":  "step3_mara_tp030_sl040_riot_tp018_sl065_clsk_tp035_sl045",
+                                "fixed_brackets_promoted_at":  "2026-05-06",
+                                "fixed_brackets_promotion_reason":  "Promoted after Step 3 SIP replay 2026-04-06 to 2026-05-01 with current best scoring profile, MARA-specific 0.30/0.40 brackets, and RIOT-specific 0.18/0.65 brackets produced 31537.10 P/L, beating current live 22983.63 by 8553.47.",
+                                "fixed_brackets":  {
+                                                       "CLSK":  {
+                                                                    "sl":  0.0045,
+                                                                    "tp":  0.0035
+                                                                },
+                                                       "MARA":  {
+                                                                    "sl":  0.004,
+                                                                    "tp":  0.003
+                                                                },
+                                                       "RIOT":  {
+                                                                    "sl":  0.0065,
+                                                                    "tp":  0.0018
+                                                                }
+                                                   },
+                                "strict_tp_sl_promoted_at":  "2026-05-07",
+                                "strict_tp_sl_promotion_reason":  "Live promotion from 2026-05-06 mock what-if: strict TP/SL plus disabled risk-off produced +608.98 versus actual mock -18.01.",
+                                "profit_protect_enabled":  false,
+                                "profit_protect_trigger_pct":  0.45,
+                                "profit_protect_giveback_pct":  0.55,
+                                "breakeven_after_sec":  180,
+                                "breakeven_min_green_pct":  0.2,
+                                "adverse_exit_pct":  99.0,
+                                "adverse_exit_pct_by_ticker":  {
+                                                                   "CLSK":  99.0,
+                                                                   "MARA":  99.0,
+                                                                   "RIOT":  99.0
+                                                               },
+                                "broker_disaster_stop_pct_by_ticker":  {
+                                                                           "CLSK":  0.018,
+                                                                           "MARA":  0.018,
+                                                                           "RIOT":  0.02
+                                                                       },
+                                "failed_followthrough_after_sec":  999999,
+                                "failed_followthrough_min_mfe_pct":  0.12,
+                                "path_failure_reduce_enabled":  false,
+                                "path_failure_reduce_name":  "step3_brs_open_120s_edge_n035_rel_n005_reduce_100",
+                                "path_failure_reduce_promoted_at":  "2026-05-05",
+                                "path_failure_reduce_setup":  "btc_relative_strength",
+                                "path_failure_reduce_session_phase":  "open",
+                                "path_failure_reduce_after_sec":  120,
+                                "path_failure_reduce_window_sec":  5,
+                                "path_failure_reduce_edge_threshold_pct":  -0.35,
+                                "path_failure_reduce_rel_threshold_pct":  -0.05,
+                                "path_failure_reduce_fraction":  1.0,
+                                "short_conviction_decay_enabled":  false,
+                                "short_conviction_min_age_sec":  20,
+                                "short_conviction_min_score":  3,
+                                "short_conviction_max_green_pct":  0.06,
+                                "short_conviction_min_adverse_pct":  -0.08,
+                                "short_conviction_low_mfe_pct":  0.12,
+                                "short_conviction_flow_buy_pct":  62.0,
+                                "short_conviction_flow_delta_pct":  4.0,
+                                "short_conviction_btc_mom15_pct":  0.08,
+                                "short_conviction_btc_mom60_pct":  0.12,
+                                "long_conviction_decay_enabled":  false,
+                                "long_conviction_min_age_sec":  30,
+                                "long_conviction_min_score":  3,
+                                "long_conviction_max_green_pct":  0.05,
+                                "long_conviction_min_adverse_pct":  -0.08,
+                                "long_conviction_low_mfe_pct":  0.12,
+                                "long_conviction_flow_buy_pct":  40.0,
+                                "long_conviction_flow_delta_pct":  -4.0,
+                                "long_conviction_btc_mom15_pct":  -0.08,
+                                "long_conviction_btc_mom60_pct":  -0.12,
+                                "setup_loss_pause_count":  0,
+                                "setup_loss_pause_min":  90,
+                                "market_regime_filter_enabled":  false,
+                                "max_consecutive_losses":  0,
+                                "risk_off_cooldown_min":  0,
+                                "risk_off_ignore_reasons":  [
+                                                                "manual_stop",
+                                                                "session_end",
+                                                                "external_broker_exit"
+                                                            ],
+                                "max_daily_loss_pct":  0.0,
+                                "drawdown_size_cut_pct":  0.5,
+                                "drawdown_size_cut_trade_size_pct":  0.12,
+                                "bad_slippage_reduce_enabled":  true,
+                                "bad_slippage_threshold_pct":  0.12,
+                                "bad_slippage_count":  2,
+                                "bad_slippage_lookback_trades":  8,
+                                "bad_slippage_size_multiplier":  0.5,
+                                "execution_risk_pause_enabled":  false,
+                                "execution_risk_pause_min":  15,
+                                "execution_risk_pause_count":  2,
+                                "execution_risk_pause_lookback_trades":  6,
+                                "execution_risk_pause_adverse_fill_pct":  0.12,
+                                "shadow_exit_policies_enabled":  false,
+                                "shadow_exit_policies":  {
+                                                             "failed_followthrough_90s":  {
+                                                                                              "failed_after_sec":  90,
+                                                                                              "failed_min_mfe_pct":  0.12
+                                                                                          },
+                                                             "trail_after_half_pct":  {
+                                                                                          "profit_trigger_pct":  0.5,
+                                                                                          "profit_giveback_pct":  0.35
+                                                                                      }
+                                                         },
+                                "setup_size_multiplier":  {
+                                                              "momentum_breakout":  1.0,
+                                                              "btc_relative_strength":  1.0,
+                                                              "vwap_reclaim_breakdown":  0.85,
+                                                              "trend_pullback":  0.8,
+                                                              "flow_exhaustion_fade":  0.75
+                                                          }
+                            },
+    "rvol_min":  1.5,
+    "rvol_lookback":  20,
+    "ticker_cfg":  {
+                       "CLSK":  {
+                                    "sl":  0.0045,
+                                    "tp":  0.0035,
+                                    "btc_mode":  "baseline"
+                                },
+                       "MARA":  {
+                                    "sl":  0.004,
+                                    "tp":  0.003,
+                                    "btc_mode":  "baseline"
+                                },
+                       "RIOT":  {
+                                    "sl":  0.0065,
+                                    "tp":  0.0018,
+                                    "btc_mode":  "agree"
+                                }
+                   },
+    "wash_sale_blackouts":  [
+                                [
+                                    "2026-12-01",
+                                    "2026-12-31"
+                                ]
+                            ]
 }

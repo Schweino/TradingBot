@@ -1,0 +1,16 @@
+# Generated or locked local runtime trees.
+.test_tmp/
+.test_work/
+runtime/test_tmp/
+runtime/unit_test_tmp/
+runtime/pytest_tmp/
+runtime/codex_temp/
+runtime/codex_pytest*/
+runtime/pytest-cache-files-*/
+tmp*/
+pytest-cache-files-*/
+
+# Large archival/output trees that are not useful for normal code search.
+archive/cleanup_*/
+postmortem/archive/
+postmortem/cache_benchmarks/_scratch/

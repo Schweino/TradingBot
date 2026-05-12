@@ -4,7 +4,7 @@ Use this for fast future reviews without rereading the whole folder.
 
 ## Pre-Market
 
-- Confirm exactly one `pythonw app.py` process is running.
+- Confirm exactly one `python.exe local_server.py` process is running.
 - Confirm `/mock/status` returns `running: true`.
 - Confirm latest `mock_trader.log` boot line says `signal_source=ws_scalp`.
 - Confirm no open internal positions unless expected.

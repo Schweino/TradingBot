@@ -1,11 +1,11 @@
 {
   "artifacts": {
     "active_profile_promotion_registry_latest": {
-      "bytes": 20215,
+      "bytes": 108060,
       "exists": true,
-      "mtime": 1778374849.2589405,
-      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotions\\active_scoring_profiles\\20260509_200049_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00.json",
-      "sha256": "50a4cb80c3c877b581847565629fb452a5a38a78df1879ef8724888e045622e9"
+      "mtime": 1778381673.8546798,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotions\\active_scoring_profiles\\20260509_215433_hill_cross_g0019_19000299.json",
+      "sha256": "04a9e12b211e8c7ec205430494d89cd08a801560f0952276b8aca1fe90532264"
     },
     "architecture_drift_gate": {
       "bytes": 0,
@@ -28,6 +28,13 @@
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\baseline_drift\\baseline_drift_sentinel_2026-05-08.json",
       "sha256": "42603fa37ef87b1ebc5be3ea21abdc0be7225f9139cf624de499f5a90dc28eb8"
     },
+    "cache_certification": {
+      "bytes": 3306,
+      "exists": true,
+      "mtime": 1778376177.0717525,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\cache_certifications\\step2_cache_certification_2026-05-08_CLSK-MARA-RIOT.json",
+      "sha256": "8b79bcb89e10d8debf85ff94d184111cd44ede65e3bc215d77dede63efebb8dd"
+    },
     "candidate_lifecycle_dashboard": {
       "bytes": 7915,
       "exists": true,
@@ -36,18 +43,18 @@
       "sha256": "acc54dc8e9172253cc318fc019479a103d7884f096cc7db0fee75467d3417695"
     },
     "candidate_lifecycle_registry": {
-      "bytes": 16833,
+      "bytes": 80586,
       "exists": true,
-      "mtime": 1778376284.9391549,
+      "mtime": 1778497270.5608633,
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\candidate_lifecycle\\candidate_lifecycle_registry.json",
-      "sha256": "f86d96217dc3ae5add633d702c05c43a013125c71ff1853a225d92b910b849a9"
+      "sha256": "4b4501b690fa1ea9a90aa8d350487d0b025508c97a4dae08bbd08fb3e079e8b0"
     },
     "candidate_reproducibility_latest": {
-      "bytes": 0,
-      "exists": false,
-      "mtime": null,
-      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\candidate_reproducibility\\missing_candidate_reproducibility.json",
-      "sha256": null
+      "bytes": 24903,
+      "exists": true,
+      "mtime": 1778489043.3356977,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\candidate_reproducibility\\20260511_034403_quarantine_reproducibility_router_001000000___trend_pullback_late.json",
+      "sha256": "4cc7ebf8e1e3646311090ddbe6d2565387f9f674965dd27247dbfd5f7ec25c9d"
     },
     "canonical_events": {
       "bytes": 4791033,
@@ -59,14 +66,14 @@
     "canonical_live_decision_packets": {
       "bytes": 15405582,
       "exists": true,
-      "mtime": 1778378218.4950676,
+      "mtime": 1778496734.9588869,
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_decision_packets\\2026-05-08\\live_decision_packets_2026-05-08.jsonl",
       "sha256": "a479b1f0a91e0109f2cf500c245b66008532c4b9e2099ce27553f721fcdf6506"
     },
     "canonical_live_exit_packets": {
       "bytes": 1416881,
       "exists": true,
-      "mtime": 1778378218.7438574,
+      "mtime": 1778496735.2137635,
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_decision_packets\\2026-05-08\\live_exit_packets_2026-05-08.jsonl",
       "sha256": "f1bc55cc84e40a415719d717eaa2234adefc5cfede60e173f3cbd864872dbe7f"
     },
@@ -84,17 +91,24 @@
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_opportunities\\canonical_opportunities_2026-05-08.jsonl",
       "sha256": "a8d76ce89da27637813acb713df09afc0c2d56c112bc0af2924af7d50f1ef33c"
     },
+    "canonical_opportunities_summary": {
+      "bytes": 443,
+      "exists": true,
+      "mtime": 1778378215.9412448,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_opportunities\\canonical_opportunities_2026-05-08.summary.json",
+      "sha256": "3a16c562e0fce38f015bfc36dd53bc9d528e5824c3622a801c18c444176b55c0"
+    },
     "canonical_packet_diff": {
       "bytes": 1416,
       "exists": true,
-      "mtime": 1778378219.044334,
+      "mtime": 1778496735.5784056,
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_decision_packets\\2026-05-08\\canonical_packet_diff_2026-05-08.json",
-      "sha256": "07e50e82de155d111424eb4d57dde17ffb298776712e96b27bbbeaaa09c03b81"
+      "sha256": "736ca1e55a0d9acea2e1b387cf7aab587fec7fd4d9b54cf7e263c8744cae558d"
     },
     "canonical_step2_decision_packets": {
       "bytes": 13191413,
       "exists": true,
-      "mtime": 1778378218.7161722,
+      "mtime": 1778496735.1857643,
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\canonical_decision_packets\\2026-05-08\\step2_decision_packets_2026-05-08.jsonl",
       "sha256": "eb8a1382aa3d407304019bb11b1d0e4ecc00b0b05e9c4c4bd02a7ac4f0480c83"
     },
@@ -113,18 +127,18 @@
       "sha256": "02d1165c45718c19a9ca12628aecf331c67f9648cbdf333e10dad1a862b9a16f"
     },
     "config_change_journal": {
-      "bytes": 19156,
+      "bytes": 37002,
       "exists": true,
-      "mtime": 1778374897.860731,
+      "mtime": 1778382083.6523573,
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\config_change_journal\\config_change_journal.jsonl",
-      "sha256": "1fe647352490fcb008c43d7517822674b025c1d4e55cfd804046232877b5979a"
+      "sha256": "7d7785146bc3476c7803801c2053f68e3cf01e52a77bfb263ca64b99a7cdaef2"
     },
     "config_change_journal_latest": {
-      "bytes": 847,
+      "bytes": 1154,
       "exists": true,
-      "mtime": 1778374897.860731,
+      "mtime": 1778382083.653456,
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\config_change_journal\\CONFIG_CHANGE_JOURNAL_LATEST.json",
-      "sha256": "a4df8e3619a6a2c08f236cd175c4d90693821e06567d1871ab777d742ebd6860"
+      "sha256": "0ac1bc536f3bd7d89325139c692921a8a87e88eab970bd95a7e0ab7ecbdb7fc0"
     },
     "contract_gate": {
       "bytes": 25155,
@@ -274,32 +288,32 @@
       "sha256": "12c744968c38cc15033adfcbd33a7810287e6de7591e3e6e6294486b4183fb31"
     },
     "promotion_candidate_quarantine": {
-      "bytes": 0,
-      "exists": false,
-      "mtime": null,
+      "bytes": 26105,
+      "exists": true,
+      "mtime": 1778489043.3436978,
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotion_quarantine\\promotion_candidate_quarantine.json",
-      "sha256": null
+      "sha256": "cb9a7fbb160214543322c2d8b1e9cbaff1c78c0f6469f11531f4b6ddacf2289a"
     },
     "promotion_manifest_latest": {
-      "bytes": 20711,
+      "bytes": 111078,
       "exists": true,
-      "mtime": 1778374849.3179684,
-      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotions\\manifests\\20260509_200049_1778374849293_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00_recorded_current_067a31da0fc4.json",
-      "sha256": "2f432a09865d42af85fbddf93dfd8b9a06a8b018858f68415094d4b5a3968957"
+      "mtime": 1778382083.6338365,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotions\\manifests\\20260509_220123_1778382083604_hill_cross_g0019_19000299_backfilled_current_c1a12dfa8dca.json",
+      "sha256": "373fa450e1026bb6f859fdfc030ace7ad1bbdf5eff4f89547fd0daac940c0987"
     },
     "promotion_manifest_latest_pointer": {
-      "bytes": 1351,
+      "bytes": 1265,
       "exists": true,
-      "mtime": 1778374849.3179684,
+      "mtime": 1778382083.6356368,
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotions\\manifests\\PROMOTION_MANIFEST_LATEST.json",
-      "sha256": "a727588a42b2634b9f7ef6552318f2c78acc7286975abf443960fb57dd725630"
+      "sha256": "ec449d4a9f427569fa0c20d328b7db699ef078a51c2dc44a2014e9939425dd97"
     },
     "promotion_preflight_latest": {
-      "bytes": 18876,
+      "bytes": 21255,
       "exists": true,
-      "mtime": 1778374849.2757971,
-      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotion_preflight\\20260509_200049_pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00.json",
-      "sha256": "1ea03bd1f7e50c39134bffb7fb48f562b96a81ae735dcb9325739c173e35c94b"
+      "mtime": 1778381673.8704867,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\promotion_preflight\\20260509_215433_hill_cross_g0019_19000299.json",
+      "sha256": "d14633dfb49046d8819dcf1465f2aabfb3a08ccaf6e06fd92126d1c14b5a0d72"
     },
     "realtime_parity_alerts": {
       "bytes": 0,
@@ -357,6 +371,13 @@
       "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\step2_decision_parity\\step2_decision_parity_2026-05-08.jsonl",
       "sha256": "bb8e9462f486cfbe7535f4f4215eacf8eb3ad92756c5d995c0ce6a3422c8df48"
     },
+    "step2_decision_parity_summary": {
+      "bytes": 5385,
+      "exists": true,
+      "mtime": 1778378214.0575254,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\step2_decision_parity\\step2_decision_parity_2026-05-08.summary.json",
+      "sha256": "44263881f0cd1f27de18e720471f6aee5fe4e58cfca7350924d3583c2a310ef4"
+    },
     "step2_rebuild_plan": {
       "bytes": 2066,
       "exists": true,
@@ -365,6 +386,13 @@
       "sha256": "d1b1247cc12c41fb663b1fa99df0ee46dbe6a5fc932c4267f5df36245dd67500"
     },
     "step2_score": {
+      "bytes": 215306,
+      "exists": true,
+      "mtime": 1778376175.3281877,
+      "path": "C:\\xampp\\htdocs\\Claude\\postmortem\\backtests\\step2_today_compiled\\step2_today_compiled_2026-05-08.json",
+      "sha256": "0157731ba162186aeff1afa3ed91ea73fdb6868415b0a2c51404eb9181078ca9"
+    },
+    "step2_today_compiled": {
       "bytes": 215306,
       "exists": true,
       "mtime": 1778376175.3281877,
@@ -411,46 +439,46 @@
     "active_profile": {
       "bias": 0.35291,
       "family_id": "8a90ca7d504e",
-      "hash": "067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9",
-      "model_id": "dfa69561535c1be9f685",
-      "name": "pairfull_i01_brs_open_low_range_040_+2.00_brs_open_low_range_045_-2.00",
+      "hash": "c1a12dfa8dca07a4ec5d6c2e3925503b36d336744047eb0cff2ccf3ebad86ade",
+      "model_id": "0bae4270990b2b3e091c",
+      "name": "hill_cross_g0019_19000299",
       "promoted_at": "2026-05-09",
-      "promotion_reason": "Refresh current live profile baseline after promotion evidence gate repair",
+      "promotion_reason": "Promote current Step 2 hunt winner: exact certified-cache P/L 113878.43 over current live 109954.70.",
       "routed_scoring_profile": false,
       "routes": [],
       "weight_count": 50,
       "weights": {
-        "brs_alignment_failure": -4.107055,
-        "brs_bear_normal_risk": 0.420848,
+        "brs_alignment_failure": -3.914702,
+        "brs_bear_normal_risk": 0.239862,
         "brs_clsk_mara_inversion_risk": -3.069185,
-        "brs_normal_alignment_failure": 0.724829,
-        "brs_normal_continuation_quality": 0.226645,
-        "brs_open_alignment_failure": -0.017523,
+        "brs_normal_alignment_failure": 0.121612,
+        "brs_normal_continuation_quality": 1.041851,
+        "brs_open_alignment_failure": 0.219192,
         "brs_open_book_worsening_risk": -2.620464,
         "brs_open_btc_neutral_risk": 2.075216,
         "brs_open_continuation_quality": 2.211035,
-        "brs_open_flow_book_failure": 0.192165,
+        "brs_open_flow_book_failure": 0.038234,
         "brs_open_flow_book_failure_loose": 5.929169,
-        "brs_open_flow_quote_failure": 2.24669,
-        "brs_open_inversion_risk": 3.769261,
-        "brs_open_low_range_020": -3.997201,
-        "brs_open_low_range_025": -0.025439,
+        "brs_open_flow_quote_failure": 2.233116,
+        "brs_open_inversion_risk": 3.792579,
+        "brs_open_low_range_020": -3.467906,
+        "brs_open_low_range_025": 0.043247,
         "brs_open_low_range_040": 2.623843,
-        "brs_open_low_range_045": -3.253876,
+        "brs_open_low_range_045": -1.336061,
         "brs_open_low_range_risk": 5.173914,
         "brs_open_medium_risk": -10.485817,
         "brs_open_non_riot_inversion_risk": 2.538669,
         "brs_open_range_neutral_mom_failure": 5.971397,
         "brs_open_risk": -0.151031,
-        "brs_open_session_neutral_failure": -1.79244,
-        "brs_open_side_bad_range_025": 3.223068,
+        "brs_open_session_neutral_failure": -2.840659,
+        "brs_open_side_bad_range_025": 2.010015,
         "brs_open_side_bad_range_040": 1.158805,
         "brs_open_three_tape_failure": 3.790525,
-        "brs_open_weak_followthrough": 0.075045,
+        "brs_open_weak_followthrough": 0.82559,
         "brs_weak_followthrough": -2.298248,
-        "brs_wide_spread_risk": -3.520558,
+        "brs_wide_spread_risk": -3.366852,
         "btc": -3.890194,
-        "btc_chop": 3.25127,
+        "btc_chop": 3.458163,
         "btc_mom_abs": -3.644287,
         "burst": 2.353509,
         "exec_penalty": 0.1,
@@ -463,7 +491,7 @@
         "riot_long_penalty": 3.795202,
         "riot_short_penalty": 2.723759,
         "setup_btc_relative_strength": -3.808964,
-        "setup_flow_exhaustion_fade": 2.071746,
+        "setup_flow_exhaustion_fade": 2.271396,
         "setup_momentum_breakout": 2.412835,
         "setup_trend_pullback": 3.827513,
         "setup_vwap_reclaim_breakdown": -0.007485,
@@ -472,8 +500,8 @@
         "vwap_sigma_ext": -3.065673
       }
     },
-    "active_profile_hash": "067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9",
-    "compiled_tape_semantic_hash": "9ad8f5cc2c61f9e4eae50cc7fe28dd2319f1e63d8bea295eb4e358fb1822edac",
+    "active_profile_hash": "c1a12dfa8dca07a4ec5d6c2e3925503b36d336744047eb0cff2ccf3ebad86ade",
+    "compiled_tape_semantic_hash": "ff2507dcd9e55f61d485b1819102eaa5b0c046a3537781f7f6f3224cd17ebd9d",
     "execution_action_engine_code_hash": "6a15f7645774ee780a296de37fb50fc6d1be1d46d5e2862a8aa8bd999d58ea55",
     "execution_intent_engine_code_hash": "74f66a970a7bbba38c43880c7a4ea691cb5cdd00ea3f22af4eb98f7b4784b4f6",
     "execution_kernel_contract": {
@@ -509,7 +537,7 @@
       "use_step2_brs_long_guard": false
     },
     "execution_kernel_hash": "4c8a3271a4cdd9d02e584ae3b024cc74075be1322c5d482b0e2a6f8e8b4f99f0",
-    "latency_model_hash": "30e791a05fdefc7b7f236bd756050f926130dfaa95ecda96bf2eae74907d91ba",
+    "latency_model_hash": "ae92f8a4da51228d726415d1601d83d4c4416b38ff8a1ae4bc19357e3e0e56cb",
     "semantic_config_layer_sections": {
       "compiled_step2": [
         "compiled_execution",
@@ -536,21 +564,21 @@
       ]
     },
     "semantic_config_section_hashes": {
-      "active_scoring_profile": "067a31da0fc49bc425092083acf2c9ec36d44127bcec045258805ad506b2a8f9",
+      "active_scoring_profile": "c1a12dfa8dca07a4ec5d6c2e3925503b36d336744047eb0cff2ccf3ebad86ade",
       "compiled_execution": "78240ba1427000332b48309a5311e160ff3ebefb5885996355192f087948e54c",
-      "full_config": "9ec092cf769efb56b44992485b4ac4b37f293203bba86d87fec211fc903e2392",
-      "live_runtime": "9cfe5b8681973848074cd30f21e940cd981e8b7ebc96f72b821906c0c7a454b9",
+      "full_config": "48fd4b9d2163907d35352b49729c219d55ddc00d40d77ae28740c69bad9f4a86",
+      "live_runtime": "23ca9636a0bc3df19c6ad22c2a58c33827cd7cb0d7421a289e7d9817825f9957",
       "market_data_contract": "47354fd25f8f3b7189d2016c9784e7a822e0a886b47681b4e0446e839bd8988b",
-      "path_outcomes": "daea4f3c11638d0236d0e16cd7a5e2e02744b247b78fc44d5b6ce228699f140a",
+      "path_outcomes": "c65e159c8ba667a43e80c3fecc54fd52e347c77cfb6e5caa4c5c5def2f712dad",
       "signal_generation": "9a69320363377e01a474ef114cdba5e88a457381603f9be006445e236309cd54"
     },
     "step2_execution_contract_hash": "3032b852c47d585a64e1ae1a00c74b61425c9f0bd7b88dbfd06ff837921c7217",
     "step2_parity_contract_hash": "4bdeb34b4c01d4c0c3c6ccdbd60fd78da7e51f30d8e930b8f836e27d8d1adaa9",
-    "strategy_config_hash": "57a7efde311ef76c59df66ec07c80ac8f5233565f94f9d899935b6a14c2b3b24"
+    "strategy_config_hash": "fc20a3af660ecf8b3a819868b8474acae8985878fe18216c36cf18a5e27c4216"
   },
-  "created_at_ct": "2026-05-09T20:57:11-05:00",
+  "created_at_ct": "2026-05-11T06:34:03-05:00",
   "day": "2026-05-08",
-  "registry_hash": "6858e17cfa142fda2117f7da5584d3a0cf73fcd5468a0ed133c3921cedab8f91",
+  "registry_hash": "6ebc1ce4b53648fe990ac5424953f1b622fe93efb99b158d7ce7fa3ad87e64a0",
   "schema_version": 1,
   "tickers": [
     "CLSK",

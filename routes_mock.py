@@ -7,20 +7,46 @@ def register_mock_routes(app, get_mock_trader):
     @app.route('/mock/start', methods=['POST'])
     def mock_start():
         mt = get_mock_trader()
-        mt.start()
-        return jsonify({'ok': True, 'status': mt.status()})
+        result = mt.start() or {'ok': True}
+        return jsonify({**result, 'status': mt.status()}), (200 if result.get('ok') else 409)
 
     @app.route('/mock/stop', methods=['POST'])
     def mock_stop():
         mt = get_mock_trader()
-        mt.stop()
-        return jsonify({'ok': True, 'status': mt.status()})
+        result = mt.stop() or {'ok': True}
+        return jsonify({**result, 'status': mt.status()}), (200 if result.get('ok') else 409)
 
     @app.route('/mock/reset', methods=['POST'])
     def mock_reset():
         mt = get_mock_trader()
-        mt.reset()
-        return jsonify({'ok': True, 'status': mt.status()})
+        result = mt.reset() or {'ok': True}
+        return jsonify({**result, 'status': mt.status()}), (200 if result.get('ok') else 409)
+
+    @app.route('/mock/rollover', methods=['POST'])
+    def mock_rollover():
+        mt = get_mock_trader()
+        data = request.get_json(silent=True) or {}
+        day_iso = request.args.get('day') or data.get('day') or None
+        dry_run = str(request.args.get('dry_run') or data.get('dry_run') or '').lower() in ('1', 'true', 'yes')
+        reason = request.args.get('reason') or data.get('reason') or 'api'
+        result = mt.rollover_market_day_state(day_iso=day_iso, reason=reason, dry_run=dry_run)
+        return jsonify({**result, 'status': mt.status()}), (200 if result.get('ok') else 409)
+
+    @app.route('/mock/clear-broker-block', methods=['POST'])
+    def mock_clear_broker_block():
+        mt = get_mock_trader()
+        force = str(request.args.get('force', '')).lower() in ('1', 'true', 'yes')
+        result = mt.clear_broker_exposure_block(force=force) or {'ok': True}
+        return jsonify({**result, 'status': mt.status()}), (200 if result.get('ok') else 409)
+
+    @app.route('/mock/broker-lifecycle', methods=['POST', 'GET'])
+    def mock_broker_lifecycle():
+        mt = get_mock_trader()
+        data = request.get_json(silent=True) or {}
+        label = request.args.get('label') or data.get('label') or 'api'
+        enforce = str(request.args.get('enforce') or data.get('enforce') or '').lower() in ('1', 'true', 'yes')
+        result = mt.broker_lifecycle_gate(label=label, enforce=enforce) or {'ok': True}
+        return jsonify({**result, 'status': mt.status()}), (200 if result.get('ok') else 409)
 
     @app.route('/mock/kill-switch', methods=['POST'])
     def mock_kill_switch():

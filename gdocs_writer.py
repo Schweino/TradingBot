@@ -40,15 +40,21 @@ TRACKING_HYPOTHESIS_MARKERS = (
 POSTMORTEM_FONT_FAMILY = 'Arial'
 POSTMORTEM_BODY_FONT_SIZE_PT = 11
 SECTION_HEADING_MARKERS = (
+    'Daily verdict:',
     'Learning trust:',
     'Daily human summary',
     'What worked',
     "What didn't work",
+    'Why the day made or lost money',
     'Data / ops notes',
     'Suggested action items',
     'Tracking hypotheses',
     "Today's main evidence",
     'Active watchlist',
+    'Hypothesis movement',
+    'Next session watchlist',
+    'New data now being tracked',
+    'Do not overreact to',
     'Local detail artifacts',
 )
 

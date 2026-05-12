@@ -955,6 +955,238 @@ DEFAULT_MINER_BETA = 1.20  # fallback for other miners until measured
 HIGH_BTC_CORRELATION = {'CLSK', 'MARA', 'RIOT', 'HUT', 'BITF', 'CIFR', 'CORZ', 'IREN', 'BTDR', 'WULF'}
 
 
+def _fmt_price(value):
+    if value is None:
+        return 'N/A'
+    try:
+        return f"${float(value):.2f}"
+    except Exception:
+        return str(value)
+
+
+def _fmt_pct(value):
+    if value is None:
+        return 'N/A'
+    try:
+        return f"{float(value):+.2f}%"
+    except Exception:
+        return str(value)
+
+
+def _plain_signal_read(ticker, latest, analysis, daily_ctx=None, btc=None, btc_intraday=None):
+    """Human-first explanation of the same indicator data used by the Analyzer."""
+    price = latest.get('price')
+    decision = analysis.get('decision')
+    confidence = analysis.get('confidence')
+    score = analysis.get('score')
+    forced = analysis.get('forced_side')
+    forced_conv = analysis.get('forced_conviction')
+
+    if decision == 'LONG':
+        headline = f"{ticker} leans upward right now, but treat the strength as {confidence.lower()}."
+        summary = (
+            f"The current read favors buyers at about {_fmt_price(price)}. "
+            "That does not mean the stock must go up; it means the evidence is currently better for an upside move than a downside move."
+        )
+    elif decision == 'SHORT':
+        headline = f"{ticker} leans downward right now, with {confidence.lower()} confidence."
+        summary = (
+            f"The current read favors sellers at about {_fmt_price(price)}. "
+            "For a newer trader, that usually means avoid buying here unless the stock quickly recovers key levels."
+        )
+    else:
+        headline = f"{ticker} does not have a clean edge right now."
+        summary = (
+            f"At about {_fmt_price(price)}, the evidence is mixed. "
+            f"If forced to choose, the weaker directional lean is {forced} with {str(forced_conv).lower()} conviction, but patience is the cleaner decision."
+        )
+
+    rows = []
+
+    rsi = latest.get('rsi')
+    if rsi is not None:
+        if rsi >= 70:
+            meaning = "The stock has been pushed up hard enough that late buyers may be chasing."
+            bias = "bear"
+        elif rsi >= 55:
+            meaning = "Buyers have control of recent movement, but it is not yet extremely stretched."
+            bias = "bull"
+        elif rsi <= 30:
+            meaning = "Selling has been heavy enough that a bounce can happen, even if the larger trend is still weak."
+            bias = "bull"
+        elif rsi <= 45:
+            meaning = "Sellers have control of recent movement, so quick bounces may fail."
+            bias = "bear"
+        else:
+            meaning = "Momentum is balanced; RSI is not giving a strong reason by itself."
+            bias = "neutral"
+        rows.append({
+            'label': 'RSI',
+            'value': f"{rsi:.1f}",
+            'bias': bias,
+            'meaning': meaning,
+            'plain': 'RSI is a speedometer for recent buying vs selling pressure.',
+        })
+
+    ema9 = latest.get('ema9')
+    ema21 = latest.get('ema21')
+    if ema9 is not None and ema21 is not None:
+        up = ema9 > ema21
+        rows.append({
+            'label': 'Short-term trend',
+            'value': f"EMA9 {_fmt_price(ema9)} / EMA21 {_fmt_price(ema21)}",
+            'bias': 'bull' if up else 'bear',
+            'meaning': (
+                "The faster average is above the slower one, so the short-term path is rising."
+                if up else
+                "The faster average is below the slower one, so the short-term path is slipping."
+            ),
+            'plain': 'EMA lines smooth out price so you can see whether the recent path is tilting up or down.',
+        })
+
+    vwap = latest.get('vwap')
+    if vwap is not None and price is not None:
+        above = price > vwap
+        dist = abs(float(price) - float(vwap))
+        rows.append({
+            'label': 'VWAP',
+            'value': _fmt_price(vwap),
+            'bias': 'bull' if above else 'bear',
+            'meaning': (
+                f"Price is ${dist:.2f} above the day's average traded price, which means buyers are paying up."
+                if above else
+                f"Price is ${dist:.2f} below the day's average traded price, which means sellers have the upper hand."
+            ),
+            'plain': 'VWAP is the average price where the stock has traded today, weighted by volume.',
+        })
+
+    macd_h = latest.get('macd_histogram')
+    macd_prev = latest.get('macd_prev_histogram')
+    if macd_h is not None:
+        if macd_h > 0 and (macd_prev is None or macd_h >= macd_prev):
+            bias = 'bull'
+            meaning = "Momentum is improving; the recent push upward is still building."
+        elif macd_h > 0:
+            bias = 'neutral'
+            meaning = "Momentum is still positive, but it is cooling off."
+        elif macd_h < 0 and (macd_prev is None or macd_h <= macd_prev):
+            bias = 'bear'
+            meaning = "Momentum is worsening; sellers are pressing harder."
+        else:
+            bias = 'neutral'
+            meaning = "Momentum is still negative, but the selling pressure is easing."
+        rows.append({
+            'label': 'MACD',
+            'value': f"{macd_h:.4f}",
+            'bias': bias,
+            'meaning': meaning,
+            'plain': 'MACD compares faster and slower momentum to show whether a move is gaining or losing energy.',
+        })
+
+    rvol = latest.get('rvol')
+    if rvol is not None:
+        if rvol >= 1.5:
+            meaning = "More people are participating than usual, so moves are more likely to matter."
+            bias = 'neutral'
+        elif rvol < 0.7:
+            meaning = "Volume is light, so price moves are easier to fake out."
+            bias = 'watch'
+        else:
+            meaning = "Volume is normal; it is not strongly confirming or rejecting the move."
+            bias = 'neutral'
+        rows.append({
+            'label': 'Volume',
+            'value': f"{rvol}x normal",
+            'bias': bias,
+            'meaning': meaning,
+            'plain': 'Relative volume compares today\'s activity with normal activity for this point in the session.',
+        })
+
+    pivot = latest.get('pivot')
+    if pivot is not None and price is not None:
+        rows.append({
+            'label': 'Daily pivot',
+            'value': _fmt_price(pivot),
+            'bias': 'bull' if price >= pivot else 'bear',
+            'meaning': (
+                "Price is above a common reference level, so the day has a slightly stronger tone."
+                if price >= pivot else
+                "Price is below a common reference level, so rallies may run into resistance."
+            ),
+            'plain': 'The pivot is a simple level built from yesterday\'s high, low, and close.',
+        })
+
+    poc = latest.get('poc')
+    if poc is not None and price is not None:
+        rows.append({
+            'label': 'Volume profile',
+            'value': f"POC {_fmt_price(poc)}",
+            'bias': 'bull' if price >= poc else 'bear',
+            'meaning': (
+                "Price is above the busiest traded price of the day, which means buyers are holding value."
+                if price >= poc else
+                "Price is below the busiest traded price of the day, which means that busy area may act like a ceiling."
+            ),
+            'plain': 'POC is the price where the most shares traded today.',
+        })
+
+    cvd = latest.get('cvd_value')
+    cvd_div = latest.get('cvd_divergence')
+    if cvd is not None:
+        if cvd_div == 'bear':
+            bias = 'bear'
+            meaning = "Price is rising while buying pressure is weakening. That is an early warning sign."
+        elif cvd_div == 'bull':
+            bias = 'bull'
+            meaning = "Price is falling while buyers are quietly stepping in. That can precede a bounce."
+        elif cvd > 0:
+            bias = 'bull'
+            meaning = "More aggressive buying than selling has shown up today."
+        else:
+            bias = 'bear'
+            meaning = "More aggressive selling than buying has shown up today."
+        rows.append({
+            'label': 'Buying vs selling pressure',
+            'value': f"{cvd:+,.0f}",
+            'bias': bias,
+            'meaning': meaning,
+            'plain': 'CVD estimates whether trades are mostly hitting the ask (buying) or bid (selling).',
+        })
+
+    watch = []
+    if analysis.get('entry') is not None:
+        watch.append(f"Planned entry area: {_fmt_price(analysis.get('entry'))}.")
+    if analysis.get('stop') is not None:
+        watch.append(f"Invalidation/stop area: {_fmt_price(analysis.get('stop'))}. If price gets there, this read is probably wrong.")
+    if analysis.get('target') is not None:
+        watch.append(f"First target area: {_fmt_price(analysis.get('target'))}.")
+    if decision == 'FLAT':
+        watch.append("A cleaner trade would need price to reclaim or reject VWAP with stronger volume.")
+    elif decision == 'LONG':
+        watch.append("For the long idea to stay healthy, price should hold above VWAP or quickly reclaim it after a dip.")
+    elif decision == 'SHORT':
+        watch.append("For the short idea to stay healthy, price should stay below VWAP or fail quickly if it bounces into it.")
+
+    if btc:
+        btc_bits = []
+        if btc.get('btc_pct_change') is not None:
+            btc_bits.append(f"BTC move since stock close: {_fmt_pct(btc.get('btc_pct_change'))}")
+        if analysis.get('btc_adj'):
+            btc_bits.append(f"BTC adjustment to score: {analysis.get('btc_adj'):+.2f}")
+        if btc_intraday:
+            btc_bits.append(f"BTC intraday bias: {btc_intraday.get('bias')} ({btc_intraday.get('score'):+.1f})")
+        if btc_bits:
+            watch.append("Bitcoin context: " + "; ".join(btc_bits) + ".")
+
+    return {
+        'headline': headline,
+        'summary': summary,
+        'rows': rows,
+        'watch': watch,
+        'score_label': f"Engine score {score:+.1f}" if score is not None else None,
+    }
+
+
 def get_btc_beta(ticker, btc_move_pct=None):
     """
     Return empirical β for a BTC-correlated ticker. If btc_move_pct is supplied
@@ -1681,7 +1913,7 @@ def rule_based_analysis(ticker, latest, daily_ctx=None, btc=None, btc_intraday=N
 
     narrative = ". ".join(sentences) + ("." if sentences else "")
 
-    return {
+    analysis_payload = {
         'narrative':       narrative,
         'btc_line':        btc_line,
         'decision':        decision,
@@ -1713,6 +1945,15 @@ def rule_based_analysis(ticker, latest, daily_ctx=None, btc=None, btc_intraday=N
         'btc_current':       btc_current_px,
         'btc_pct_change':    btc_pct_now,
     }
+    analysis_payload['human_read'] = _plain_signal_read(
+        ticker,
+        latest,
+        analysis_payload,
+        daily_ctx=daily_ctx,
+        btc=btc,
+        btc_intraday=btc_intraday,
+    )
+    return analysis_payload
 
 
 def get_btc_intraday_bias():
@@ -2499,6 +2740,8 @@ watcher_state = {
     'running': False,
     'ticker': None,
     'btc_correlated': False,
+    'signal_source': 'ws_scalp',
+    'min_alert_conviction': ['MEDIUM', 'HIGH'],
     'interval': 30,
     'last_check': None,
     'last_price': None,
@@ -2516,6 +2759,7 @@ watcher_state = {
 _watcher_lock = threading.Lock()
 _watcher_stop_evt = threading.Event()
 _watcher_thread = None
+_WATCHER_MIN_ALERT_CONVICTION = {'MEDIUM', 'HIGH'}
 
 
 def _notify(title, msg):
@@ -2529,6 +2773,101 @@ def _notify(title, msg):
 def _push_event(kind, text, price=None):
     evt = {'ts': int(time.time()), 'kind': kind, 'text': text, 'price': price}
     watcher_state['events'] = ([evt] + watcher_state['events'])[:30]
+
+
+def _watcher_signal_rationale(sig):
+    reasons = sig.get('reasons') or []
+    bits = []
+    setup = sig.get('setup_type')
+    if setup:
+        bits.append(f"setup={setup}")
+    if sig.get('score') is not None:
+        bits.append(f"score={sig.get('score')}")
+    if sig.get('execution_quality'):
+        eq = sig.get('execution_quality') or {}
+        bits.append(f"execution={eq.get('score')}")
+    if sig.get('btc_regime'):
+        bits.append(f"BTC={sig.get('btc_regime')}")
+    return ' · '.join(bits + reasons[:2])
+
+
+def _watcher_on_signal(sig):
+    """Watcher alerts use the same ws_scalp signal stream as MockTrader."""
+    try:
+        ticker = (sig.get('ticker') or '').upper()
+        side = (sig.get('side') or '').upper()
+        conviction = sig.get('conviction')
+        if conviction not in _WATCHER_MIN_ALERT_CONVICTION:
+            return
+        if side not in ('LONG', 'SHORT'):
+            return
+        with _watcher_lock:
+            if not watcher_state.get('running'):
+                return
+            if ticker != (watcher_state.get('ticker') or '').upper():
+                return
+            price = sig.get('price')
+            watcher_state['last_check'] = int(time.time())
+            watcher_state['next_check_ts'] = int(time.time()) + int(watcher_state.get('interval') or 30)
+            watcher_state['last_error'] = None
+            watcher_state['last_price'] = price
+            watcher_state['last_decision'] = side
+            watcher_state['last_confidence'] = conviction
+            watcher_state['last_score'] = sig.get('score')
+            watcher_state['last_confidence_score'] = min(10, abs(float(sig.get('score') or 0)) * 2)
+            watcher_state['last_forced_side'] = side
+            watcher_state['last_forced_conviction'] = conviction
+            watcher_state['last_forced_reasons'] = sig.get('reasons') or []
+            watcher_state['last_signal'] = {
+                'ticker': ticker,
+                'side': side,
+                'conviction': conviction,
+                'score': sig.get('score'),
+                'price': price,
+                'setup_type': sig.get('setup_type'),
+                'reasons': sig.get('reasons') or [],
+                'execution_quality': sig.get('execution_quality') or {},
+                'signal_quality': sig.get('signal_quality') or {},
+                'btc_regime': sig.get('btc_regime'),
+                'tp_price': sig.get('tp_price'),
+                'sl_price': sig.get('sl_price'),
+                'source': 'ws_scalp',
+            }
+            if side == 'LONG':
+                watcher_state['long_trigger_hit'] = True
+                watcher_state['long_setup'] = {
+                    'trigger': price,
+                    'stop': sig.get('sl_price'),
+                    'target': sig.get('tp_price'),
+                    'trigger_reason': _watcher_signal_rationale(sig),
+                    'source': 'ws_scalp',
+                    'conviction': conviction,
+                }
+            else:
+                watcher_state['short_trigger_hit'] = True
+                watcher_state['short_setup'] = {
+                    'trigger': price,
+                    'stop': sig.get('sl_price'),
+                    'target': sig.get('tp_price'),
+                    'trigger_reason': _watcher_signal_rationale(sig),
+                    'source': 'ws_scalp',
+                    'conviction': conviction,
+                }
+            rationale = _watcher_signal_rationale(sig)
+            tp_txt = f"TP ${sig.get('tp_price'):.2f}" if sig.get('tp_price') is not None else 'TP n/a'
+            sl_txt = f"SL ${sig.get('sl_price'):.2f}" if sig.get('sl_price') is not None else 'SL n/a'
+            main = f'{side} {conviction} engine signal @ ${float(price or 0):.2f} · {tp_txt} · {sl_txt}'
+            _push_event(
+                f'{side.lower()}_trigger',
+                main + (f'<br><span class="evt-why">Why: {rationale}</span>' if rationale else ''),
+                price,
+            )
+        _notify(
+            f'{ticker} — {side} {conviction} signal',
+            f'${float(sig.get("price") or 0):.2f} · {tp_txt} · {sl_txt}' + (f' — {rationale}' if rationale else ''),
+        )
+    except Exception:
+        pass
 
 
 def _in_rth():
@@ -2725,6 +3064,44 @@ def _check_crossings_unlocked(price, prev_price):
         _notify(title, msg)
 
 
+def _check_watcher_position_unlocked(price):
+    """Track manually-recorded Watcher positions without emitting old playbook entry alerts."""
+    if price is None:
+        return
+
+    notifications = []
+    with _watcher_lock:
+        ticker = watcher_state['ticker']
+        pos = watcher_state.get('position')
+        if pos and pos.get('status') == 'open':
+            side = pos['side']; entry = pos['entry']; stop = pos.get('stop'); target = pos.get('target')
+            hit = None
+            if side == 'long':
+                if target and price >= target: hit = ('target', target)
+                elif stop and price <= stop:   hit = ('stop', stop)
+                pos['pnl'] = round(price - entry, 2)
+            else:
+                if target and price <= target: hit = ('target', target)
+                elif stop and price >= stop:   hit = ('stop', stop)
+                pos['pnl'] = round(entry - price, 2)
+            if hit:
+                kind, lv = hit
+                pnl = (price - entry) if side == 'long' else (entry - price)
+                pnl_txt = f'{"+" if pnl >= 0 else ""}${pnl:.2f}/share'
+                pos['status'] = f'{kind}_hit'
+                pos['closed_price'] = price
+                pos['closed_ts'] = int(time.time())
+                emoji = '🟢' if kind == 'target' else '🔴'
+                _push_event(f'{side}_{kind}', f'{emoji} {side.upper()} {kind.upper()} ${lv:.2f} hit · {pnl_txt}', price)
+                notifications.append((
+                    f'{ticker} — {side.upper()} {kind.upper()} HIT',
+                    f'${lv:.2f} · {pnl_txt}'
+                ))
+
+    for title, msg in notifications:
+        _notify(title, msg)
+
+
 def _watcher_loop(ticker, btc_correlated, interval):
     prev_price = None
     # Let /watcher/start finish its HTTP response before the watcher makes a
@@ -2747,30 +3124,10 @@ def _watcher_loop(ticker, btc_correlated, interval):
                     watcher_state['last_error'] = data['error']
                 else:
                     watcher_state['last_error'] = None
-                    pb = data.get('playbook') or {}
-                    long_p = pb.get('long') or {}
-                    short_p = pb.get('short') or {}
-                    new_long = {'trigger': long_p.get('trigger'), 'stop': long_p.get('stop'),
-                                'target': long_p.get('target'), 'trigger_reason': long_p.get('trigger_reason')}
-                    new_short = {'trigger': short_p.get('trigger'), 'stop': short_p.get('stop'),
-                                 'target': short_p.get('target'), 'trigger_reason': short_p.get('trigger_reason')}
-                    # Reset trigger-hit flags when the trigger level changes
-                    old_long = watcher_state.get('long_setup') or {}
-                    old_short = watcher_state.get('short_setup') or {}
-                    if new_long['trigger'] != old_long.get('trigger'):
-                        watcher_state['long_trigger_hit'] = False
-                    if new_short['trigger'] != old_short.get('trigger'):
-                        watcher_state['short_trigger_hit'] = False
-                    watcher_state['long_setup'] = new_long
-                    watcher_state['short_setup'] = new_short
+                    # Watcher alerts now come only from the shared ws_scalp
+                    # signal callback used by MockTrader. This polling loop is
+                    # retained for price/BTC context and manual position tracking.
                     ana = data.get('analysis') or {}
-                    watcher_state['last_decision'] = ana.get('decision')
-                    watcher_state['last_confidence'] = ana.get('confidence')
-                    watcher_state['last_score'] = ana.get('score')
-                    watcher_state['last_confidence_score'] = ana.get('confidence_score')
-                    watcher_state['last_forced_side'] = ana.get('forced_side')
-                    watcher_state['last_forced_conviction'] = ana.get('forced_conviction')
-                    watcher_state['last_forced_reasons'] = ana.get('forced_reasons') or []
                     watcher_state['last_btc_intraday'] = data.get('btc_intraday')
                     watcher_state['last_market_closed'] = ana.get('market_closed')
                     watcher_state['last_expected_gap_pct'] = ana.get('expected_gap_pct')
@@ -2786,12 +3143,32 @@ def _watcher_loop(ticker, btc_correlated, interval):
                     watcher_state['last_price'] = price
                     prev_price_next = price
             if 'error' not in data:
-                _check_crossings_unlocked(price, prev_price)
+                _check_watcher_position_unlocked(price)
                 prev_price = prev_price_next
         except Exception as e:
             with _watcher_lock:
                 watcher_state['last_error'] = str(e)[:200]
         _watcher_stop_evt.wait(interval)
+
+
+def _ensure_watcher_signal_engine(ticker, btc_correlated):
+    """Attach Watcher to the shared ws_scalp engine used by MockTrader."""
+    eng = _get_scalp_engine()
+    eng.on_signal(_watcher_on_signal)
+    ticker = ticker.upper().strip()
+    need_btc = bool(btc_correlated or ticker in HIGH_BTC_CORRELATION)
+    subscribed = set(eng.get_all_subscribed())
+    active = getattr(eng, 'active_ticker', None)
+
+    if need_btc and not getattr(eng, 'btc_enabled', False):
+        eng.subscribe(active or ticker, btc=True)
+        subscribed = set(eng.get_all_subscribed())
+
+    if not subscribed:
+        eng.subscribe(ticker, btc=need_btc)
+    elif ticker not in subscribed:
+        eng.add_ticker(ticker)
+    return eng
 
 
 @app.route('/backtest_report', methods=['POST'])
@@ -3207,12 +3584,19 @@ def _watcher_start_impl():
         return jsonify({'error': 'Ticker required'}), 400
     btc_correlated = bool(body.get('btc_correlated', False))
     interval = int(body.get('interval', 30))
+    try:
+        _ensure_watcher_signal_engine(ticker, btc_correlated)
+    except Exception as e:
+        return jsonify({'error': f'Could not start shared signal engine: {e}'}), 500
+
     with _watcher_lock:
         if watcher_state['running']:
             return jsonify({'error': 'Already running', 'state': watcher_state}), 409
         _watcher_stop_evt.clear()
         watcher_state.update({
             'running': True, 'ticker': ticker, 'btc_correlated': btc_correlated,
+            'signal_source': 'ws_scalp',
+            'min_alert_conviction': sorted(_WATCHER_MIN_ALERT_CONVICTION),
             'interval': interval, 'last_check': None, 'last_decision': None,
             'last_price': None, 'last_error': None,
             'next_check_ts': int(time.time()) + 1,
@@ -3399,12 +3783,15 @@ def _watcher_autostart():
     if not tkr: return
     global _watcher_thread
     try:
+        _ensure_watcher_signal_engine(tkr, bool(prefs.get('btc_correlated')))
         with _watcher_lock:
             if watcher_state['running']: return  # already running somehow
             _watcher_stop_evt.clear()
             watcher_state.update({
                 'running': True, 'ticker': tkr,
                 'btc_correlated': bool(prefs.get('btc_correlated')),
+                'signal_source': 'ws_scalp',
+                'min_alert_conviction': sorted(_WATCHER_MIN_ALERT_CONVICTION),
                 'interval': int(prefs.get('interval', 30)),
                 'last_check': None, 'last_price': None, 'last_error': None,
                 'next_check_ts': int(time.time()) + 5,
@@ -3476,8 +3863,16 @@ def _mock_autostart():
     """Boot the mock trader on Flask startup so it's ready at wake-up."""
     print('[mock] autostart...', flush=True)
     try:
+        if os.getenv('MOCK_AUTOSTART', '1') != '1':
+            print('[mock] MOCK_AUTOSTART!=1, skipping', flush=True)
+            return
         mt = _get_mock_trader()
         s = mt.status()
+        if not s.get('running'):
+            print('[mock] not running; attempting start...', flush=True)
+            resp = mt.start()
+            print(f'[mock] start => {resp}', flush=True)
+            s = mt.status()
         print(f'[mock] running={s["running"]} balance=${s["balance"]:.2f} '
               f'open_positions={len(s.get("positions",{}))} '
               f'trade_count={s["trade_count"]} in_window={s["in_window"]}',
@@ -3488,18 +3883,42 @@ def _mock_autostart():
         traceback.print_exc()
 
 
-if __name__ == '__main__':
+_BOOT_APP_DONE = False
+
+
+def boot_app():
     # Install crash/shutdown diagnostics FIRST so they cover the rest of
     # startup. Writes a 10s heartbeat file, installs faulthandler for
     # C-level crashes, excepthooks for unhandled exceptions in any
     # thread, and signal+atexit handlers to distinguish OS-kill from
     # silent-death. Boot logs report downtime since last heartbeat.
+    global _BOOT_APP_DONE
+    if _BOOT_APP_DONE:
+        return
+    _BOOT_APP_DONE = True
     import process_monitor
-    process_monitor.install()
+    (getattr(process_monitor, 'install_v2', None) or process_monitor.install)()
 
     _daily_beta_refit_startup()
     _watcher_autostart()
     _scalp_autostart()
     _mock_autostart()
-    # use_reloader=False prevents the watcher thread from being duplicated
-    app.run(debug=True, port=5000, use_reloader=False, threaded=True)
+
+
+if __name__ == '__main__':
+    from runtime_guard import SingleInstanceLock, rotate_runtime_logs, status_reachable
+
+    lock = SingleInstanceLock()
+    if not lock.acquire():
+        if status_reachable('http://127.0.0.1:5000/mock/status', timeout=3):
+            print('[server] existing app is healthy at http://127.0.0.1:5000', flush=True)
+            raise SystemExit(0)
+        print('[server] refused to start: app lock is held but status is unreachable', flush=True)
+        raise SystemExit(2)
+    try:
+        rotate_runtime_logs()
+        boot_app()
+        # use_reloader=False prevents duplicate watcher/scalp/mock threads.
+        app.run(debug=False, port=5000, use_reloader=False, threaded=True)
+    finally:
+        lock.release()

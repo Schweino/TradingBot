@@ -53,16 +53,37 @@
     .sidebar-what { font-size: .85rem; line-height: 1.65; color: #8b949e; }
 
     /* Stats */
-    .stats-section { margin-bottom: 8px; }
-    .stats-section-label { font-size: .7rem; font-weight: 600; color: #7d8590; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 9px; margin-bottom: 16px; }
-    .stat-card { background: #0d1117; border: 1px solid #21262d; border-radius: 10px; padding: 11px 13px; cursor: pointer; transition: border-color .15s, background .15s; user-select: none; }
-    .stat-card:hover { border-color: #388bfd88; background: #161b22; }
-    .stat-card.active { border-color: #388bfd; background: #161b22; }
-    .stat-card .label { font-size: .7rem; color: #7d8590; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
-    .stat-card .value { font-size: 1.05rem; font-weight: 700; }
-    .stat-card .badge { display: inline-block; font-size: .62rem; font-weight: 600; padding: 2px 5px; border-radius: 20px; margin-left: 4px; vertical-align: middle; }
-    .stat-card .sub { font-size: .67rem; color: #7d8590; margin-top: 3px; }
+    .stats-section { margin: 0 0 26px; }
+    .stats-section-head { display:block; margin-bottom:12px; max-width:900px; }
+    .stats-section-label { font-size: .74rem; font-weight: 800; color: #c9d1d9; text-transform: uppercase; letter-spacing: .14em; }
+    .stats-section-note { font-size:.8rem; color:#8b949e; line-height:1.45; max-width:760px; margin-top:5px; }
+    .stats { display: grid; gap: 12px; margin-bottom: 4px; }
+    .signal-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .roadmap-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .battle-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stat-card { background: linear-gradient(180deg, #111820 0%, #0d1117 100%); border: 1px solid #26313d; border-radius: 8px; padding: 13px 14px 12px; cursor: pointer; transition: border-color .15s, background .15s, transform .15s, box-shadow .15s; user-select: none; min-height: 126px; position: relative; overflow: hidden; }
+    .stat-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:#30363d; opacity:.75; }
+    .stat-card.bull::before { background:#3fb950; }
+    .stat-card.bear::before { background:#f85149; }
+    .stat-card.neutral::before { background:#e3b341; }
+    .stat-card.muted::before { background:#7d8590; }
+    .stat-card:hover { border-color: #388bfd99; background: linear-gradient(180deg, #151d27 0%, #0f141b 100%); transform: translateY(-1px); box-shadow: 0 8px 22px #00000038; }
+    .stat-card.active { border-color: #58a6ff; background: linear-gradient(180deg, #152031 0%, #101722 100%); box-shadow: 0 0 0 1px #388bfd44 inset; }
+    .stat-card .label { font-size: .66rem; color: #8b949e; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; line-height:1.35; min-height: 1.8em; }
+    .stat-card .value { font-size: 1.2rem; font-weight: 800; line-height:1.05; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .stat-card .badge { display: inline-flex; align-items:center; font-size: .58rem; font-weight: 800; padding: 3px 7px; border-radius: 20px; vertical-align: middle; letter-spacing:.03em; line-height:1; }
+    .stat-card .sub { font-size: .72rem; color: #8b949e; margin-top: 8px; line-height:1.35; }
+    .stat-card .hint { font-size: .72rem; color: #9aa7b5; margin-top: 8px; line-height: 1.35; }
+    .roadmap-grid .stat-card, .battle-grid .stat-card { min-height: 116px; }
+    .roadmap-grid .stat-card .label, .battle-grid .stat-card .label { min-height: auto; }
+    @media (max-width: 1250px) {
+      .signal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .roadmap-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .battle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .signal-grid, .roadmap-grid, .battle-grid { grid-template-columns: 1fr; }
+    }
 
     .ticker-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 6px; }
     .ticker-header h2 { font-size: 2rem; font-weight: 700; }
@@ -77,6 +98,22 @@
     .analysis-box { background: #161b22; border: 1px solid #388bfd44; border-left: 3px solid #388bfd; border-radius: 10px; padding: 18px 20px; margin-bottom: 16px; }
     .analysis-box .ai-label { font-size: .72rem; font-weight: 600; color: #388bfd; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
     .analysis-box p { font-size: .95rem; line-height: 1.7; color: #c9d1d9; }
+    .human-read { display:grid; gap:12px; }
+    .human-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .human-headline { font-size:1.05rem; font-weight:800; color:#e6edf3; }
+    .human-score { font-size:.72rem; font-weight:800; color:#58a6ff; background:#0d1117; border:1px solid #30363d; border-radius:14px; padding:3px 9px; }
+    .human-summary { color:#c9d1d9; font-size:.94rem; line-height:1.6; }
+    .human-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:9px; }
+    .human-row { background:#0d1117; border:1px solid #21262d; border-radius:8px; padding:10px 12px; }
+    .human-row.bull { border-left:3px solid #3fb950; color:#c9d1d9; }
+    .human-row.bear { border-left:3px solid #f85149; color:#c9d1d9; }
+    .human-row.neutral, .human-row.watch { border-left:3px solid #e3b341; color:#c9d1d9; }
+    .human-row-top { display:flex; justify-content:space-between; gap:10px; margin-bottom:5px; }
+    .human-label { font-size:.72rem; color:#8b949e; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    .human-value { font-size:.78rem; color:#e6edf3; font-family:ui-monospace, monospace; white-space:nowrap; }
+    .human-meaning { font-size:.86rem; line-height:1.5; color:#c9d1d9; margin-bottom:5px; }
+    .human-plain { font-size:.74rem; line-height:1.45; color:#8b949e; }
+    .human-watch { margin:0; padding-left:18px; color:#c9d1d9; font-size:.84rem; line-height:1.55; }
     .analysis-box .btc-caveat { margin-top: 14px; padding-top: 14px; border-top: 1px solid #21262d; font-size: .92rem; line-height: 1.6; color: #c9d1d9; }
     .analysis-box .btc-caveat.warn { color: #f85149; }
     .analysis-box .btc-caveat.tail { color: #3fb950; }
@@ -593,7 +630,9 @@ async function pollWatcher() {
       const lastTs = s.last_check ? new Date(s.last_check*1000).toLocaleTimeString() : '—';
       const price = s.last_price != null ? `$${s.last_price.toFixed(2)}` : '—';
       const err = s.last_error ? ` · ⚠ ${s.last_error}` : '';
-      st.innerHTML = `<b>${s.ticker}</b> · price ${price} · last ${lastTs} · next ${nextIn}s${err}`;
+      const source = s.signal_source || 'ws_scalp';
+      const minConv = (s.min_alert_conviction || ['MEDIUM','HIGH']).join('/');
+      st.innerHTML = `<b>${s.ticker}</b> · alerts ${minConv} via ${source} · price ${price} · last ${lastTs} · next ${nextIn}s${err}`;
 
       // Gap prediction (only for high-corr miners when market is closed)
       const gapEl = document.getElementById('wbGap');
@@ -1021,16 +1060,25 @@ window.addEventListener('DOMContentLoaded', () => {
       <div class="session-label" id="sessionLabel"></div>
 
       <div class="stats-section">
-        <div class="stats-section-label">Indicators (5-min)</div>
-        <div class="stats" id="statsIndicators"></div>
+        <div class="stats-section-head">
+          <div class="stats-section-label">Top 10 Signal Checks</div>
+          <div class="stats-section-note">These are the ten reads I would scan first: trend, momentum, volume, risk, and whether price is sitting near an important crowd level.</div>
+        </div>
+        <div class="stats signal-grid" id="statsIndicators"></div>
       </div>
       <div class="stats-section">
-        <div class="stats-section-label">Pivot Levels (from prev session)</div>
-        <div class="stats" id="statsPivots"></div>
+        <div class="stats-section-head">
+          <div class="stats-section-label">Prior-Day Roadmap</div>
+          <div class="stats-section-note">These are yesterday-based reference prices. They are not magic signals; they are likely areas where traders may react if price reaches them.</div>
+        </div>
+        <div class="stats roadmap-grid" id="statsPivots"></div>
       </div>
       <div class="stats-section">
-        <div class="stats-section-label">Session Levels</div>
-        <div class="stats" id="statsLevels"></div>
+        <div class="stats-section-head">
+          <div class="stats-section-label">Today's Battle Lines</div>
+          <div class="stats-section-note">These levels come from today's market activity. Use them to answer: are buyers defending important prices, or are sellers breaking them?</div>
+        </div>
+        <div class="stats battle-grid" id="statsLevels"></div>
       </div>
 
       <div class="btc-card" id="btcCard">
@@ -1400,13 +1448,13 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     },
     pivot: {
-      name: 'Daily Pivot Point',
-      what: 'The pivot point P = (prev high + prev low + prev close) / 3. It is the central reference level for the session. Price above it is considered bullish for the day; below is bearish. Many algorithmic systems and institutional desks use pivot levels automatically.',
+      name: 'Prior-Day Fair Price',
+      what: 'This is the classic pivot level, built from yesterday\'s high, low, and close. Think of it as yesterday\'s rough fair price for today. Above it, buyers have a small advantage; below it, sellers have a small advantage.',
       reading(d) {
         const p = d.latest.pivot;
         if (!p) return { cls: 'neutral', label: 'N/A', text: 'Pivot data not available.' };
-        if (d.latest.price >= p) return { cls: 'bull', label: 'Above Pivot', text: `Price ($${d.latest.price}) is above today's pivot ($${p}). Bullish bias for the session. The pivot acts as support on pullbacks. Institutional algos buy dips above the pivot.` };
-        return { cls: 'bear', label: 'Below Pivot', text: `Price ($${d.latest.price}) is below today's pivot ($${p}). Bearish bias for the session. The pivot acts as resistance on bounces. A reclaim of $${p} would shift the intraday bias neutral to bullish.` };
+        if (d.latest.price >= p) return { cls: 'bull', label: 'Above Fair Price', text: `Price ($${d.latest.price}) is above the prior-day fair price ($${p}). Buyers are currently paying more than yesterday's balanced level. If price pulls back to $${p} and holds, that is constructive.` };
+        return { cls: 'bear', label: 'Below Fair Price', text: `Price ($${d.latest.price}) is below the prior-day fair price ($${p}). The stock is trading under yesterday's balanced level. A move back above $${p} would improve the read.` };
       }
     },
     r1: {
@@ -1642,14 +1690,56 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function mkCard(label, value, valueCls, badge, badgeCls, sub, key) {
-    return `<div class="stat-card" onclick="showIndicatorPanel('${key}',this)">
+  function mkCard(label, value, valueCls, badge, badgeCls, sub, key, hint) {
+    const cardTone = ['bull', 'bear', 'neutral', 'muted'].includes(valueCls) ? valueCls : '';
+    return `<div class="stat-card ${cardTone}" onclick="showIndicatorPanel('${key}',this)">
       <div class="label">${label}</div>
       <div class="value ${valueCls}">${value}${badge ? `<span class="badge ${badgeCls}">${badge}</span>` : ''}</div>
       ${sub ? `<div class="sub">${sub}</div>` : ''}
+      ${hint ? `<div class="hint">${hint}</div>` : ''}
     </div>`;
   }
 
+  function distanceText(price, level) {
+    if (price == null || level == null) return '';
+    const gap = Math.abs(price - level).toFixed(2);
+    if (Math.abs(price - level) < 0.005) return 'right here';
+    return `$${gap} ${price >= level ? 'below price' : 'above price'}`;
+  }
+
+  function escHtml(v) {
+    return String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function renderHumanRead(analysis) {
+    const target = document.getElementById('analysisText');
+    const read = analysis.human_read;
+    if (!read) {
+      target.textContent = analysis.narrative;
+      return;
+    }
+    const rows = (read.rows || []).map(row => `
+      <div class="human-row ${escHtml(row.bias || 'neutral')}">
+        <div class="human-row-top">
+          <div class="human-label">${escHtml(row.label)}</div>
+          <div class="human-value">${escHtml(row.value)}</div>
+        </div>
+        <div class="human-meaning">${escHtml(row.meaning)}</div>
+        <div class="human-plain">${escHtml(row.plain)}</div>
+      </div>
+    `).join('');
+    const watch = (read.watch || []).map(item => `<li>${escHtml(item)}</li>`).join('');
+    target.innerHTML = `
+      <div class="human-read">
+        <div class="human-head">
+          <div class="human-headline">${escHtml(read.headline)}</div>
+          ${read.score_label ? `<div class="human-score">${escHtml(read.score_label)}</div>` : ''}
+        </div>
+        <div class="human-summary">${escHtml(read.summary)}</div>
+        ${rows ? `<div class="human-grid">${rows}</div>` : ''}
+        ${watch ? `<ul class="human-watch">${watch}</ul>` : ''}
+      </div>
+    `;
+  }
   function renderDashboard(data) {
     const { ticker, session_date, latest, daily_ctx, analysis, btc, chart_data } = data;
     document.getElementById('tickerTitle').textContent = ticker;
@@ -1657,7 +1747,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sessionLabel').textContent = `Session: ${session_date} · 5-min bars · times in ET`;
 
     // Signal narrative
-    document.getElementById('analysisText').textContent = analysis.narrative;
+    renderHumanRead(analysis);
 
     // BTC caveat
     const caveatEl = document.getElementById('btcCaveat');
@@ -1845,53 +1935,56 @@ window.addEventListener('DOMContentLoaded', () => {
     const rvolHigh = latest.rvol && latest.rvol > 1.5;
 
     document.getElementById('statsIndicators').innerHTML = [
-      mkCard('RSI (5-min)', latest.rsi != null ? latest.rsi.toFixed(1) : 'N/A', rsiCls, rsiLbl, rsiCls === 'bull' ? 'badge-bull' : rsiCls === 'bear' ? 'badge-bear' : 'badge-neutral', null, 'rsi'),
-      mkCard('EMA 9 / 21', emaBull ? '9 > 21' : '9 < 21', emaBull ? 'bull' : 'bear', emaBull ? 'BULLISH' : 'BEARISH', emaBull ? 'badge-bull' : 'badge-bear', null, 'ema'),
-      mkCard('vs VWAP', vwapBull ? 'Above' : 'Below', vwapBull ? 'bull' : 'bear', vwapBull ? 'BULLISH' : 'BEARISH', vwapBull ? 'badge-bull' : 'badge-bear', null, 'vwap'),
-      mkCard('VWAP', latest.vwap != null ? `$${latest.vwap.toFixed(2)}` : 'N/A', '', null, null, latest.vwap_upper2 ? `+2σ $${latest.vwap_upper2.toFixed(2)} / −2σ $${latest.vwap_lower2.toFixed(2)}` : null, 'vwap'),
-      mkCard('MACD Histogram', macdH != null ? macdH.toFixed(4) : 'N/A', macdCls, macdLbl, macdBadgeCls, null, 'macd'),
-      mkCard('ATR (5-min)', latest.atr != null ? `$${latest.atr.toFixed(2)}` : 'N/A', 'neutral', null, null, latest.atr ? `stop ~$${latest.atr.toFixed(2)} · tgt ~$${(latest.atr*2).toFixed(2)}` : null, 'atr'),
-      mkCard('RVOL', latest.rvol != null ? `${latest.rvol}x` : 'N/A', rvolHigh ? 'neutral' : '', rvolHigh ? 'HIGH' : (latest.rvol ? 'NORMAL' : null), 'badge-neutral', null, 'rvol'),
+      mkCard('1. Momentum', latest.rsi != null ? latest.rsi.toFixed(1) : 'N/A', rsiCls, rsiLbl, rsiCls === 'bull' ? 'badge-bull' : rsiCls === 'bear' ? 'badge-bear' : 'badge-neutral', 'RSI', 'rsi', 'Are buyers or sellers pushing harder right now?'),
+      mkCard('2. Short Trend', emaBull ? '9 > 21' : '9 < 21', emaBull ? 'bull' : 'bear', emaBull ? 'BULLISH' : 'BEARISH', emaBull ? 'badge-bull' : 'badge-bear', 'EMA 9/21', 'ema', 'Is the fast trend above or below the slower trend?'),
+      mkCard('3. Fair Price', vwapBull ? 'Above' : 'Below', vwapBull ? 'bull' : 'bear', vwapBull ? 'BULLISH' : 'BEARISH', vwapBull ? 'badge-bull' : 'badge-bear', 'VWAP', 'vwap', 'Is price above the market average for today?'),
+      mkCard('4. Stretch', latest.vwap != null ? fmtMoney(latest.vwap) : 'N/A', '', null, null, latest.vwap_upper2 ? `outer band ${fmtMoney(latest.vwap_lower2)}-${fmtMoney(latest.vwap_upper2)}` : null, 'vwap', 'Shows whether price is stretched far from VWAP.'),
+      mkCard('5. Momentum Shift', macdH != null ? macdH.toFixed(4) : 'N/A', macdCls, macdLbl, macdBadgeCls, 'MACD', 'macd', 'Is momentum accelerating or fading?'),
+      mkCard('6. Risk Size', latest.atr != null ? fmtMoney(latest.atr) : 'N/A', 'neutral', null, null, latest.atr ? `target idea ${fmtMoney(latest.atr*2)}` : null, 'atr', 'How much room does a normal 5-min candle need?'),
+      mkCard('7. Participation', latest.rvol != null ? `${latest.rvol}x` : 'N/A', rvolHigh ? 'neutral' : '', rvolHigh ? 'HIGH' : (latest.rvol ? 'NORMAL' : null), 'badge-neutral', 'RVOL', 'rvol', 'Are enough shares trading to trust the move?'),
       (() => {
         const cv = latest.cvd_value, cdiv = latest.cvd_divergence;
         const cvCls = cdiv === 'bear' ? 'bear' : cdiv === 'bull' ? 'bull' : cv > 0 ? 'bull' : cv < 0 ? 'bear' : 'neutral';
-        const cvLbl = cdiv === 'bear' ? 'BEAR DIV ⚠' : cdiv === 'bull' ? 'BULL DIV' : cv > 0 ? 'NET BUY' : cv < 0 ? 'NET SELL' : 'NEUTRAL';
+        const cvLbl = cdiv === 'bear' ? 'BEAR DIV' : cdiv === 'bull' ? 'BULL DIV' : cv > 0 ? 'NET BUY' : cv < 0 ? 'NET SELL' : 'NEUTRAL';
         const cvBadge = cvCls === 'bull' ? 'badge-bull' : cvCls === 'bear' ? 'badge-bear' : 'badge-neutral';
         const cvVal = cv != null ? (cv > 0 ? '+' : '') + Math.round(cv).toLocaleString() : 'N/A';
-        return mkCard('CVD', cvVal, cvCls, cvLbl, cvBadge, null, 'cvd');
+        return mkCard('8. Buy/Sell Pressure', cvVal, cvCls, cvLbl, cvBadge, 'CVD', 'cvd', 'Is hidden buying or selling pressure confirming price?');
+      })(),
+      mkCard('9. Bigger Trend', daily_ctx ? (daily_ctx.daily_trend === 'bullish' ? 'Bullish' : 'Bearish') : 'N/A', daily_ctx ? (daily_ctx.daily_trend === 'bullish' ? 'bull' : 'bear') : 'muted', null, null, daily_ctx && daily_ctx.pct_5d != null ? `5d ${daily_ctx.pct_5d > 0 ? '+' : ''}${daily_ctx.pct_5d}%` : null, 'daily_trend', 'Is the daily chart helping or fighting this setup?'),
+      (() => {
+        const poc = latest.poc, pNow = latest.price;
+        const pocCls = poc ? (pNow > poc ? 'bull' : pNow < poc ? 'bear' : 'neutral') : 'muted';
+        const pocLbl = poc ? (pNow > poc ? 'ABOVE' : pNow < poc ? 'BELOW' : 'AT') : null;
+        return mkCard('10. Crowd Price', poc ? fmtMoney(poc) : 'N/A', pocCls, pocLbl, pocCls === 'bull' ? 'badge-bull' : pocCls === 'bear' ? 'badge-bear' : 'badge-neutral', 'POC', 'poc', 'Where has the most trading happened today?');
       })(),
     ].join('');
-
-    // Pivot cards
+    // Prior-day roadmap cards
     const p = latest.pivot, r1 = latest.r1, r2 = latest.r2, s1 = latest.s1, s2 = latest.s2;
     const pricePiv = p ? (latest.price >= p ? 'bull' : 'bear') : '';
     document.getElementById('statsPivots').innerHTML = [
-      mkCard('Pivot (P)', p ? `$${p}` : 'N/A', '', p ? (latest.price >= p ? 'ABOVE' : 'BELOW') : null, pricePiv === 'bull' ? 'badge-bull' : 'badge-bear', null, 'pivot'),
-      mkCard('R2', r2 ? `$${r2}` : 'N/A', latest.price >= (r2||Infinity) ? 'bear' : '', r2 && latest.price >= r2 ? 'AT/ABOVE' : null, 'badge-bear', null, 'r2'),
-      mkCard('R1', r1 ? `$${r1}` : 'N/A', latest.price >= (r1||Infinity) ? 'bear' : '', r1 && latest.price >= r1 ? 'AT/ABOVE' : null, 'badge-neutral', null, 'r1'),
-      mkCard('S1', s1 ? `$${s1}` : 'N/A', latest.price <= (s1||0) ? 'bull' : '', s1 && latest.price <= s1 ? 'AT/BELOW' : null, 'badge-neutral', null, 's1'),
-      mkCard('S2', s2 ? `$${s2}` : 'N/A', latest.price <= (s2||0) ? 'bull' : '', s2 && latest.price <= s2 ? 'AT/BELOW' : null, 'badge-bull', null, 's2'),
+      mkCard('Fair Price', p ? fmtMoney(p) : 'N/A', pricePiv, p ? (latest.price >= p ? 'ABOVE' : 'BELOW') : null, pricePiv === 'bull' ? 'badge-bull' : 'badge-bear', 'from yesterday', 'pivot', p ? `This level is ${distanceText(latest.price, p)}.` : 'Needs prior-day data.'),
+      mkCard('First Upside Zone', r1 ? fmtMoney(r1) : 'N/A', latest.price >= (r1||Infinity) ? 'bear' : '', r1 && latest.price >= r1 ? 'AT/ABOVE' : null, r1 && latest.price >= r1 ? 'badge-bear' : 'badge-neutral', 'from yesterday', 'r1', r1 ? `This level is ${distanceText(latest.price, r1)}; first place upside may stall.` : 'Needs prior-day data.'),
+      mkCard('Stretched Upside', r2 ? fmtMoney(r2) : 'N/A', latest.price >= (r2||Infinity) ? 'bear' : '', r2 && latest.price >= r2 ? 'AT/ABOVE' : null, 'badge-bear', 'from yesterday', 'r2', r2 ? `This level is ${distanceText(latest.price, r2)}; only matters on a strong trend day.` : 'Needs prior-day data.'),
+      mkCard('First Downside Zone', s1 ? fmtMoney(s1) : 'N/A', latest.price <= (s1||0) ? 'bull' : '', s1 && latest.price <= s1 ? 'AT/BELOW' : null, s1 && latest.price <= s1 ? 'badge-bull' : 'badge-neutral', 'from yesterday', 's1', s1 ? `This level is ${distanceText(latest.price, s1)}; first place buyers may defend.` : 'Needs prior-day data.'),
+      mkCard('Stretched Downside', s2 ? fmtMoney(s2) : 'N/A', latest.price <= (s2||0) ? 'bull' : '', s2 && latest.price <= s2 ? 'AT/BELOW' : null, 'badge-bull', 'from yesterday', 's2', s2 ? `This level is ${distanceText(latest.price, s2)}; selloff may be extended here.` : 'Needs prior-day data.'),
     ].join('');
 
-    // Session level cards
+    // Today's live level cards
     const pc = latest.prev_close, priceVsPrev = pc ? (latest.price >= pc ? 'bull' : 'bear') : '';
     document.getElementById('statsLevels').innerHTML = [
-      mkCard('Prev Close', pc ? `$${pc}` : 'N/A', '', pc ? (latest.price >= pc ? 'ABOVE' : 'BELOW') : null, priceVsPrev === 'bull' ? 'badge-bull' : 'badge-bear', null, 'prev_close'),
-      mkCard('Premarket High', latest.premarket_high ? `$${latest.premarket_high}` : 'N/A', '', latest.premarket_high && latest.price > latest.premarket_high ? 'ABOVE ↑' : (latest.premarket_high ? 'BELOW' : null), latest.premarket_high && latest.price > latest.premarket_high ? 'badge-bull' : 'badge-neutral', null, 'pm_high'),
-      mkCard('Premarket Low', latest.premarket_low ? `$${latest.premarket_low}` : 'N/A', '', latest.premarket_low && latest.price < latest.premarket_low ? 'BELOW ↓' : (latest.premarket_low ? 'ABOVE' : null), latest.premarket_low && latest.price < latest.premarket_low ? 'badge-bear' : 'badge-neutral', null, 'pm_low'),
-      mkCard('OR High (15-min)', latest.or_high ? `$${latest.or_high}` : 'Pending', '', latest.or_high && latest.price > latest.or_high ? 'BREAKOUT ↑' : (latest.or_high ? 'BELOW' : null), latest.or_high && latest.price > latest.or_high ? 'badge-bull' : 'badge-neutral', null, 'or_high'),
-      mkCard('OR Low (15-min)', latest.or_low ? `$${latest.or_low}` : 'Pending', '', latest.or_low && latest.price < latest.or_low ? 'BREAKDOWN ↓' : (latest.or_low ? 'ABOVE' : null), latest.or_low && latest.price < latest.or_low ? 'badge-bear' : 'badge-neutral', null, 'or_low'),
-      mkCard('Daily Trend', daily_ctx ? (daily_ctx.daily_trend === 'bullish' ? 'Bullish' : 'Bearish') : 'N/A', daily_ctx ? (daily_ctx.daily_trend === 'bullish' ? 'bull' : 'bear') : 'muted', null, null, null, 'daily_trend'),
+      mkCard('Yesterday Close', pc ? fmtMoney(pc) : 'N/A', priceVsPrev, pc ? (latest.price >= pc ? 'ABOVE' : 'BELOW') : null, priceVsPrev === 'bull' ? 'badge-bull' : 'badge-bear', null, 'prev_close', pc ? `Simple check: is today green or red vs yesterday?` : 'Needs prior close.'),
+      mkCard('Premarket Ceiling', latest.premarket_high ? fmtMoney(latest.premarket_high) : 'N/A', '', latest.premarket_high && latest.price > latest.premarket_high ? 'BROKE ABOVE' : (latest.premarket_high ? 'BELOW' : null), latest.premarket_high && latest.price > latest.premarket_high ? 'badge-bull' : 'badge-neutral', 'PM High', 'pm_high', latest.premarket_high ? 'If price clears this, early sellers are beaten.' : 'No premarket high found.'),
+      mkCard('Premarket Floor', latest.premarket_low ? fmtMoney(latest.premarket_low) : 'N/A', '', latest.premarket_low && latest.price < latest.premarket_low ? 'BROKE BELOW' : (latest.premarket_low ? 'ABOVE' : null), latest.premarket_low && latest.price < latest.premarket_low ? 'badge-bear' : 'badge-neutral', 'PM Low', 'pm_low', latest.premarket_low ? 'If price loses this, early buyers are trapped.' : 'No premarket low found.'),
+      mkCard('Opening Range High', latest.or_high ? fmtMoney(latest.or_high) : 'Pending', '', latest.or_high && latest.price > latest.or_high ? 'BREAKOUT' : (latest.or_high ? 'BELOW' : null), latest.or_high && latest.price > latest.or_high ? 'badge-bull' : 'badge-neutral', 'first 15 min', 'or_high', latest.or_high ? 'A break above says buyers won the open.' : 'Builds after the first 15 minutes.'),
+      mkCard('Opening Range Low', latest.or_low ? fmtMoney(latest.or_low) : 'Pending', '', latest.or_low && latest.price < latest.or_low ? 'BREAKDOWN' : (latest.or_low ? 'ABOVE' : null), latest.or_low && latest.price < latest.or_low ? 'badge-bear' : 'badge-neutral', 'first 15 min', 'or_low', latest.or_low ? 'A break below says sellers won the open.' : 'Builds after the first 15 minutes.'),
       (() => {
-        const poc = latest.poc, p = latest.price;
-        const pocCls = poc ? (p > poc ? 'bull' : p < poc ? 'bear' : 'neutral') : 'muted';
-        const pocLbl = poc ? (p > poc ? 'ABOVE' : p < poc ? 'BELOW' : 'AT') : null;
-        return mkCard('POC', poc ? `$${poc}` : 'N/A', pocCls, pocLbl, pocCls === 'bull' ? 'badge-bull' : pocCls === 'bear' ? 'badge-bear' : 'badge-neutral', null, 'poc');
+        const vah = latest.vah, val = latest.val, pNow = latest.price;
+        const inValue = vah != null && val != null && pNow <= vah && pNow >= val;
+        const cls = vah == null || val == null ? 'muted' : inValue ? 'neutral' : pNow > vah ? 'bull' : 'bear';
+        const badge = vah == null || val == null ? null : inValue ? 'INSIDE' : pNow > vah ? 'ABOVE' : 'BELOW';
+        return mkCard('Volume Value Area', vah && val ? `${fmtMoney(val)}-${fmtMoney(vah)}` : 'N/A', cls, badge, cls === 'bull' ? 'badge-bull' : cls === 'bear' ? 'badge-bear' : 'badge-neutral', '70% of volume', 'poc', 'Inside means balanced; outside means price is moving away from where most trading happened.');
       })(),
-      mkCard('VAH', latest.vah ? `$${latest.vah}` : 'N/A', latest.vah && latest.price >= latest.vah ? 'bear' : '', latest.vah && latest.price >= latest.vah ? 'ABOVE' : null, 'badge-bear', 'Value Area High', 'poc'),
-      mkCard('VAL', latest.val ? `$${latest.val}` : 'N/A', latest.val && latest.price <= latest.val ? 'bull' : '', latest.val && latest.price <= latest.val ? 'BELOW' : null, 'badge-bull', 'Value Area Low', 'poc'),
     ].join('');
-
     renderCharts(chart_data);
     document.getElementById('main').style.display = 'block';
   }

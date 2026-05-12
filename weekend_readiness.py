@@ -23,6 +23,33 @@ CURRENT_ERA_LABEL = 'vNext_2026_05_04'
 BASELINE_ERA_LABEL = 'pre_2026_05_04'
 
 
+def _compiled_step2_paths(day: str) -> dict[str, str]:
+    name = f'compiled_step2_live_mockparity_CLSK-MARA-RIOT_{day}_intraday'
+    root = os.path.join(OUT_DIR, 'backtests', 'compiled_decision_tapes', name)
+    return {
+        'compiled_manifest': os.path.join(root, 'manifest.json'),
+        'compiled_chunk_manifest': os.path.join(root, 'chunks', 'chunk_manifest.json'),
+        'step2_score': os.path.join(OUT_DIR, 'backtests', 'step2_today_compiled', f'step2_today_compiled_{day}.json'),
+        'step2_rebuild_plan': os.path.join(OUT_DIR, 'rebuild_plans', f'step2_rebuild_plan_{day}.json'),
+        'unified_step2_current_trace': os.path.join(
+            OUT_DIR, 'unified_decision_ledger', day, f'step2_current_trace_{day}.jsonl',
+        ),
+        'unified_step2_current_trace_summary': os.path.join(
+            OUT_DIR, 'unified_decision_ledger', day, f'step2_current_trace_{day}.summary.json',
+        ),
+        'unified_live_signal_parity': os.path.join(
+            OUT_DIR, 'unified_decision_ledger', day, f'live_signal_parity_{day}.jsonl',
+        ),
+        'unified_live_signal_parity_summary': os.path.join(
+            OUT_DIR, 'unified_decision_ledger', day, f'live_signal_parity_{day}.summary.json',
+        ),
+        'golden_parity_suite': os.path.join(OUT_DIR, 'golden_parity', 'golden_parity_all.json'),
+        'run_supervisor_cleanup': os.path.join(
+            OUT_DIR, 'runtime_supervisor', f'run_supervisor_cleanup_post-close_{day}.json',
+        ),
+    }
+
+
 def _now_ct() -> datetime:
     return datetime.now(CT)
 
@@ -125,6 +152,22 @@ def _heartbeat_rows(day: str) -> list[dict]:
     return _iter_jsonl(os.path.join(OUT_DIR, 'health_heartbeats', f'health_heartbeats_{day}.jsonl'))
 
 
+def _runtime_event_rows(day: str) -> list[dict]:
+    return _iter_jsonl(os.path.join(OUT_DIR, 'runtime', f'runtime_events_{day}.jsonl'))
+
+
+def _rule_dry_run_rows(day: str) -> list[dict]:
+    return _iter_jsonl(os.path.join(OUT_DIR, 'rule_dry_run', f'rule_dry_run_{day}.jsonl'))
+
+
+def _gate_timeline_rows(day: str) -> list[dict]:
+    return _iter_jsonl(os.path.join(OUT_DIR, 'gate_timeline', f'gate_timeline_{day}.jsonl'))
+
+
+def _no_signal_snapshot_rows(day: str) -> list[dict]:
+    return _iter_jsonl(os.path.join(OUT_DIR, 'no_signal_snapshots', f'no_signal_snapshots_{day}.jsonl'))
+
+
 def _ts(row: dict) -> Optional[float]:
     for key in ('created_at', 'ts', 'timestamp', 'time'):
         value = row.get(key)
@@ -203,6 +246,8 @@ def build_broker_safety_snapshot(day: Optional[str] = None, label: str = 'manual
             'positions': status.get('positions') or {},
             'pending_entries': status.get('pending_entries') or {},
             'broker_exposure_block': status.get('broker_exposure_block'),
+            'broker_lifecycle_block': status.get('broker_lifecycle_block'),
+            'broker_lifecycle_gate': status.get('broker_lifecycle_gate'),
             'broker_api_degraded': status.get('broker_api_degraded'),
             'kill_switch': status.get('kill_switch') or {},
             'strategy_config_hash': status.get('strategy_config_hash'),
@@ -214,6 +259,7 @@ def build_broker_safety_snapshot(day: Optional[str] = None, label: str = 'manual
             'no_local_positions': not (status.get('positions') or {}),
             'no_pending_entries': not (status.get('pending_entries') or {}),
             'no_exposure_block': not status.get('broker_exposure_block'),
+            'no_broker_lifecycle_block': not status.get('broker_lifecycle_block'),
         },
     }
 
@@ -241,6 +287,7 @@ def build_premarket_checklist(day: Optional[str] = None) -> dict:
         {'name': 'no_local_positions', 'ok': safety['verdict']['no_local_positions']},
         {'name': 'no_pending_entries', 'ok': safety['verdict']['no_pending_entries']},
         {'name': 'no_exposure_block', 'ok': safety['verdict']['no_exposure_block']},
+        {'name': 'no_broker_lifecycle_block', 'ok': safety['verdict']['no_broker_lifecycle_block']},
         {'name': 'kill_switch_disabled', 'ok': not (status.get('kill_switch') or {}).get('enabled')},
         {'name': 'alpaca_equity_visible', 'ok': status.get('alpaca_equity') is not None},
         {
@@ -1165,6 +1212,7 @@ def build_world_class_dashboard(day: Optional[str] = None) -> dict:
             'positions': status.get('positions') or {},
             'pending_entries': status.get('pending_entries') or {},
             'broker_exposure_block': status.get('broker_exposure_block'),
+            'broker_lifecycle_block': status.get('broker_lifecycle_block'),
             'alerts': alerts.get('alerts') or [],
         },
         'trading_quality': {
@@ -1587,12 +1635,49 @@ def build_why_no_trade_summary(day: Optional[str] = None, recent_minutes: int = 
     skipped = _skipped_rows(day)
     near = _near_signal_rows(day)
     audit = _audit_rows(day)
+    gate_timeline = _gate_timeline_rows(day)
+    no_signal = _no_signal_snapshot_rows(day)
     recent_skipped = _since(skipped, recent_minutes)
     recent_near = _since(near, recent_minutes)
     recent_audit = _since(audit, recent_minutes)
+    recent_gate = _since(gate_timeline, recent_minutes)
+    recent_no_signal = _since(no_signal, recent_minutes)
     reason_counts = Counter(str(r.get('reason') or r.get('event') or 'unknown') for r in skipped)
     near_counts = Counter(str(r.get('reason') or 'unknown') for r in near)
+    gate_blockers = Counter(
+        str(blocker)
+        for row in gate_timeline
+        for blocker in (row.get('blocked_by') or [])
+    )
+    no_signal_blockers = Counter(
+        str(blocker)
+        for row in no_signal
+        for blocker in (row.get('blocked_by') or [])
+    )
     recent_reason_counts = Counter(str(r.get('reason') or r.get('event') or 'unknown') for r in recent_skipped)
+    recent_gate_blockers = Counter(
+        str(blocker)
+        for row in recent_gate
+        for blocker in (row.get('blocked_by') or [])
+    )
+    dual_side_counts = Counter(
+        str((row.get('shadow_dual_side_score') or {}).get('chosen_side_by_shadow') or 'unknown')
+        for row in gate_timeline + no_signal
+        if row.get('shadow_dual_side_score')
+    )
+    thin_side_edge = [
+        {
+            'ticker': row.get('ticker'),
+            'stage': row.get('stage'),
+            'reason': row.get('reason'),
+            'side_gap': (row.get('shadow_dual_side_score') or {}).get('side_gap'),
+            'chosen_side': (row.get('shadow_dual_side_score') or {}).get('chosen_side_by_shadow'),
+            'blocked_by': row.get('blocked_by') or [],
+        }
+        for row in gate_timeline + no_signal
+        if (row.get('shadow_dual_side_score') or {}).get('side_gap') is not None
+        and float((row.get('shadow_dual_side_score') or {}).get('side_gap') or 0) < 1.0
+    ][:20]
     entry_events = Counter(str(r.get('event') or 'unknown') for r in audit if str(r.get('event') or '').startswith('entry_'))
     return {
         'day': day,
@@ -1602,19 +1687,28 @@ def build_why_no_trade_summary(day: Optional[str] = None, recent_minutes: int = 
             'skipped_signals': len(skipped),
             'near_signals': len(near),
             'audit_entry_events': sum(entry_events.values()),
+            'gate_timeline_rows': len(gate_timeline),
+            'no_signal_snapshots': len(no_signal),
         },
         'recent': {
             'skipped_signals': len(recent_skipped),
             'near_signals': len(recent_near),
             'audit_events': len(recent_audit),
+            'gate_timeline_rows': len(recent_gate),
+            'no_signal_snapshots': len(recent_no_signal),
             'top_skipped_reasons': [{'reason': k, 'count': v} for k, v in recent_reason_counts.most_common(12)],
+            'top_gate_blockers': [{'blocker': k, 'count': v} for k, v in recent_gate_blockers.most_common(12)],
         },
         'all_day_top_skipped_reasons': [{'reason': k, 'count': v} for k, v in reason_counts.most_common(20)],
         'all_day_top_near_signal_reasons': [{'reason': k, 'count': v} for k, v in near_counts.most_common(20)],
+        'all_day_top_gate_blockers': [{'blocker': k, 'count': v} for k, v in gate_blockers.most_common(20)],
+        'all_day_top_no_signal_blockers': [{'blocker': k, 'count': v} for k, v in no_signal_blockers.most_common(20)],
+        'dual_side_shadow_chosen_counts': dict(dual_side_counts),
+        'thin_side_edge_rows': thin_side_edge,
         'entry_event_counts': dict(entry_events),
         'deduction': (
-            'If no trades are opening, check recent.top_skipped_reasons first. '
-            'Near-signal reasons show what almost qualified before mock_trader risk/execution gates.'
+            'If no trades are opening, check recent.top_gate_blockers first, then skipped and near-signal reasons. '
+            'Gate timeline/no-signal snapshots explain quiet periods even when nothing was close to firing.'
         ),
     }
 
@@ -1660,6 +1754,7 @@ def build_market_open_monitor(day: Optional[str] = None) -> dict:
             'losses': status.get('losses'),
             'total_pnl': status.get('total_pnl'),
             'broker_exposure_block': status.get('broker_exposure_block'),
+            'broker_lifecycle_block': status.get('broker_lifecycle_block'),
         },
         'feed_freshness': freshness,
         'stale_feeds': stale,
@@ -2096,15 +2191,46 @@ def build_order_latency_summary(day: str) -> dict:
         for r in events:
             event = r.get('event')
             ts = r.get('ts')
+            data = r.get('data') or {}
             if event == 'entry_reserved':
-                pending = {'reserved_ts': ts, 'symbol': symbol, 'side': (r.get('data') or {}).get('side')}
+                pending = {'reserved_ts': ts, 'symbol': symbol, 'side': data.get('side')}
             elif event == 'entry_submitted' and pending:
                 pending['submitted_ts'] = ts
-                pending['order_id'] = (r.get('data') or {}).get('order_id')
+                pending['order_id'] = data.get('order_id')
+                pending['client_order_id'] = data.get('client_order_id')
+                pending['submitted_status'] = data.get('status')
             elif event == 'entry_committed' and pending:
                 pending['committed_ts'] = ts
+                pending['committed_trade_id'] = data.get('trade_id') or (data.get('decision_audit') or {}).get('trade_id')
                 rows.append(dict(pending))
                 pending = {}
+        fill_events = [
+            r for r in events
+            if r.get('event') == 'entry_filled'
+        ]
+        for fill in fill_events:
+            data = fill.get('data') or {}
+            oid = data.get('order_id')
+            candidates = [
+                row for row in rows
+                if row.get('symbol') == symbol
+                and (not oid or row.get('order_id') == oid)
+                and (not row.get('filled_ts'))
+                and (not row.get('committed_ts') or fill.get('ts') >= row.get('committed_ts'))
+            ]
+            if not candidates:
+                candidates = [
+                    row for row in rows
+                    if row.get('symbol') == symbol
+                    and (not row.get('filled_ts'))
+                ]
+            if not candidates:
+                continue
+            row = sorted(candidates, key=lambda x: abs((fill.get('ts') or 0) - (x.get('committed_ts') or x.get('reserved_ts') or 0)))[0]
+            row['filled_ts'] = fill.get('ts')
+            row['fill_price'] = data.get('fill_price')
+            row['slippage_pct'] = data.get('slippage_pct')
+            row['fill_status'] = data.get('status')
     for row in rows:
         row['reserve_to_submit_sec'] = (
             round(row['submitted_ts'] - row['reserved_ts'], 3)
@@ -2118,15 +2244,30 @@ def build_order_latency_summary(day: str) -> dict:
             round(row['committed_ts'] - row['reserved_ts'], 3)
             if row.get('committed_ts') and row.get('reserved_ts') else None
         )
+        row['commit_to_fill_sec'] = (
+            round(row['filled_ts'] - row['committed_ts'], 3)
+            if row.get('filled_ts') and row.get('committed_ts') else None
+        )
+        row['reserve_to_fill_sec'] = (
+            round(row['filled_ts'] - row['reserved_ts'], 3)
+            if row.get('filled_ts') and row.get('reserved_ts') else None
+        )
     vals = [r['reserve_to_commit_sec'] for r in rows if r.get('reserve_to_commit_sec') is not None]
+    fill_vals = [r['reserve_to_fill_sec'] for r in rows if r.get('reserve_to_fill_sec') is not None]
+    slippage_vals = [float(r.get('slippage_pct')) for r in rows if r.get('slippage_pct') is not None]
     return {
         'day': day,
         'created_at_ct': _now_ct().isoformat(timespec='seconds'),
         'entries': len(rows),
+        'filled_entries': len(fill_vals),
         'avg_reserve_to_commit_sec': round(sum(vals) / len(vals), 3) if vals else None,
         'max_reserve_to_commit_sec': max(vals, default=None),
+        'avg_reserve_to_fill_sec': round(sum(fill_vals) / len(fill_vals), 3) if fill_vals else None,
+        'max_reserve_to_fill_sec': max(fill_vals, default=None),
+        'avg_entry_slippage_pct': round(sum(slippage_vals) / len(slippage_vals), 4) if slippage_vals else None,
+        'max_entry_slippage_pct': max(slippage_vals, default=None),
         'rows': rows[:100],
-        'note': 'Uses audit lifecycle events. Broker fill/protection latency is included when audit events are present.',
+        'note': 'Uses audit lifecycle events. Separates signal reserve, broker submit, local commit, and broker fill timing.',
     }
 
 
@@ -2443,6 +2584,45 @@ def write_strategy_operations_split(day: str) -> tuple[str, dict]:
     return _write_json(path, payload), payload
 
 
+def build_runtime_restart_alerts(day: Optional[str] = None) -> dict:
+    day = day or _now_ct().date().isoformat()
+    rows = _runtime_event_rows(day)
+    boots = [r for r in rows if r.get('kind') == 'process_boot']
+    alerts = []
+    for row in boots:
+        payload = row.get('payload') or {}
+        downtime = int(payload.get('downtime_sec') or 0)
+        if payload.get('unexpected_restart') or downtime >= 30:
+            alerts.append({
+                'created_at_ct': row.get('created_at_ct'),
+                'previous_pid': payload.get('previous_pid'),
+                'current_pid': payload.get('current_pid'),
+                'downtime_sec': downtime,
+                'previous_heartbeat_iso': payload.get('previous_heartbeat_iso'),
+                'severity': 'critical' if downtime >= 180 else 'warning',
+            })
+    return {
+        'day': day,
+        'created_at_ct': _now_ct().isoformat(timespec='seconds'),
+        'boot_count': len(boots),
+        'unexpected_restart_count': len(alerts),
+        'alerts': alerts[-20:],
+        'ok': len(alerts) == 0,
+        'deduction': (
+            'Unexpected app restarts are operational contamination. If alerts appear, '
+            'review trade timing, feed gaps, broker reconciliation, and process logs before '
+            'changing strategy rules.'
+        ),
+    }
+
+
+def write_runtime_restart_alerts(day: Optional[str] = None) -> tuple[str, dict]:
+    day = day or _now_ct().date().isoformat()
+    payload = build_runtime_restart_alerts(day)
+    path = os.path.join(OUT_DIR, f'runtime_restart_alerts_{day}.json')
+    return _write_json(path, payload), payload
+
+
 def build_postmarket_artifact_validation(day: Optional[str] = None, mode: str = 'post_market') -> dict:
     day = day or _now_ct().date().isoformat()
     mode = mode or 'post_market'
@@ -2474,6 +2654,7 @@ def build_postmarket_artifact_validation(day: Optional[str] = None, mode: str = 
         os.path.join(OUT_DIR, f'edge_quality_activity_{day}_10d.json'),
         os.path.join(OUT_DIR, f'order_latency_{day}.json'),
         os.path.join(OUT_DIR, f'strategy_operations_split_{day}.json'),
+        os.path.join(OUT_DIR, f'runtime_restart_alerts_{day}.json'),
         os.path.join(OUT_DIR, 'promotion_queue.json'),
         os.path.join(OUT_DIR, 'change_impact_ledger.json'),
         os.path.join(OUT_DIR, 'config_intent_ledger.json'),
@@ -2501,6 +2682,31 @@ def build_postmarket_artifact_validation(day: Optional[str] = None, mode: str = 
         os.path.join(OUT_DIR, f'rule_candidate_quarantine_{day}.json'),
         os.path.join(OUT_DIR, f'world_class_dashboard_{day}.json'),
         os.path.join(OUT_DIR, f'monday_review_packet_{day}.json'),
+        os.path.join(OUT_DIR, 'live_step2_parity', f'live_step2_parity_{day}.json'),
+        os.path.join(OUT_DIR, 'live_step2_parity', f'live_step2_parity_{day}.txt'),
+        os.path.join(OUT_DIR, 'cache_layers', f'step2_cache_layers_{day}.json'),
+        os.path.join(OUT_DIR, 'execution_replay_inputs', f'execution_replay_inputs_{day}.jsonl'),
+        os.path.join(OUT_DIR, 'canonical_opportunities', f'canonical_opportunities_{day}.jsonl'),
+        os.path.join(OUT_DIR, 'canonical_opportunities', f'canonical_opportunities_{day}.summary.json'),
+        os.path.join(OUT_DIR, 'parity_diff_classifier', f'parity_diff_classifier_{day}.json'),
+        os.path.join(OUT_DIR, 'market_data_integrity', f'market_data_integrity_{day}.json'),
+        os.path.join(OUT_DIR, 'market_data_integrity', f'market_data_integrity_{day}.txt'),
+        os.path.join(OUT_DIR, 'baseline_drift', f'baseline_drift_sentinel_{day}.json'),
+        os.path.join(OUT_DIR, 'artifact_registry', f'artifact_registry_{day}.json'),
+        os.path.join(OUT_DIR, 'parity_sentinel', f'parity_sentinel_{day}.json'),
+        os.path.join(OUT_DIR, 'step2_decision_parity', f'step2_decision_parity_{day}.jsonl'),
+        os.path.join(OUT_DIR, 'step2_decision_parity', f'step2_decision_parity_{day}.summary.json'),
+        os.path.join(HERE, 'data_cache', 'incremental_market_store', day, 'manifest.json'),
+        _compiled_step2_paths(day)['compiled_manifest'],
+        _compiled_step2_paths(day)['compiled_chunk_manifest'],
+        _compiled_step2_paths(day)['step2_score'],
+        _compiled_step2_paths(day)['step2_rebuild_plan'],
+        _compiled_step2_paths(day)['unified_step2_current_trace'],
+        _compiled_step2_paths(day)['unified_step2_current_trace_summary'],
+        _compiled_step2_paths(day)['unified_live_signal_parity'],
+        _compiled_step2_paths(day)['unified_live_signal_parity_summary'],
+        _compiled_step2_paths(day)['golden_parity_suite'],
+        _compiled_step2_paths(day)['run_supervisor_cleanup'],
         os.path.join(HERE, 'audit', f'trade_lifecycle_{day}.jsonl'),
         os.path.join(OUT_DIR, 'health_heartbeats', f'health_heartbeats_{day}.jsonl'),
     ]
@@ -2663,6 +2869,8 @@ def build_trade_alerts(day: Optional[str] = None) -> dict:
         })
     if status.get('broker_exposure_block'):
         alerts.append({'level': 'critical', 'kind': 'broker_exposure_block', 'detail': status.get('broker_exposure_block')})
+    if status.get('broker_lifecycle_block'):
+        alerts.append({'level': 'critical', 'kind': 'broker_lifecycle_block', 'detail': status.get('broker_lifecycle_block')})
     if status.get('broker_api_degraded'):
         alerts.append({'level': 'warning', 'kind': 'broker_api_degraded', 'detail': status.get('broker_api_degraded')})
     for sym, pos in (status.get('positions') or {}).items():
@@ -2760,6 +2968,7 @@ def build_now_status(day: Optional[str] = None) -> dict:
             'running': status.get('running'),
             'in_window': status.get('in_window'),
             'broker_exposure_block': status.get('broker_exposure_block'),
+            'broker_lifecycle_block': status.get('broker_lifecycle_block'),
             'broker_api_degraded': status.get('broker_api_degraded'),
             'pending_entries': status.get('pending_entries') or {},
             'open_position_count': len(positions),
@@ -2820,7 +3029,7 @@ def build_monday_launch_checklist(day: Optional[str] = None) -> dict:
         'checks': checks,
         'commands': [
             {'time_ct': '08:25', 'command': 'python smoke_check.py --mode no-surprises'},
-            {'time_ct': '08:30', 'command': 'python live_monitor.py --loop --interval-sec 30'},
+            {'time_ct': '08:30', 'command': 'python live_monitor.py --loop --interval-sec 30 --parity-sentinel'},
             {'time_ct': '08:35', 'command': 'python smoke_check.py --mode post-open'},
             {'time_ct': '12:00', 'command': f'python live_monitor.py {day} --checkpoint --checkpoint-label noon'},
             {'time_ct': '14:55', 'command': 'hard flat should trigger automatically'},
@@ -2916,6 +3125,7 @@ def build_session_checkpoint(day: Optional[str] = None, label: str = 'manual') -
             'losses': status.get('losses'),
             'total_pnl': status.get('total_pnl'),
             'broker_exposure_block': status.get('broker_exposure_block'),
+            'broker_lifecycle_block': status.get('broker_lifecycle_block'),
         },
         'closed_trade_snapshot': {
             'count': len(tape),
@@ -2980,6 +3190,7 @@ def build_review_start_here(day: Optional[str] = None) -> dict:
     review_gate = _read_json(os.path.join(OUT_DIR, f'daily_review_gate_{day}.json'), {}) or build_daily_review_gate(day)
     lifecycle = _read_json(os.path.join(OUT_DIR, f'rule_lifecycle_dashboard_{day}.json'), {}) or build_rule_lifecycle_dashboard(day)
     fpfn = _read_json(os.path.join(OUT_DIR, f'false_positive_negative_{day}.json'), {}) or build_false_positive_negative_tables(day)
+    runtime_alerts = _read_json(os.path.join(OUT_DIR, f'runtime_restart_alerts_{day}.json'), {}) or build_runtime_restart_alerts(day)
     return {
         'day': day,
         'era': era_for_day(day),
@@ -2997,6 +3208,11 @@ def build_review_start_here(day: Optional[str] = None) -> dict:
         'clean_day_score': clean.get('clean_day_score'),
         'entry_quality_tiers': (tiers.get('tiers') or [])[:5],
         'alerts': alerts.get('alerts') or [],
+        'runtime_restart_alerts': {
+            'ok': runtime_alerts.get('ok'),
+            'unexpected_restart_count': runtime_alerts.get('unexpected_restart_count'),
+            'alerts': (runtime_alerts.get('alerts') or [])[:5],
+        },
         'strategy_operations_split': {
             'strategy': split.get('strategy'),
             'data_or_execution': split.get('data_or_execution'),
@@ -3091,6 +3307,7 @@ def build_review_start_here(day: Optional[str] = None) -> dict:
             os.path.join(OUT_DIR, f'market_regime_day_{day}.json'),
             os.path.join(OUT_DIR, f'edge_quality_activity_{day}_10d.json'),
             os.path.join(OUT_DIR, f'order_latency_{day}.json'),
+            os.path.join(OUT_DIR, f'runtime_restart_alerts_{day}.json'),
             os.path.join(OUT_DIR, 'promotion_queue.json'),
         ],
     }
@@ -3140,6 +3357,7 @@ def build_monday_live_review(day: Optional[str] = None) -> dict:
             'losses': status.get('losses'),
             'trade_count': status.get('trade_count'),
             'broker_exposure_block': status.get('broker_exposure_block'),
+            'broker_lifecycle_block': status.get('broker_lifecycle_block'),
             'broker_api_degraded': status.get('broker_api_degraded'),
             'strategy_config_hash': status.get('strategy_config_hash'),
         },
@@ -3189,6 +3407,9 @@ def build_monday_live_review(day: Optional[str] = None) -> dict:
         'false_positive_negative': build_false_positive_negative_tables(day),
         'daily_review_gate': build_daily_review_gate(day),
         'rule_lifecycle_dashboard': build_rule_lifecycle_dashboard(day),
+        'rule_dry_run_scoreboard': build_rule_dry_run_scoreboard(day),
+        'execution_context_summary': build_execution_context_summary(day),
+        'retention_plan_file': os.path.join(OUT_DIR, f'retention_plan_{day}.json'),
         'now_status': build_now_status(day),
         'config_intent_ledger': build_config_intent_ledger(day),
         'world_class_dashboard': build_world_class_dashboard(day),
@@ -3203,6 +3424,217 @@ def write_monday_live_review(day: Optional[str] = None) -> tuple[str, dict]:
     payload = build_monday_live_review(day)
     path = os.path.join(OUT_DIR, f'monday_live_review_{day}.json')
     return _write_json(path, payload), payload
+
+
+def _rule_dry_run_keys(row: dict) -> list[str]:
+    keys = []
+    for item in row.get('near_miss_rules') or []:
+        if isinstance(item, dict):
+            rule = item.get('rule') or item.get('name') or item.get('reason')
+        else:
+            rule = str(item)
+        if rule:
+            keys.append(f'near_miss:{rule}')
+    fx = row.get('forensics') or {}
+    micro = fx.get('market_microstructure') or {}
+    if micro.get('halt_suspected'):
+        keys.append('market_microstructure:halt_suspected')
+    if micro.get('luld_like_risk'):
+        keys.append('market_microstructure:luld_like_risk')
+    if micro.get('ssr_approx_active'):
+        keys.append('market_microstructure:ssr_approx_active')
+    liq = fx.get('liquidity_impact') or {}
+    if liq.get('impact_risk') in ('elevated', 'high'):
+        keys.append(f'liquidity:{liq.get("impact_risk")}')
+    catalyst = fx.get('catalyst_context') or {}
+    if catalyst.get('has_catalyst'):
+        keys.append('catalyst:flagged')
+    proxy = fx.get('btc_proxy_basket') or {}
+    if proxy.get('state') in ('proxy_risk_on', 'proxy_risk_off'):
+        keys.append(f'btc_proxy:{proxy.get("state")}')
+    if not keys and row.get('reason'):
+        keys.append(f'skip_reason:{row.get("reason")}')
+    return sorted(set(keys))
+
+
+def build_rule_dry_run_scoreboard(day: Optional[str] = None) -> dict:
+    day = day or _now_ct().date().isoformat()
+    rows = _rule_dry_run_rows(day)
+    by_rule = defaultdict(lambda: {
+        'rule': None,
+        'observed': 0,
+        'entered': 0,
+        'skipped': 0,
+        'closed': 0,
+        'wins': 0,
+        'losses': 0,
+        'pnl': 0.0,
+        'net_pnl_after_estimated_costs': 0.0,
+        'examples': [],
+    })
+    event_counts = Counter(row.get('event') for row in rows)
+    for row in rows:
+        keys = _rule_dry_run_keys(row) or ['uncategorized']
+        for key in keys:
+            rec = by_rule[key]
+            rec['rule'] = key
+            rec['observed'] += 1
+            if row.get('decision') == 'entered':
+                rec['entered'] += 1
+            if row.get('decision') == 'skipped':
+                rec['skipped'] += 1
+            if row.get('decision') == 'closed':
+                rec['closed'] += 1
+                if row.get('result') == 'WIN':
+                    rec['wins'] += 1
+                elif row.get('result') == 'LOSS':
+                    rec['losses'] += 1
+                rec['pnl'] += float(row.get('pnl') or 0)
+                rec['net_pnl_after_estimated_costs'] += float(
+                    row.get('net_pnl_after_estimated_costs') or row.get('pnl') or 0
+                )
+            if len(rec['examples']) < 5:
+                rec['examples'].append({
+                    'event': row.get('event'),
+                    'ticker': row.get('ticker'),
+                    'side': row.get('side'),
+                    'decision': row.get('decision'),
+                    'reason': row.get('reason'),
+                    'result': row.get('result'),
+                    'pnl': row.get('pnl'),
+                    'trade_id': row.get('trade_id'),
+                })
+    scoreboard = []
+    for rec in by_rule.values():
+        rec['pnl'] = round(rec['pnl'], 2)
+        rec['net_pnl_after_estimated_costs'] = round(rec['net_pnl_after_estimated_costs'], 2)
+        rec['win_rate'] = _safe_pct(rec['wins'], rec['wins'] + rec['losses'])
+        rec['deduction'] = (
+            'Use as a live-day dry-run scoreboard only. A rule must still pass multi-day '
+            'evidence thresholds before it becomes a suggested action item.'
+        )
+        scoreboard.append(dict(rec))
+    scoreboard.sort(
+        key=lambda r: (r.get('losses') or 0, -(r.get('pnl') or 0), r.get('observed') or 0),
+        reverse=True,
+    )
+    return {
+        'day': day,
+        'rows': len(rows),
+        'event_counts': dict(event_counts),
+        'scoreboard': scoreboard,
+        'source_file': os.path.join(OUT_DIR, 'rule_dry_run', f'rule_dry_run_{day}.jsonl'),
+        'purpose': (
+            'Tracks how candidate rule/gate ideas behaved during the live day without automatically '
+            'changing the bot.'
+        ),
+    }
+
+
+def write_rule_dry_run_scoreboard(day: Optional[str] = None) -> tuple[str, dict]:
+    day = day or _now_ct().date().isoformat()
+    payload = build_rule_dry_run_scoreboard(day)
+    path = os.path.join(OUT_DIR, f'rule_dry_run_scoreboard_{day}.json')
+    return _write_json(path, payload), payload
+
+
+def build_execution_context_summary(day: Optional[str] = None) -> dict:
+    day = day or _now_ct().date().isoformat()
+    trades = _tape(day)
+    skipped = _skipped_rows(day)
+    rows = []
+    total_cost = 0.0
+    cost_count = 0
+    micro_counts = Counter()
+    liquidity_counts = Counter()
+    proxy_counts = Counter()
+    borrow_counts = Counter()
+    catalyst_count = 0
+    for source, records in (('trade', trades), ('skipped', skipped)):
+        for rec in records:
+            fx = rec.get('forensics') or {}
+            if source == 'trade':
+                costs = rec.get('estimated_transaction_costs') or {}
+                if costs.get('estimated_total') is not None:
+                    cost_count += 1
+                    total_cost += float(costs.get('estimated_total') or 0)
+                micro = rec.get('market_microstructure_at_entry') or fx.get('market_microstructure') or {}
+                liq = rec.get('liquidity_impact_at_entry') or fx.get('liquidity_impact') or {}
+                borrow = rec.get('short_borrow_snapshot') or fx.get('short_borrow_snapshot') or {}
+                proxy = rec.get('btc_proxy_basket_at_entry') or fx.get('btc_proxy_basket') or {}
+                catalyst = rec.get('catalyst_context_at_entry') or fx.get('catalyst_context') or {}
+            else:
+                micro = fx.get('market_microstructure') or {}
+                liq = fx.get('liquidity_impact') or {}
+                borrow = fx.get('short_borrow_snapshot') or {}
+                proxy = fx.get('btc_proxy_basket') or {}
+                catalyst = fx.get('catalyst_context') or {}
+            if micro.get('halt_suspected'):
+                micro_counts['halt_suspected'] += 1
+            if micro.get('luld_like_risk'):
+                micro_counts['luld_like_risk'] += 1
+            if micro.get('ssr_approx_active'):
+                micro_counts['ssr_approx_active'] += 1
+            if liq.get('impact_risk'):
+                liquidity_counts[str(liq.get('impact_risk'))] += 1
+            if proxy.get('state'):
+                proxy_counts[str(proxy.get('state'))] += 1
+            if borrow:
+                state = 'shortable' if borrow.get('shortable') else ('not_shortable' if borrow.get('available') else 'unknown')
+                borrow_counts[state] += 1
+            if catalyst.get('has_catalyst'):
+                catalyst_count += 1
+            if len(rows) < 25 and (micro or liq or borrow or proxy or catalyst):
+                rows.append({
+                    'source': source,
+                    'ticker': rec.get('ticker'),
+                    'side': rec.get('side'),
+                    'result': rec.get('result'),
+                    'pnl': rec.get('pnl'),
+                    'micro': {
+                        'halt_suspected': micro.get('halt_suspected'),
+                        'luld_like_risk': micro.get('luld_like_risk'),
+                        'ssr_approx_active': micro.get('ssr_approx_active'),
+                        'spread_pct': micro.get('spread_pct'),
+                    },
+                    'liquidity_risk': liq.get('impact_risk'),
+                    'borrow': {
+                        'shortable': borrow.get('shortable'),
+                        'easy_to_borrow': borrow.get('easy_to_borrow'),
+                    },
+                    'btc_proxy_state': proxy.get('state'),
+                    'catalyst_flagged': catalyst.get('has_catalyst'),
+                })
+    return {
+        'day': day,
+        'trade_count': len(trades),
+        'skipped_count': len(skipped),
+        'estimated_transaction_costs': {
+            'trades_with_estimate': cost_count,
+            'estimated_total_cost': round(total_cost, 4),
+            'avg_estimated_cost_per_trade': round(total_cost / cost_count, 4) if cost_count else None,
+            'deduction': 'Cost estimates are configurable and used to rank friction; broker statements remain source of truth.',
+        },
+        'market_microstructure_counts': dict(micro_counts),
+        'liquidity_impact_counts': dict(liquidity_counts),
+        'btc_proxy_counts': dict(proxy_counts),
+        'short_borrow_counts': dict(borrow_counts),
+        'catalyst_flagged_rows': catalyst_count,
+        'examples': rows,
+        'purpose': 'Compact daily summary of the new market-structure, borrow, catalyst, BTC-proxy, liquidity, and cost fields.',
+    }
+
+
+def write_execution_context_summary(day: Optional[str] = None) -> tuple[str, dict]:
+    day = day or _now_ct().date().isoformat()
+    payload = build_execution_context_summary(day)
+    path = os.path.join(OUT_DIR, f'execution_context_summary_{day}.json')
+    return _write_json(path, payload), payload
+
+
+def write_retention_plan_artifact(day: Optional[str] = None) -> tuple[str, dict]:
+    from retention_policy import write_retention_plan
+    return write_retention_plan(day or _now_ct().date().isoformat())
 
 
 def write_weekend_artifacts(day: Optional[str] = None) -> tuple[dict, dict]:
@@ -3250,10 +3682,14 @@ def write_weekend_artifacts(day: Optional[str] = None) -> tuple[dict, dict]:
         ('config_intent_ledger', write_config_intent_ledger),
         ('world_class_dashboard', write_world_class_dashboard),
         ('strategy_operations_split', write_strategy_operations_split),
+        ('runtime_restart_alerts', write_runtime_restart_alerts),
         ('multi_day_scorecard', write_multi_day_scorecard),
         ('market_regime_day', write_market_regime_day_label),
         ('edge_quality_activity', write_edge_quality_activity),
         ('order_latency', write_order_latency_summary),
+        ('rule_dry_run_scoreboard', write_rule_dry_run_scoreboard),
+        ('execution_context_summary', write_execution_context_summary),
+        ('retention_plan', write_retention_plan_artifact),
         ('why_no_trade', write_why_no_trade_summary),
         ('market_open_monitor', write_market_open_monitor),
         ('trade_alerts', write_trade_alerts),

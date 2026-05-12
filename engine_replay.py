@@ -52,6 +52,7 @@ def _rows_for_day(path: str, day: str, ts_field: str = 'created_at') -> list[dic
 def _compact_signal(sig: Optional[dict]) -> dict:
     if not sig:
         return {'decision': 'skip'}
+    quality = sig.get('signal_quality') or {}
     return {
         'decision': 'enter',
         'side': sig.get('side'),
@@ -60,14 +61,22 @@ def _compact_signal(sig: Optional[dict]) -> dict:
         'setup_type': sig.get('setup_type'),
         'reasons': sig.get('reasons') or [],
         'btc_context': sig.get('btc_context') or {},
-        'components': sig.get('components') or {},
+        'components': quality.get('score_components') or sig.get('components') or {},
+        'setup_tags': quality.get('setup_tags') or [],
+        'miner_basket': sig.get('miner_basket') or {},
     }
 
 
-def _current_engine_decision(ticker: str, indicators: dict, btc: dict) -> tuple[dict, Optional[str]]:
+def _current_engine_decision(ticker: str, indicators: dict, btc: dict,
+                             miner_indicators: Optional[dict] = None) -> tuple[dict, Optional[str]]:
     try:
         import ws_scalp
-        sig = ws_scalp.detect_signal(ticker, indicators or {}, btc or {})
+        sig = ws_scalp.detect_signal(
+            ticker,
+            indicators or {},
+            btc or {},
+            miner_indicators=miner_indicators or None,
+        )
         return _compact_signal(sig), None
     except Exception as e:
         return {'decision': 'error'}, str(e)
@@ -104,8 +113,24 @@ def _sample_confidence(sample: dict) -> dict:
 
 
 def _sample_from_trade(row: dict) -> dict:
-    indicators = row.get('indicators') or {}
-    btc = row.get('btc_indicators') or row.get('btc') or row.get('btc_context') or {}
+    thesis = row.get('entry_thesis') or {}
+    audit = row.get('decision_audit') or thesis.get('decision_audit') or {}
+    indicators = (
+        row.get('indicators')
+        or thesis.get('indicators')
+        or audit.get('indicators')
+        or {}
+    )
+    btc = (
+        row.get('btc_indicators')
+        or thesis.get('btc_indicators')
+        or audit.get('btc_indicators')
+        or thesis.get('btc_context')
+        or audit.get('btc_context')
+        or row.get('btc')
+        or row.get('btc_context')
+        or {}
+    )
     return {
         'source': 'trade',
         'historical_decision': 'enter',
@@ -118,6 +143,12 @@ def _sample_from_trade(row: dict) -> dict:
         'score': row.get('entry_score') if row.get('entry_score') is not None else row.get('score'),
         'indicators': indicators,
         'btc': btc,
+        'components': (
+            (thesis.get('signal_quality') or {}).get('score_components')
+            or (audit.get('signal_quality') or {}).get('score_components')
+            or row.get('components')
+            or {}
+        ),
     }
 
 
@@ -134,7 +165,37 @@ def _sample_from_row(row: dict, source: str, historical_decision: str) -> dict:
         'score': row.get('score'),
         'indicators': row.get('indicators') or row.get('snapshot') or {},
         'btc': row.get('btc_context') or row.get('btc') or row.get('btc_indicators') or {},
+        'components': row.get('components') or {},
     }
+
+
+def _sample_ts(sample: dict) -> Optional[float]:
+    try:
+        ts = sample.get('created_at')
+        return float(ts) if ts is not None else None
+    except Exception:
+        return None
+
+
+def _miner_context_for_sample(sample: dict, samples: list[dict], max_age_sec: int = 5) -> dict:
+    ticker = sample.get('ticker')
+    created = _sample_ts(sample)
+    out = {}
+    if ticker and sample.get('indicators'):
+        out[str(ticker)] = sample.get('indicators') or {}
+    if created is None:
+        return out
+    for other in samples:
+        sym = other.get('ticker')
+        if not sym or sym == ticker or sym in out:
+            continue
+        ots = _sample_ts(other)
+        if ots is None or abs(ots - created) > max_age_sec:
+            continue
+        ind = other.get('indicators') or {}
+        if ind:
+            out[str(sym)] = ind
+    return out
 
 
 def build_replay(day: str, limit: int = 2000) -> dict:
@@ -150,7 +211,13 @@ def build_replay(day: str, limit: int = 2000) -> dict:
     errors = Counter()
     for sample in samples[:limit]:
         ticker = sample.get('ticker')
-        current, err = _current_engine_decision(str(ticker or ''), sample.get('indicators') or {}, sample.get('btc') or {})
+        miner_context = _miner_context_for_sample(sample, samples)
+        current, err = _current_engine_decision(
+            str(ticker or ''),
+            sample.get('indicators') or {},
+            sample.get('btc') or {},
+            miner_indicators=miner_context,
+        )
         confidence = _sample_confidence(sample)
         if err:
             errors[err] += 1
@@ -174,8 +241,10 @@ def build_replay(day: str, limit: int = 2000) -> dict:
             'historical_side': sample.get('side'),
             'current_decision': current,
             'replay_confidence': confidence,
+            'miner_context_symbols': sorted(miner_context),
             'historical_score': sample.get('score'),
             'historical_setup': sample.get('setup_type'),
+            'historical_components': sample.get('components') or {},
             'pnl': sample.get('pnl'),
             'reason': sample.get('reason'),
             'created_at': sample.get('created_at'),

@@ -187,6 +187,23 @@ class AlpacaTrader:
         return self._request('GET', f'/v2/orders/{order_id}',
                              params={'nested': str(nested).lower()})
 
+    def get_order_by_client_order_id(self, client_order_id: str,
+                                     nested: bool = True) -> Optional[dict]:
+        """Get an order by caller-provided client_order_id, or None if absent."""
+        try:
+            return self._request(
+                'GET',
+                '/v2/orders:by_client_order_id',
+                params={
+                    'client_order_id': client_order_id,
+                    'nested': str(nested).lower(),
+                },
+            )
+        except AlpacaTradingError as e:
+            if e.status == 404:
+                return None
+            raise
+
     def list_orders(self, status: str = 'open',
                     limit: int = 100,
                     symbols: Optional[list] = None,

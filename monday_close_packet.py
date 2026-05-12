@@ -40,12 +40,15 @@ def build_close_packet(day: str, write_gdoc: bool = False, mutate_hypotheses: bo
     except Exception as e:
         errors['daily_postmortem'] = str(e)
 
-    try:
-        from review_artifacts import write_all
-        review_paths, _payloads = write_all(day)
-        paths.update({f'review_{k}': v for k, v in review_paths.items() if v})
-    except Exception as e:
-        errors['review_artifacts'] = str(e)
+    if os.getenv('WRITE_LEGACY_REVIEW_ARTIFACTS') == '1':
+        try:
+            from review_artifacts import write_all
+            review_paths, _payloads = write_all(day)
+            paths.update({f'review_{k}': v for k, v in review_paths.items() if v})
+        except Exception as e:
+            errors['review_artifacts'] = str(e)
+    else:
+        paths['legacy_review_artifacts'] = 'skipped; set WRITE_LEGACY_REVIEW_ARTIFACTS=1 to rebuild archived forensic review pack'
 
     try:
         from weekend_readiness import (

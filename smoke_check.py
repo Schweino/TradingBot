@@ -6,9 +6,18 @@ import os
 import py_compile
 import sys
 from pathlib import Path
+from datetime import datetime
 from urllib.request import urlopen
 
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo
+
 HERE = Path(__file__).resolve().parent
+CT = ZoneInfo('America/Chicago')
+MOCK_REQUIRED_HOUR_CT = 8
+MOCK_REQUIRED_MINUTE_CT = 25
 
 
 def check(name: str, ok: bool, detail: str = '') -> bool:
@@ -16,6 +25,26 @@ def check(name: str, ok: bool, detail: str = '') -> bool:
     suffix = f' - {detail}' if detail else ''
     print(f'{status}: {name}{suffix}')
     return ok
+
+
+def mock_required_by_now() -> bool:
+    now = datetime.now(CT)
+    if now.weekday() >= 5:
+        return False
+    try:
+        from market_calendar import market_calendar_status
+        market = market_calendar_status(now.date().isoformat())
+        if not market.get('is_trading_day', True):
+            return False
+    except Exception:
+        pass
+    required_at = now.replace(
+        hour=MOCK_REQUIRED_HOUR_CT,
+        minute=MOCK_REQUIRED_MINUTE_CT,
+        second=0,
+        microsecond=0,
+    )
+    return now >= required_at
 
 
 def main() -> int:
@@ -30,6 +59,11 @@ def main() -> int:
         choices=('auto', 'pre-market', 'market-open', 'post-market', 'no-surprises', 'post-open'),
         default='auto',
         help='Readiness mode. no-surprises adds compile checks and readiness artifacts.',
+    )
+    parser.add_argument(
+        '--refresh-artifacts',
+        action='store_true',
+        help='Refresh readiness/review artifacts. Without this, no-surprises is validation-only.',
     )
     args = parser.parse_args()
     ok = True
@@ -59,8 +93,13 @@ def main() -> int:
         with urlopen('http://127.0.0.1:5000/mock/status', timeout=3) as resp:
             data = json.loads(resp.read().decode('utf-8'))
         ok &= check('mock status reachable', True)
-        if args.mode == 'market-open' or (args.mode == 'post-open' and data.get('in_window')) \
-                or (args.mode == 'auto' and data.get('in_window')):
+        require_running = (
+            args.mode == 'market-open'
+            or (args.mode == 'post-open' and data.get('in_window'))
+            or (args.mode == 'auto' and data.get('in_window'))
+            or (args.mode in ('pre-market', 'no-surprises') and mock_required_by_now())
+        )
+        if require_running:
             ok &= check('mock trader running', data.get('running') is True)
         else:
             ok &= check('mock trader inactive outside market window is acceptable',
@@ -133,7 +172,21 @@ def main() -> int:
                         ', '.join(unprotected) if unprotected else f'{len(protected)} protected')
     except Exception as e:
         if require_broker_flat:
-            ok &= check('broker flat check reachable', False, str(e))
+            app_flat = bool(
+                isinstance(data, dict)
+                and not data.get('positions')
+                and not data.get('pending_entries')
+                and not data.get('broker_exposure_block')
+                and not data.get('broker_api_degraded')
+                and data.get('alpaca_equity') is not None
+            )
+            ok &= check(
+                'direct broker check degraded to app flat status',
+                app_flat,
+                f'direct Alpaca unavailable: {e}; app_positions={len((data or {}).get("positions") or {})}; '
+                f'app_broker_exposure_block={(data or {}).get("broker_exposure_block")}; '
+                f'app_broker_api_degraded={(data or {}).get("broker_api_degraded")}',
+            )
         else:
             degraded = data.get('broker_api_degraded') if isinstance(data, dict) else None
             ok &= check(
@@ -146,13 +199,84 @@ def main() -> int:
         compile_targets = [
             'mock_trader.py',
             'ws_scalp.py',
+            'local_server.py',
+            'runtime_guard.py',
+            'run_supervisor.py',
+            'worker_policy.py',
+            'process_monitor.py',
+            'alpaca_trading.py',
+            'routes_mock.py',
             'daily_postmortem.py',
+            'gdocs_writer.py',
             'review_artifacts.py',
+            'tick_replay.py',
+            'event_store.py',
             'weekend_readiness.py',
             'live_monitor.py',
             'monday_close_packet.py',
             'daily_close_packet.py',
             'automation_ops.py',
+            'canonical_command_registry.py',
+            'artifact_version_registry.py',
+            'execution_action_engine.py',
+            'execution_intent_engine.py',
+            'execution_kernel.py',
+            'execution_state_reducer.py',
+            'execution_adapters.py',
+            'contract_gate.py',
+            'shadow_variant_engine.py',
+            'candidate_lifecycle.py',
+            'certify_step2_cache.py',
+            'step2_cache_catalog.py',
+            'canonical_decision_packet.py',
+            'parity_verdict_engine.py',
+            'market_data_integrity_gate.py',
+            'market_data_freshness_guard.py',
+            'config_change_journal.py',
+            'rollback_drill.py',
+            'order_lifecycle_reconciliation.py',
+            'daily_parity_scorecard.py',
+            'step2_evaluation_envelope.py',
+            'candidate_decision_brief.py',
+            'candidate_reproducibility_gate.py',
+            'candidate_robustness_report.py',
+            'promotion_candidate_quarantine.py',
+            'promotion_manifest.py',
+            'promotion_preflight_bundle.py',
+            'baseline_drift_sentinel.py',
+            'step2_adaptive_hunter.py',
+            'deterministic_live_replay.py',
+            'promotion_evidence_packet.py',
+            'promote_active_profile.py',
+            'architecture_drift_gate.py',
+            'golden_parity_suite.py',
+            'live_step2_execution_harness.py',
+            'promotion_gate.py',
+            'promotion_safety.py',
+            'canonical_opportunity_ledger.py',
+            'compiled_tape_lineage.py',
+            'compiled_chunk_store.py',
+            'incremental_market_store.py',
+            'live_execution_replay_schema.py',
+            'live_signal_step2_parity.py',
+            'live_step2_feed.py',
+            'live_step2_parity_report.py',
+            'prepare_step2_live_cache.py',
+            'refresh_intraday_step2.py',
+            'intraday_parity_sentinel.py',
+            'opportunity_outcome_cache.py',
+            'parity_diff_classifier.py',
+            'replay_state_checkpoints.py',
+            'step2_cache_layers.py',
+            'step2_decision_parity.py',
+            'step2_execution_contract.py',
+            'step2_latency_model.py',
+            'step2_parity_contract.py',
+            'step2_rebuild_planner.py',
+            'step2_today_compiled.py',
+            'step2_warm_scorer.py',
+            'step2_warm_scorer_ops.py',
+            'unified_decision_ledger.py',
             'ops.py',
             'state_compactor.py',
             'engine_replay.py',
@@ -162,9 +286,11 @@ def main() -> int:
             'promotion_review.py',
             'schedule_helpers.py',
             'promotion_queue.py',
+            'market_calendar.py',
             'engine_validation.py',
             'engine_scoreboard.py',
             'eod_integrity_check.py',
+            'refit_betas.py',
         ]
         for name in compile_targets:
             try:
@@ -173,14 +299,27 @@ def main() -> int:
             except Exception as e:
                 ok &= check(f'compile {name}', False, str(e))
         try:
-            from weekend_readiness import write_weekend_artifacts
-            paths, payloads = write_weekend_artifacts()
-            checklist = payloads.get('pre_market_checklist') or {}
-            ok &= check('weekend readiness artifacts written', True, ', '.join(k for k, v in paths.items() if v))
-            ok &= check('pre-market checklist passes', bool(checklist.get('ok')),
-                        json.dumps([c for c in checklist.get('checks', []) if not c.get('ok')])[:500])
+            from architecture_drift_gate import build as build_architecture_drift
+            drift = build_architecture_drift(day=None, write=False)
+            ok &= check(
+                'architecture drift gate',
+                bool(drift.get('ok')),
+                json.dumps(drift.get('failed_checks') or [])[:500],
+            )
         except Exception as e:
-            ok &= check('weekend readiness artifacts written', False, str(e))
+            ok &= check('architecture drift gate', False, str(e))
+        if args.refresh_artifacts:
+            try:
+                from weekend_readiness import write_weekend_artifacts
+                paths, payloads = write_weekend_artifacts()
+                checklist = payloads.get('pre_market_checklist') or {}
+                ok &= check('weekend readiness artifacts written', True, ', '.join(k for k, v in paths.items() if v))
+                ok &= check('pre-market checklist passes', bool(checklist.get('ok')),
+                            json.dumps([c for c in checklist.get('checks', []) if not c.get('ok')])[:500])
+            except Exception as e:
+                ok &= check('weekend readiness artifacts written', False, str(e))
+        else:
+            ok &= check('weekend readiness artifact refresh skipped', True, 'pass --refresh-artifacts to write files')
 
     if args.mode == 'post-open':
         try:

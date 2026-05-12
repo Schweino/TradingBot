@@ -1,5 +1,5 @@
 {
-  "created_at_ct": "2026-05-09T20:56:59-05:00",
+  "created_at_ct": "2026-05-11T21:43:50-05:00",
   "day": "2026-05-08",
   "deduction": "This compares normalized packets, not raw ad hoc rows. A mismatch is a precise field-level lead for why Live and Step 2 diverged.",
   "examples": {

@@ -27,6 +27,7 @@ OUT_DIR = os.path.join(POSTMORTEM_DIR, 'step2_decision_parity')
 DEFAULT_PREPARED_DIR = os.path.join(HERE, 'data_cache', 'live_intraday_tapes')
 CONFIG_PATH = os.path.join(HERE, 'trading_config.json')
 CT = ZoneInfo('America/Chicago')
+QUOTE_AWARE_EXIT_MODEL_VERSION = 'quote_aware_exit_v1'
 
 
 def _jsonl_rows(path: str) -> list[dict[str, Any]]:
@@ -111,6 +112,114 @@ def _price_path(events: list[dict[str, Any]]) -> dict[str, tuple[list[int], list
     return out
 
 
+def _exit_path(events: list[dict[str, Any]]) -> dict[str, tuple[list[int], list[dict[str, Any]]]]:
+    grouped: dict[str, list[tuple[int, dict[str, Any]]]] = {}
+    quote_counts: Counter[str] = Counter()
+    for event in events:
+        kind = event.get('kind')
+        if kind not in ('stock_trade', 'stock_quote'):
+            continue
+        ticker = str(event.get('symbol') or '').upper()
+        row = event.get('row') or {}
+        ts = int(event.get('t') or row.get('t') or 0)
+        if not ticker or not ts:
+            continue
+        if kind == 'stock_quote':
+            bid = _num(row.get('bp'))
+            ask = _num(row.get('ap'))
+            if bid is None and ask is None:
+                continue
+            quote_counts[ticker] += 1
+            grouped.setdefault(ticker, []).append((ts, {
+                'kind': 'quote',
+                'bid': bid,
+                'ask': ask,
+                'bid_size': _num(row.get('bs')),
+                'ask_size': _num(row.get('as')),
+            }))
+            continue
+        if not replay_artifacts.is_executable_stock_trade(row):
+            continue
+        price = _num(row.get('p'))
+        if price is None:
+            continue
+        grouped.setdefault(ticker, []).append((ts, {
+            'kind': 'trade',
+            'price': float(price),
+            'size': _num(row.get('s')),
+            'conditions': row.get('c') or [],
+            'allow_trade_take_profit': False,
+        }))
+    out: dict[str, tuple[list[int], list[dict[str, Any]]]] = {}
+    for ticker, rows in grouped.items():
+        allow_trade_take_profit = quote_counts[ticker] == 0
+        normalized: list[tuple[int, dict[str, Any]]] = []
+        for ts, point in rows:
+            if point.get('kind') == 'trade':
+                point = dict(point)
+                point['allow_trade_take_profit'] = allow_trade_take_profit
+            normalized.append((ts, point))
+        normalized.sort(key=lambda item: (item[0], 0 if item[1].get('kind') == 'quote' else 1))
+        out[ticker] = ([ts for ts, _ in normalized], [point for _, point in normalized])
+    return out
+
+
+def _legacy_exit_point(value: Any) -> dict[str, Any]:
+    return {
+        'kind': 'trade',
+        'price': float(value),
+        'allow_trade_take_profit': True,
+        'legacy_price_path': True,
+    }
+
+
+def _mark_price(point: dict[str, Any], side: str) -> float | None:
+    if point.get('kind') == 'quote':
+        bid = _num(point.get('bid'))
+        ask = _num(point.get('ask'))
+        if side == 'LONG':
+            return bid
+        if side == 'SHORT':
+            return ask
+        if bid is not None and ask is not None:
+            return (bid + ask) / 2.0
+        return bid if bid is not None else ask
+    return _num(point.get('price'))
+
+
+def _exit_trigger(side: str, point: dict[str, Any], sl: float, tp: float) -> tuple[float, str] | None:
+    kind = point.get('kind')
+    if kind == 'quote':
+        bid = _num(point.get('bid'))
+        ask = _num(point.get('ask'))
+        if side == 'LONG':
+            if bid is not None and bid <= sl:
+                return sl, 'stop_loss'
+            if bid is not None and bid >= tp:
+                return tp, 'take_profit'
+        else:
+            if ask is not None and ask >= sl:
+                return sl, 'stop_loss'
+            if ask is not None and ask <= tp:
+                return tp, 'take_profit'
+        return None
+    price = _num(point.get('price'))
+    if price is None:
+        return None
+    allow_trade_take_profit = bool(point.get('allow_trade_take_profit'))
+    if side == 'LONG':
+        if price <= sl:
+            return sl, 'stop_loss'
+        if allow_trade_take_profit and price >= tp:
+            return tp, 'take_profit'
+    else:
+        if price >= sl:
+            return sl, 'stop_loss'
+        if allow_trade_take_profit and price <= tp:
+            return tp, 'take_profit'
+    return None
+
+
 def _ct_from_ms(ts_ms: int | None) -> str | None:
     if not ts_ms:
         return None
@@ -167,7 +276,7 @@ def _actual_entry(row: dict[str, Any], trade: dict[str, Any] | None,
     return fill_price, entry_ts, source
 
 
-def _simulate_outcome(row: dict[str, Any], paths: dict[str, tuple[list[int], list[float]]],
+def _simulate_outcome(row: dict[str, Any], paths: dict[str, tuple[list[int], list[Any]]],
                       trade: dict[str, Any] | None = None,
                       model: dict[str, Any] | None = None,
                       latency_percentile: str = 'p75') -> dict[str, Any] | None:
@@ -186,39 +295,48 @@ def _simulate_outcome(row: dict[str, Any], paths: dict[str, tuple[list[int], lis
             'exit': None,
             'pnl': None,
         }
-    times, prices = paths.get(ticker, ([], []))
+    times, points = paths.get(ticker, ([], []))
     idx = bisect.bisect_left(times, ts_ms)
     exit_price = None
     exit_ts = None
+    exit_evidence = None
     reason = 'no_exit'
     mfe = 0.0
     mae = 0.0
     last_price = entry
     last_ts = ts_ms
     for i in range(idx, len(times)):
-        price = prices[i]
+        raw_point = points[i]
+        point = raw_point if isinstance(raw_point, dict) else _legacy_exit_point(raw_point)
+        price = _mark_price(point, side)
+        if price is None:
+            continue
         last_price = price
         last_ts = times[i]
         if side == 'LONG':
             pnl_pct = (price - entry) / entry
             mfe = max(mfe, pnl_pct)
             mae = min(mae, pnl_pct)
-            if price <= sl:
-                exit_price, exit_ts, reason = sl, times[i], 'stop_loss'
-                break
-            if price >= tp:
-                exit_price, exit_ts, reason = tp, times[i], 'take_profit'
-                break
         else:
             pnl_pct = (entry - price) / entry
             mfe = max(mfe, pnl_pct)
             mae = min(mae, pnl_pct)
-            if price >= sl:
-                exit_price, exit_ts, reason = sl, times[i], 'stop_loss'
-                break
-            if price <= tp:
-                exit_price, exit_ts, reason = tp, times[i], 'take_profit'
-                break
+        trigger = _exit_trigger(side, point, sl, tp)
+        if trigger:
+            exit_price, reason = trigger
+            exit_ts = times[i]
+            exit_evidence = {
+                'model': QUOTE_AWARE_EXIT_MODEL_VERSION,
+                'kind': point.get('kind'),
+                'price': point.get('price'),
+                'bid': point.get('bid'),
+                'ask': point.get('ask'),
+                'bid_size': point.get('bid_size'),
+                'ask_size': point.get('ask_size'),
+                'allow_trade_take_profit': point.get('allow_trade_take_profit'),
+                'legacy_price_path': point.get('legacy_price_path'),
+            }
+            break
     if exit_price is None:
         exit_price = last_price
         exit_ts = last_ts
@@ -252,6 +370,7 @@ def _simulate_outcome(row: dict[str, Any], paths: dict[str, tuple[list[int], lis
         'sl': round(sl, 4),
         'tp': round(tp, 4),
         'qty': round(qty, 6),
+        'exit_evidence': exit_evidence,
     }
 
 
@@ -331,7 +450,7 @@ def build(day: str, tickers: list[str], feed: str, quote_mode: str, btc_mode: st
     ]
     trades = _trade_rows(day)
     events = _load_prepared(prepared_path)
-    paths = _price_path(events)
+    paths = _exit_path(events)
     latency_model = step2_latency_model.load_model(latency_model_path)
     config = _load_config()
     execution_contract = execution_kernel.contract_from_config(config)
@@ -356,9 +475,12 @@ def build(day: str, tickers: list[str], feed: str, quote_mode: str, btc_mode: st
         'latency_model_source': latency_model.get('source'),
         'latency_model_sample_count': latency_model.get('sample_count'),
         'latency_percentile': latency_percentile,
+        'exit_model': QUOTE_AWARE_EXIT_MODEL_VERSION,
         'deduction': (
             'Fast parity starts from Live signal rows, preserving Live parity keys, then replays only '
-            'future stock trade prices from the actual Live fill/commit time when available. '
+            'future quote-aware stock exits from the actual Live fill/commit time when available. '
+            'Take-profit exits require an executable top-of-book quote when quotes are available, '
+            'so isolated odd-lot trade prints cannot create optimistic fills. '
             'It avoids rediscovering signals from the full tape.'
         ),
     }

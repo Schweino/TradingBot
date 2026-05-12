@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import threading
 import time
 from datetime import datetime
 from typing import Optional
@@ -16,29 +17,37 @@ except ImportError:
 HERE = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(HERE, 'postmortem', 'trading_events.sqlite')
 CT = ZoneInfo('America/Chicago')
+_CONN: Optional[sqlite3.Connection] = None
+_CONN_LOCK = threading.RLock()
+_SCHEMA_READY = False
 
 
 def _conn():
+    global _CONN, _SCHEMA_READY
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-    conn = sqlite3.connect(DB_PATH, timeout=5)
-    conn.execute('PRAGMA journal_mode=WAL')
-    conn.execute('PRAGMA synchronous=NORMAL')
-    conn.execute(
-        '''
-        CREATE TABLE IF NOT EXISTS events (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ts INTEGER NOT NULL,
-            day TEXT NOT NULL,
-            kind TEXT NOT NULL,
-            symbol TEXT,
-            trade_id TEXT,
-            payload_json TEXT NOT NULL
+    if _CONN is None:
+        _CONN = sqlite3.connect(DB_PATH, timeout=5, check_same_thread=False)
+    if not _SCHEMA_READY:
+        _CONN.execute('PRAGMA journal_mode=WAL')
+        _CONN.execute('PRAGMA synchronous=NORMAL')
+        _CONN.execute(
+            '''
+            CREATE TABLE IF NOT EXISTS events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ts INTEGER NOT NULL,
+                day TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                symbol TEXT,
+                trade_id TEXT,
+                payload_json TEXT NOT NULL
+            )
+            '''
         )
-        '''
-    )
-    conn.execute('CREATE INDEX IF NOT EXISTS idx_events_day_kind ON events(day, kind)')
-    conn.execute('CREATE INDEX IF NOT EXISTS idx_events_trade_id ON events(trade_id)')
-    return conn
+        _CONN.execute('CREATE INDEX IF NOT EXISTS idx_events_day_kind ON events(day, kind)')
+        _CONN.execute('CREATE INDEX IF NOT EXISTS idx_events_trade_id ON events(trade_id)')
+        _CONN.commit()
+        _SCHEMA_READY = True
+    return _CONN
 
 
 def record_event(kind: str, payload: dict, symbol: Optional[str] = None,
@@ -53,16 +62,19 @@ def record_event(kind: str, payload: dict, symbol: Optional[str] = None,
         trade_id,
         json.dumps(payload or {}, separators=(',', ':'), default=str),
     )
-    with _conn() as conn:
+    with _CONN_LOCK:
+        conn = _conn()
         conn.execute(
             'INSERT INTO events(ts, day, kind, symbol, trade_id, payload_json) VALUES (?, ?, ?, ?, ?, ?)',
             row,
         )
+        conn.commit()
 
 
 def event_counts(day: Optional[str] = None) -> dict:
     day = day or datetime.now(CT).date().isoformat()
-    with _conn() as conn:
+    with _CONN_LOCK:
+        conn = _conn()
         rows = conn.execute(
             'SELECT kind, COUNT(*) FROM events WHERE day = ? GROUP BY kind ORDER BY kind',
             (day,),

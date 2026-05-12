@@ -7,6 +7,7 @@
 
 # Runtime state and logs
 mock_trader_state.json
+mock_trader_state.json.tmp
 *.log
 *.log.*
 *.err
@@ -16,12 +17,17 @@ signal_debug.json
 watcher_prefs.json
 .last_refit.txt
 tick_logs/
+tmp_tests/
+runtime/
 
 # Large/generated trading artifacts
 postmortem/
+postmort/
 audit/
 archive/
 data_cache_*.pkl
+data_cache/
+*.zip
 backtest_*.csv
 repro_*.csv
 *.csv

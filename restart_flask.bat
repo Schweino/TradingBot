@@ -1,9 +1,8 @@
 @echo off
 REM Detached Flask restarter. Called by refit_betas.py after rewriting TICKER_BTC_BETAS.
 REM Waits briefly so the parent python (refit script) can exit first, then kills
-REM any running Flask and relaunches in the background via pythonw.
+REM this app's local server and relaunches it in the background.
 timeout /t 3 /nobreak >nul
-taskkill /F /IM python.exe /T >nul 2>&1
-taskkill /F /IM pythonw.exe /T >nul 2>&1
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-CimInstance Win32_Process | Where-Object { ($_.CommandLine -like '*C:\xampp\htdocs\Claude\local_server.py*') -or ($_.CommandLine -like '*C:\xampp\htdocs\Claude\app.py*') -or ($_.CommandLine -like '*C:\xampp\htdocs\Claude\refresh_intraday_step2.py*') -or (($_.CommandLine -like '*pythonw.exe*') -and ($_.CommandLine -like '*C:\xampp\htdocs\Claude*')) } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }" >nul 2>&1
 timeout /t 1 /nobreak >nul
-start "" /MIN cmd /c "cd /d C:\xampp\htdocs\Claude && C:\xampp\htdocs\python.exe app.py >> flask_boot.log 2>&1"
+start "" /MIN cmd /c "C:\xampp\htdocs\Claude\start_flask.bat"

@@ -78,6 +78,86 @@ def alpaca_stock_bars(ticker, start_iso, end_iso, timeframe='1Min', feed='sip', 
     return out
 
 
+def alpaca_stock_trades(ticker, start_iso, end_iso, feed='sip', limit=10000, max_pages=1000):
+    """
+    Fetch historical stock trades from Alpaca.
+
+    Returns normalized rows shaped for ws_scalp replay:
+      {t(ms), p, s, x, c, i, z}
+    """
+    url = f'https://data.alpaca.markets/v2/stocks/{ticker}/trades'
+    params = {
+        'start': start_iso,
+        'end': end_iso,
+        'limit': limit,
+        'feed': feed,
+        'sort': 'asc',
+    }
+    out = []
+    page_token = None
+    for _ in range(max_pages):
+        if page_token:
+            params['page_token'] = page_token
+        else:
+            params.pop('page_token', None)
+        data = _alpaca_get(url, params, timeout=20)
+        for t in (data.get('trades') or []):
+            out.append({
+                't': _iso_to_ms(t['t']),
+                'p': t.get('p'),
+                's': t.get('s'),
+                'x': t.get('x'),
+                'c': t.get('c') or [],
+                'i': t.get('i'),
+                'z': t.get('z'),
+            })
+        page_token = data.get('next_page_token')
+        if not page_token:
+            break
+    return out
+
+
+def alpaca_stock_quotes(ticker, start_iso, end_iso, feed='sip', limit=10000, max_pages=1000):
+    """
+    Fetch historical stock quotes from Alpaca.
+
+    Returns normalized rows shaped for ws_scalp replay:
+      {t(ms), bp, ap, bs, as, bx, ax, c, z}
+    """
+    url = f'https://data.alpaca.markets/v2/stocks/{ticker}/quotes'
+    params = {
+        'start': start_iso,
+        'end': end_iso,
+        'limit': limit,
+        'feed': feed,
+        'sort': 'asc',
+    }
+    out = []
+    page_token = None
+    for _ in range(max_pages):
+        if page_token:
+            params['page_token'] = page_token
+        else:
+            params.pop('page_token', None)
+        data = _alpaca_get(url, params, timeout=20)
+        for q in (data.get('quotes') or []):
+            out.append({
+                't': _iso_to_ms(q['t']),
+                'bp': q.get('bp'),
+                'ap': q.get('ap'),
+                'bs': q.get('bs'),
+                'as': q.get('as'),
+                'bx': q.get('bx'),
+                'ax': q.get('ax'),
+                'c': q.get('c') or [],
+                'z': q.get('z'),
+            })
+        page_token = data.get('next_page_token')
+        if not page_token:
+            break
+    return out
+
+
 def alpaca_crypto_bars(symbol, start_iso, end_iso, timeframe='5Min'):
     """
     Fetch crypto bars. `symbol` is a pair like 'BTC/USD'.

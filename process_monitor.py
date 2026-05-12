@@ -1,5 +1,5 @@
 """
-process_monitor.py — crash / shutdown / death diagnostics for app.py.
+process_monitor.py — crash / shutdown / death diagnostics for the local app server.
 
 Installs four complementary loggers so we can always answer "what
 happened to the Flask process?" after the fact:
@@ -38,13 +38,21 @@ import sys
 import threading
 import time
 from datetime import datetime, timezone
+from logging.handlers import RotatingFileHandler
+
+try:
+    from runtime_guard import append_runtime_event
+except Exception:
+    append_runtime_event = None
 
 log = logging.getLogger('proc_monitor')
 log.setLevel(logging.INFO)
 if not log.handlers:
-    _h = logging.FileHandler(
+    _h = RotatingFileHandler(
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'proc_monitor.log'),
+        maxBytes=1_500_000,
+        backupCount=5,
         encoding='utf-8',
     )
     _h.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
@@ -67,7 +75,7 @@ def _read_prev_heartbeat():
 
 def _write_heartbeat():
     try:
-        tmp = HEARTBEAT_PATH + '.tmp'
+        tmp = f'{HEARTBEAT_PATH}.{os.getpid()}.tmp'
         with open(tmp, 'w') as f:
             json.dump({
                 'pid':  os.getpid(),
@@ -115,7 +123,7 @@ def _thread_excepthook(args):
 
 
 def install():
-    """Install all diagnostics. Call once from app.py at startup."""
+    """Install all diagnostics. Call once from app startup."""
 
     # ── 1. Heartbeat: check previous, then start rewriter thread ──
     prev = _read_prev_heartbeat()
@@ -164,3 +172,32 @@ def install():
 
     log.info(f'PROC MONITOR installed: heartbeat={HEARTBEAT_PATH} '
              f'crashlog={CRASH_LOG_PATH} pid={os.getpid()}')
+
+
+def install_v2():
+    """Install diagnostics and emit structured runtime restart events."""
+    prev = _read_prev_heartbeat()
+    if prev:
+        try:
+            prev_iso = prev.get('iso', '?')
+            prev_unix = int(prev.get('unix', 0) or 0)
+            now_unix = int(time.time())
+            downtime = max(0, now_unix - prev_unix)
+            if append_runtime_event:
+                append_runtime_event('process_boot', {
+                    'previous_pid': prev.get('pid'),
+                    'previous_heartbeat_iso': prev_iso,
+                    'downtime_sec': downtime,
+                    'current_pid': os.getpid(),
+                    'unexpected_restart': downtime >= 30,
+                })
+        except Exception as e:
+            log.warning(f'runtime boot event write failed: {e}')
+    else:
+        if append_runtime_event:
+            append_runtime_event('process_boot', {
+                'previous_pid': None,
+                'current_pid': os.getpid(),
+                'unexpected_restart': False,
+            })
+    install()

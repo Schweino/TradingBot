@@ -22,7 +22,7 @@ a NEW dated section in the Doc (we don't dedup the Doc â€” manual cleanup i
 you re-run for testing).
 """
 from __future__ import annotations
-import sys, os, json, re
+import sys, os, json, re, hashlib
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -39,6 +39,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 STATE_PATH = os.path.join(HERE, 'mock_trader_state.json')
 LOG_PATH   = os.path.join(HERE, 'mock_trader.log')
 OUT_DIR    = os.path.join(HERE, 'postmortem')
+ARCHIVE_DIR = os.path.join(OUT_DIR, 'archive')
+EMBEDDED_ARCHIVE_DIR = os.path.join(ARCHIVE_DIR, 'embedded_payloads')
 SKIPPED_DIR = os.path.join(OUT_DIR, 'skipped_signals')
 SHADOW_DIR = os.path.join(OUT_DIR, 'shadow_decisions')
 SHADOW_EXIT_DIR = os.path.join(OUT_DIR, 'shadow_exits')
@@ -50,6 +52,20 @@ os.makedirs(OUT_DIR, exist_ok=True)
 JSON_DETAIL_ROW_LIMIT = 250
 _BAR_DAY_CACHE = {}
 _JSONL_DAY_CACHE = {}
+
+EXTERNALIZED_POSTMORTEM_KEYS = {
+    'review_artifacts',
+    'weekend_validation_packet',
+    'engine_scoreboard',
+    'engine_validation',
+    'rolling_engine_validation',
+    'engine_candidate_config',
+    'exit_policy_replay',
+    'rolling_exit_policy_replay',
+    'exit_policy_candidate_config',
+    'candidate_config',
+    'ev_table',
+}
 
 
 # â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -68,6 +84,70 @@ def write_json_atomic(path: str, payload: dict) -> None:
     with open(tmp, 'w', encoding='utf-8') as f:
         json.dump(payload, f, indent=2, default=str)
     os.replace(tmp, path)
+
+
+def sha256_file(path: str) -> str | None:
+    try:
+        h = hashlib.sha256()
+        with open(path, 'rb') as f:
+            for chunk in iter(lambda: f.read(65536), b''):
+                h.update(chunk)
+        return h.hexdigest()
+    except Exception:
+        return None
+
+
+def payload_brief(value):
+    if isinstance(value, dict):
+        brief = {'type': 'dict', 'keys': len(value)}
+        if 'error' in value:
+            brief['error'] = value.get('error')
+        for key in ('count', 'total', 'ok', 'status', 'verdict'):
+            if key in value:
+                brief[key] = value.get(key)
+        return brief
+    if isinstance(value, list):
+        return {'type': 'list', 'rows': len(value)}
+    return {'type': type(value).__name__}
+
+
+def externalize_postmortem_payloads(payload: dict, day_iso: str) -> dict:
+    """Move bulky duplicated payloads out of postmortem_YYYY-MM-DD.json.
+
+    The daily postmortem is a contract file for validation, EV analytics,
+    readiness, and promotion tooling. Keep active learning fields inline, but
+    archive large generated artifacts that already have first-class files.
+    """
+    os.makedirs(EMBEDDED_ARCHIVE_DIR, exist_ok=True)
+    archive_index = dict(payload.get('archived_embedded_payloads') or {})
+    for key in sorted(EXTERNALIZED_POSTMORTEM_KEYS):
+        value = payload.get(key)
+        if value in (None, {}, []):
+            continue
+        if isinstance(value, dict) and value.get('archived') is True:
+            archive_index[key] = value
+            continue
+        archive_path = os.path.join(EMBEDDED_ARCHIVE_DIR, f'postmortem_{day_iso}_{key}.json')
+        write_json_atomic(archive_path, value)
+        try:
+            size = os.path.getsize(archive_path)
+        except Exception:
+            size = None
+        pointer = {
+            'archived': True,
+            'file': archive_path,
+            'bytes': size,
+            'sha256': sha256_file(archive_path),
+            'summary': payload_brief(value),
+        }
+        source_file_key = f'{key}_file'
+        if payload.get(source_file_key):
+            pointer['canonical_file'] = payload.get(source_file_key)
+        payload[key] = pointer
+        archive_index[key] = pointer
+    if archive_index:
+        payload['archived_embedded_payloads'] = archive_index
+    return payload
 
 
 def load_human_notes(day_iso):
@@ -2464,22 +2544,86 @@ def render_review_artifact_summary(day_iso):
     try:
         from review_artifacts import (
             build_artifact_manifest,
+            build_best_avoided_loser_simulator,
+            build_counterfactual_side_review,
+            build_data_collection_coverage,
+            build_daily_conclusion_ledger,
+            build_dual_side_shadow_review,
             build_entry_retry_summary,
+            build_entry_timing_efficiency,
             build_execution_summary,
+            build_exit_efficiency_review,
             build_exit_hierarchy_summary,
+            build_experiment_registry,
+            build_feature_outcome_table,
+            build_fill_attribution_summary,
+            build_gate_timeline_summary,
+            build_human_feedback_summary,
+            build_hypothesis_confidence,
+            build_hypothesis_counterexamples,
+            build_latency_attribution_summary,
+            build_loser_fingerprints,
+            build_mae_mfe_timeline,
+            build_market_tape_attribution,
+            build_market_regime_library,
+            build_matched_control_review,
+            build_no_signal_snapshot_summary,
             build_per_ticker_learning,
+            build_postmortem_section_confidence,
+            build_quote_condition_quality_summary,
             build_regime_scoring_review,
             build_review_index,
             build_risk_summary,
+            build_rolling_learning_dashboard,
+            build_rule_confidence_decay,
+            build_rule_attribution_review,
             build_shadow_exit_summary,
+            build_shadow_entry_variants_review,
+            build_setup_grade_review,
+            build_trade_verdicts,
+            build_true_counterfactual_replay,
+            build_weekly_promotion_meeting_packet,
         )
+        from tick_replay import build_tick_replay
         risk = build_risk_summary(day_iso)
+        data_coverage = build_data_collection_coverage(day_iso)
+        gate_timeline = build_gate_timeline_summary(day_iso)
+        no_signal_summary = build_no_signal_snapshot_summary(day_iso)
+        fill_attr = build_fill_attribution_summary(day_iso)
+        latency_attr = build_latency_attribution_summary(day_iso)
+        entry_timing = build_entry_timing_efficiency(day_iso)
+        dual_side = build_dual_side_shadow_review(day_iso)
+        quote_condition = build_quote_condition_quality_summary(day_iso)
+        shadow_entry_variants = build_shadow_entry_variants_review(day_iso)
         execution = build_execution_summary(day_iso)
         shadow = build_shadow_exit_summary(day_iso)
         retry = build_entry_retry_summary(day_iso)
         exits = build_exit_hierarchy_summary(day_iso)
+        market_tape = build_market_tape_attribution(day_iso)
+        tick_replay = build_tick_replay(day_iso)
         ticker_learning = build_per_ticker_learning(day_iso)
         regime_review = build_regime_scoring_review(day_iso)
+        setup_grade = build_setup_grade_review(day_iso)
+        side_review = build_counterfactual_side_review(day_iso)
+        rule_review = build_rule_attribution_review(day_iso)
+        hyp_conf = build_hypothesis_confidence(day_iso)
+        conclusion = build_daily_conclusion_ledger(day_iso)
+        matched = build_matched_control_review(day_iso)
+        exit_eff = build_exit_efficiency_review(day_iso)
+        timeline = build_mae_mfe_timeline(day_iso)
+        hyp_counter = build_hypothesis_counterexamples(day_iso)
+        fingerprints = build_loser_fingerprints(day_iso)
+        section_conf = build_postmortem_section_confidence(day_iso)
+        verdicts = build_trade_verdicts(day_iso)
+        avoid = build_best_avoided_loser_simulator(day_iso)
+        rolling = build_rolling_learning_dashboard(day_iso)
+        true_replay = build_true_counterfactual_replay(day_iso)
+        experiments = build_experiment_registry(day_iso)
+        feature_table = build_feature_outcome_table(day_iso)
+        confidence_decay = build_rule_confidence_decay(day_iso)
+        human_feedback = build_human_feedback_summary(day_iso)
+        market_library = build_market_regime_library(day_iso)
+        weekly_packet = build_weekly_promotion_meeting_packet(day_iso)
         index = build_review_index(day_iso)
         manifest = build_artifact_manifest(day_iso)
     except Exception as e:
@@ -2495,6 +2639,47 @@ def render_review_artifact_summary(day_iso):
     stale = execution.get('stale_data_incidents') or {}
     out.append(f"  Execution friction: spread_avg={spread.get('avg_pct')}% "
                f"slippage_avg={slippage.get('avg_pct')}% stale_events={stale.get('count')}")
+    out.append(
+        f"  Data collection coverage: {data_coverage.get('verdict')} - "
+        f"{data_coverage.get('trust_impact')}"
+    )
+    gaps = (data_coverage.get('missing_required') or data_coverage.get('partial_required') or data_coverage.get('watch_gaps') or [])
+    if gaps:
+        out.append('    Coverage gaps:')
+        for row in gaps[:5]:
+            out.append(
+                f"    - {row.get('name')}: {row.get('count')}/{row.get('expected')} "
+                f"({row.get('pct')}%) status={row.get('status')}"
+            )
+    out.append(
+        f"  Gate/no-signal telemetry: gate_rows={gate_timeline.get('rows')} "
+        f"no_signal_rows={no_signal_summary.get('rows')} "
+        f"top_gate_blockers={(gate_timeline.get('top_blockers') or [])[:3]}"
+    )
+    out.append(
+        f"  Fill attribution: rows={fill_attr.get('rows')} by_stage={fill_attr.get('by_stage')}"
+    )
+    out.append(
+        f"  Latency attribution: rows={latency_attr.get('rows')} "
+        f"by_status={latency_attr.get('by_status')}"
+    )
+    out.append(
+        f"  Entry timing efficiency: by_window={entry_timing.get('by_window')} "
+        f"worst_rows={(entry_timing.get('rows') or [])[:2]}"
+    )
+    out.append(
+        f"  Dual-side shadow scoring: counts={dual_side.get('counts')} "
+        f"watch_rows={[r for r in (dual_side.get('rows') or []) if r.get('verdict') != 'aligned'][:3]}"
+    )
+    out.append(
+        f"  Quote/condition quality: quote_states={quote_condition.get('quote_state_counts')} "
+        f"condition_tags={quote_condition.get('condition_tag_counts')} "
+        f"spread_abnormal_rows={quote_condition.get('spread_abnormal_rows')}"
+    )
+    out.append(
+        f"  Shadow entry variants: samples={shadow_entry_variants.get('samples')} "
+        f"summary={shadow_entry_variants.get('summary')}"
+    )
     by_policy = shadow.get('by_policy') or {}
     if by_policy:
         out.append('  Shadow-exit grading:')
@@ -2510,6 +2695,30 @@ def render_review_artifact_summary(day_iso):
     exit_selected = exits.get('selected_counts') or {}
     if exit_selected:
         out.append(f'  Exit hierarchy captured: {dict(list(exit_selected.items())[:5])}')
+    market_rows = market_tape.get('market_regime_buckets') or []
+    if market_rows:
+        out.append('  Broad-market tape attribution:')
+        for row in market_rows[:3]:
+            out.append(f"    - {row.get('bucket')}: trades={row.get('trades')} "
+                       f"win_rate={row.get('win_rate')}% pnl=${row.get('pnl'):+.2f} "
+                       f"IWM_avg={row.get('avg_iwm_day_pct')}")
+    tick_summary = tick_replay.get('summary') or {}
+    if tick_summary:
+        out.append('  Tick-by-tick replay:')
+        out.append(f"    - captures={tick_summary.get('captures_analyzed')} "
+                   f"stock_paths={tick_summary.get('captures_with_stock_path')} "
+                   f"btc_paths={tick_summary.get('captures_with_btc_path')} "
+                   f"dupes_removed={tick_summary.get('duplicate_rows_removed')}")
+        if tick_summary.get('capture_type_counts'):
+            out.append(f"    - capture_types={tick_summary.get('capture_type_counts')}")
+        tags = tick_summary.get('tick_path_tags') or {}
+        if tags:
+            out.append(f"    - tags={dict(list(tags.items())[:6])}")
+        for row in (tick_replay.get('watch_rows') or [])[:3]:
+            out.append(f"    - watch {row.get('ticker')} {row.get('side')} "
+                       f"{row.get('setup_type')}: tags={row.get('tags')} "
+                       f"MFE={fmt_num(row.get('mfe_pct'), 2, '%')} "
+                       f"MAE={fmt_num(row.get('mae_pct'), 2, '%')}")
     ticker_rows = ticker_learning.get('rows') or []
     if ticker_rows:
         weak = sorted(ticker_rows, key=lambda row: (row.get('pnl') or 0))[:3]
@@ -2525,6 +2734,100 @@ def render_review_artifact_summary(day_iso):
             out.append(f"    - {row.get('btc_regime')} {row.get('side')} {row.get('setup_type')}: "
                        f"trades={row.get('trades')} "
                        f"win_rate={row.get('win_rate')}% pnl=${row.get('pnl'):+.2f}")
+    grade_rows = setup_grade.get('by_grade') or []
+    if grade_rows:
+        out.append('  Setup grade outcome split:')
+        for row in grade_rows[:4]:
+            out.append(f"    - grade {row.get('bucket')}: trades={row.get('trades')} "
+                       f"win_rate={row.get('win_rate')}% pnl=${row.get('pnl'):+.2f} "
+                       f"confidence={row.get('confidence')}")
+    side_rows = side_review.get('summary') or []
+    if side_rows:
+        out.append('  Counterfactual side review:')
+        for row in side_rows[:3]:
+            out.append(f"    - {row.get('bucket')}: evaluable={row.get('evaluable')} "
+                       f"opposite_5m={row.get('opposite_5m_rate')}% "
+                       f"opposite_15m={row.get('opposite_15m_rate')}%")
+    hurt_rows = rule_review.get('top_hurt_or_watch') or []
+    if hurt_rows:
+        out.append('  Rule attribution needing review:')
+        for row in hurt_rows[:3]:
+            out.append(f"    - {row.get('rule')}: trades={row.get('trades')} "
+                       f"hurt={row.get('hurt')} pnl=${row.get('pnl'):+.2f} "
+                       f"confidence={row.get('confidence')}")
+    hyp_counts = hyp_conf.get('counts') or {}
+    if hyp_counts:
+        out.append(f'  Hypothesis confidence: {hyp_counts}')
+    ledger_watch = conclusion.get('what_to_watch_next') or []
+    if ledger_watch:
+        out.append('  Conclusion ledger watch:')
+        for item in ledger_watch[:3]:
+            out.append(f'    - {item}')
+    matched_counts = matched.get('deduction_counts') or {}
+    if matched_counts:
+        out.append(f'  Matched controls: {matched_counts}')
+    exit_rows = exit_eff.get('summary') or []
+    if exit_rows:
+        out.append('  Exit efficiency top labels:')
+        for row in exit_rows[:3]:
+            out.append(f"    - {row.get('label')}: trades={row.get('trades')} "
+                       f"pnl=${row.get('pnl'):+.2f}")
+    fp_rows = fingerprints.get('summary') or []
+    if fp_rows:
+        out.append('  Loser fingerprints:')
+        for row in fp_rows[:3]:
+            out.append(f"    - {row.get('fingerprint')}: losers={row.get('losers')} "
+                       f"gross_loss=${row.get('gross_loss'):.2f}")
+    timeline_rows = timeline.get('summary') or []
+    if timeline_rows:
+        out.append('  MAE/MFE timeline watch:')
+        for row in timeline_rows[:2]:
+            out.append(f"    - {row.get('bucket')}: invalidated={row.get('invalidated_by_checkpoint')} "
+                       f"confirmed={row.get('confirmed_by_checkpoint')}")
+    counter_counts = hyp_counter.get('counts') or {}
+    if counter_counts:
+        out.append(f'  Hypothesis counterexamples: {counter_counts}')
+    section_counts = section_conf.get('counts') or {}
+    if section_counts:
+        out.append(f'  Section confidence: {section_counts}')
+    verdict_counts = verdicts.get('counts') or {}
+    if verdict_counts:
+        out.append(f'  Trade verdicts: {verdict_counts}')
+    avoid_rows = avoid.get('rows') or []
+    if avoid_rows:
+        out.append('  Best avoided loser simulator:')
+        for row in avoid_rows[:3]:
+            out.append(f"    - {row.get('rule')}: net=${row.get('net_pnl_if_blocked'):+.2f} "
+                       f"winner_damage=${row.get('winner_damage'):+.2f} confidence={row.get('confidence')}")
+    rolling_totals = rolling.get('totals') or {}
+    if rolling_totals:
+        out.append(f"  Rolling learning dashboard: {rolling_totals.get('days')} day(s), "
+                   f"trades={rolling_totals.get('trades')} pnl=${rolling_totals.get('pnl'):+.2f}")
+    replay_rows = true_replay.get('policies') or []
+    if replay_rows:
+        out.append('  True counterfactual replay:')
+        for row in replay_rows[:3]:
+            out.append(f"    - {row.get('policy')}: delta=${row.get('net_delta_vs_actual'):+.2f} "
+                       f"winner_damage=${row.get('winner_damage'):+.2f} verdict={row.get('verdict')}")
+    exp_counts = experiments.get('counts') or {}
+    if exp_counts:
+        out.append(f'  Experiment registry: {exp_counts}')
+    if feature_table.get('rows') is not None:
+        out.append(f"  Feature outcome table: rows={len(feature_table.get('rows') or [])} "
+                   f"columns={len(feature_table.get('columns') or [])}")
+    decay_counts = confidence_decay.get('counts') or {}
+    if decay_counts:
+        out.append(f'  Rule confidence decay: {decay_counts}')
+    feedback_counts = human_feedback.get('counts') or {}
+    out.append(f"  Human feedback: {feedback_counts or {}} file={human_feedback.get('feedback_file')}")
+    regime_rows = market_library.get('regimes') or []
+    if regime_rows:
+        out.append('  Market regime library:')
+        for row in regime_rows[:3]:
+            out.append(f"    - {row.get('regime')}: days={row.get('days')} "
+                       f"trades={row.get('trades')} pnl=${row.get('pnl'):+.2f}")
+    decision_counts = {k: len(v or []) for k, v in (weekly_packet.get('decisions') or {}).items()}
+    out.append(f'  Weekly promotion meeting decisions: {decision_counts}')
     try:
         import weekend_readiness as wr
         split = wr.build_strategy_operations_split(day_iso)
@@ -4293,7 +4596,7 @@ def human_approval_checklist(day_iso, flags, tape, state=None):
             'evidence': risk,
             'winner_damage_risk': risk.get('risk'),
             'implementation_surface': feedback.get('file_or_surface'),
-            'how_to_revert': 'Restore the prior trading_config/code value from config_diff/config_freeze and restart app.py.',
+            'how_to_revert': 'Restore the prior trading_config/code value from config_diff/config_freeze and restart the local server.',
             'post_enable_watch': [
                 'winner damage',
                 'false positives blocked',
@@ -4415,6 +4718,67 @@ def render_start_here_text(day_iso, flags, tape, state=None):
     if not (ultimate.get('loser_root_cause_buckets') or ultimate.get('trade_archetype_grades')):
         out.append('  - No trade/archetype learning callouts yet.')
     out.append('')
+    try:
+        from review_artifacts import (
+            build_best_avoided_loser_simulator,
+            build_data_collection_coverage,
+            build_experiment_registry,
+            build_human_feedback_summary,
+            build_loser_fingerprints,
+            build_matched_control_review,
+            build_market_regime_library,
+            build_rule_confidence_decay,
+            build_trade_verdicts,
+            build_true_counterfactual_replay,
+            build_weekly_promotion_meeting_packet,
+        )
+        data_coverage = build_data_collection_coverage(day_iso)
+        out.append('Elite learning checks:')
+        out.append(f"  - Data collection coverage: {data_coverage.get('verdict')} - {data_coverage.get('trust_impact')}")
+        for row in (
+            data_coverage.get('missing_required')
+            or data_coverage.get('partial_required')
+            or data_coverage.get('watch_gaps')
+            or []
+        )[:3]:
+            out.append(f"    - gap: {row.get('name')} {row.get('count')}/{row.get('expected')} ({row.get('pct')}%)")
+        out.append(f"  - Matched controls: {build_matched_control_review(day_iso).get('deduction_counts')}")
+        for row in (build_loser_fingerprints(day_iso).get('summary') or [])[:3]:
+            out.append(f"  - Fingerprint: {row.get('fingerprint')} losers={row.get('losers')} gross_loss=${row.get('gross_loss'):.2f}")
+        out.append(f"  - Trade verdicts: {build_trade_verdicts(day_iso).get('counts')}")
+        for row in (build_best_avoided_loser_simulator(day_iso).get('rows') or [])[:3]:
+            out.append(f"  - Simulator: {row.get('rule')} net=${row.get('net_pnl_if_blocked'):+.2f} confidence={row.get('confidence')}")
+        true_replay = build_true_counterfactual_replay(day_iso)
+        human_feedback = build_human_feedback_summary(day_iso)
+        confidence_decay = build_rule_confidence_decay(day_iso)
+        experiments = build_experiment_registry(day_iso, replay=true_replay, human_feedback=human_feedback)
+        market_library = build_market_regime_library(day_iso)
+        weekly_packet = build_weekly_promotion_meeting_packet(
+            day_iso,
+            replay=true_replay,
+            registry=experiments,
+            confidence=confidence_decay,
+            regimes=market_library,
+            feedback=human_feedback,
+        )
+        out.append('  - True counterfactual replay:')
+        for row in (true_replay.get('policies') or [])[:3]:
+            out.append(
+                f"    - {row.get('policy')}: delta=${row.get('net_delta_vs_actual'):+.2f} "
+                f"winner_damage=${row.get('winner_damage'):+.2f} verdict={row.get('verdict')}"
+            )
+        out.append(f"  - Experiment registry: {experiments.get('counts') or {}}")
+        out.append(f"  - Rule confidence decay: {confidence_decay.get('counts') or {}}")
+        out.append(f"  - Human feedback file: {human_feedback.get('feedback_file')}")
+        regimes = market_library.get('regimes') or []
+        if regimes:
+            out.append(f"  - Current regime library lead: {regimes[0].get('regime')} pnl=${regimes[0].get('pnl'):+.2f}")
+        decision_counts = {k: len(v or []) for k, v in (weekly_packet.get('decisions') or {}).items()}
+        out.append(f"  - Weekly promotion decisions: {decision_counts}")
+        out.append('')
+    except Exception as e:
+        out.append(f'Elite learning checks unavailable: {e}')
+        out.append('')
     out.append(f"Full report: {os.path.join(OUT_DIR, f'postmortem_{day_iso}.txt')}")
     return '\n'.join(out) + '\n'
 
@@ -4574,6 +4938,75 @@ def render_discipline_layer(day_iso, flags, tape, state=None):
 
 
 def build_postmortem_start_here(day_iso, flags, tape, state=None):
+    try:
+        from review_artifacts import (
+            build_best_avoided_loser_simulator,
+            build_data_collection_coverage,
+            build_experiment_registry,
+            build_feature_outcome_table,
+            build_human_feedback_summary,
+            build_loser_fingerprints,
+            build_market_regime_library,
+            build_matched_control_review,
+            build_postmortem_section_confidence,
+            build_rule_confidence_decay,
+            build_trade_verdicts,
+            build_true_counterfactual_replay,
+            build_weekly_promotion_meeting_packet,
+        )
+        from tick_replay import build_tick_replay
+        true_replay = build_true_counterfactual_replay(day_iso)
+        human_feedback = build_human_feedback_summary(day_iso)
+        confidence_decay = build_rule_confidence_decay(day_iso)
+        experiments = build_experiment_registry(day_iso, replay=true_replay, human_feedback=human_feedback)
+        market_library = build_market_regime_library(day_iso)
+        weekly_packet = build_weekly_promotion_meeting_packet(
+            day_iso,
+            replay=true_replay,
+            registry=experiments,
+            confidence=confidence_decay,
+            regimes=market_library,
+            feedback=human_feedback,
+        )
+        tick_replay = build_tick_replay(day_iso)
+        data_coverage = build_data_collection_coverage(day_iso)
+        elite_learning = {
+            'data_collection_coverage': {
+                'verdict': data_coverage.get('verdict'),
+                'trust_impact': data_coverage.get('trust_impact'),
+                'missing_required': data_coverage.get('missing_required'),
+                'partial_required': data_coverage.get('partial_required'),
+                'watch_gaps': (data_coverage.get('watch_gaps') or [])[:8],
+                'file': os.path.join(OUT_DIR, f'data_collection_coverage_{day_iso}.json'),
+            },
+            'matched_control_counts': build_matched_control_review(day_iso).get('deduction_counts'),
+            'loser_fingerprints': (build_loser_fingerprints(day_iso).get('summary') or [])[:5],
+            'section_confidence': build_postmortem_section_confidence(day_iso).get('counts'),
+            'trade_verdict_counts': build_trade_verdicts(day_iso).get('counts'),
+            'best_avoided_loser_simulator': (build_best_avoided_loser_simulator(day_iso).get('rows') or [])[:5],
+            'true_counterfactual_replay': (true_replay.get('policies') or [])[:5],
+            'experiment_registry_counts': experiments.get('counts'),
+            'feature_outcome_table': {
+                'rows': len(build_feature_outcome_table(day_iso).get('rows') or []),
+                'file': os.path.join(OUT_DIR, f'feature_outcome_table_{day_iso}_10d.json'),
+            },
+            'rule_confidence_decay_counts': confidence_decay.get('counts'),
+            'human_feedback': {
+                'counts': human_feedback.get('counts'),
+                'file': human_feedback.get('feedback_file'),
+            },
+            'market_regime_library': (market_library.get('regimes') or [])[:5],
+            'tick_replay': {
+                'summary': tick_replay.get('summary'),
+                'watch_rows': (tick_replay.get('watch_rows') or [])[:5],
+                'file': os.path.join(OUT_DIR, f'tick_replay_{day_iso}.json'),
+            },
+            'weekly_promotion_decision_counts': {
+                k: len(v or []) for k, v in (weekly_packet.get('decisions') or {}).items()
+            },
+        }
+    except Exception as e:
+        elite_learning = {'error': str(e)}
     return {
         'date_iso': day_iso,
         'generated_at': datetime.now(CT).isoformat(timespec='seconds'),
@@ -4591,6 +5024,7 @@ def build_postmortem_start_here(day_iso, flags, tape, state=None):
         'winner_damage_risk': winner_damage_risk(tape),
         'feedback_map': feedback_map(day_iso, tape),
         'strong_considerations': strong_considerations(day_iso, tape, state=state),
+        'elite_learning_artifacts': elite_learning,
         'review_rule': 'Read this file first; open raw postmortem only when a specific trade/candidate needs detail.',
     }
 
@@ -4931,6 +5365,143 @@ def render_report(day_iso, flags, notes, tape, log_hits, state=None,
 
 
 # â”€â”€ main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+def _humanize_summary_item(item):
+    text = str(item or '')
+    replacements = {
+        'btc_relative_strength': 'Miner moved stronger than Bitcoin',
+        'flow_exhaustion_fade': 'Flow got stretched, then faded',
+        'trend_pullback': 'Trend pullback worked',
+        'momentum_breakout': 'Momentum breakout worked',
+        'vwap_reclaim_breakdown': 'VWAP reclaim/breakdown worked',
+        'bad_execution_context': 'Poor execution context',
+        'wide_spread': 'Wide spread',
+        'mom_60s': '60-second momentum',
+        'flow_120s buy_pct': '2-minute buying pressure',
+        'flow_120s': '2-minute buying/selling flow',
+        'buy_pct': 'buying percentage',
+        'inconclusive_or_normal_variance': 'Inconclusive or normal variance',
+        'entry_timing_failed': 'Entry timing failed',
+        'execution_quality_failed': 'Execution quality failed',
+        'exit_rule_candidate': 'Exit rule candidate',
+        'market_regime': 'Market regime',
+        'broker_safety': 'Broker safety',
+        'pnl=': 'P&L=',
+        'win%=': 'win rate=',
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
+
+
+def _human_loss_bucket(bucket):
+    return {
+        'entry_quality': 'entry quality',
+        'exit_quality': 'exit quality',
+        'execution_quality': 'execution quality',
+        'market_regime': 'market regime',
+        'broker_safety': 'broker / ops safety',
+    }.get(str(bucket or ''), str(bucket or 'unclassified').replace('_', ' '))
+
+
+def _gdoc_daily_verdict(trust, total, winners, losers, flags, tape):
+    trust_label = str((trust or {}).get('quality_label') or '').replace('_', ' ')
+    if not tape:
+        return 'Gray - no closed trades; judge feed health, no-trade reasons, and data coverage.'
+    if (trust or {}).get('trust') == 'NO':
+        return f"Red - do not use this day for strategy learning yet ({trust_label})."
+    if total > 0 and not losers and not flags:
+        return 'Green - profitable, clean day; repeat the confirmed behaviors and keep collecting evidence.'
+    if total > 0:
+        return 'Yellow - profitable behavior showed up, but loser/execution patterns still need evidence before rule changes.'
+    if total < 0:
+        return 'Red - losing day; focus review on whether the damage came from idea quality, execution, exits, or regime.'
+    return 'Yellow - flat/mixed day; useful for learning only if the data quality is clean.'
+
+
+def _gdoc_money_driver_lines(brief, roots):
+    worked = [_humanize_summary_item(x) for x in (brief.get('what_worked') or [])[:1]]
+    failed = [_humanize_summary_item(x) for x in (brief.get('what_failed') or [])[:1]]
+    loss_attr = brief.get('loss_attribution') or []
+    primary_bucket = _human_loss_bucket((loss_attr[0] or {}).get('bucket')) if loss_attr else 'no dominant loss bucket'
+    rows = []
+    rows.append(f"Biggest positive driver: {worked[0] if worked else 'No winning setup stood out.'}")
+    if roots:
+        top = roots[0]
+        rows.append(
+            f"Biggest damage driver: {_humanize_summary_item(top.get('root_cause'))} "
+            f"({top.get('losers')} loser(s), gross loss ${float(top.get('gross_loss') or 0):.2f})."
+        )
+    else:
+        rows.append(f"Biggest damage driver: {failed[0] if failed else 'No losing setup stood out.'}")
+    rows.append(f"Primary diagnostic bucket: {primary_bucket}.")
+    return rows
+
+
+def _gdoc_learning_layer_lines(day_iso):
+    rows = [
+        'Fill vs quote/slippage attribution - separates bad trade ideas from bad fills.',
+        'Tick-by-tick replay - reviews the price/quote path around entries, exits, and near misses.',
+        'Dual-side LONG vs SHORT shadow review - checks whether the opposite side had stronger evidence.',
+        'Gate/no-signal timeline - explains quiet periods, missed winners, and why trades were blocked.',
+        'Quote/condition quality - flags locked/crossed quotes, odd prints, stale quotes, and abnormal spreads.',
+        'Entry timing efficiency - shows whether waiting briefly would have improved or worsened entries.',
+    ]
+    try:
+        from review_artifacts import (
+            build_dual_side_shadow_review,
+            build_entry_timing_efficiency,
+            build_fill_attribution_summary,
+            build_gate_timeline_summary,
+            build_latency_attribution_summary,
+            build_no_signal_snapshot_summary,
+            build_quote_condition_quality_summary,
+        )
+        from tick_replay import build_tick_replay
+        gate = build_gate_timeline_summary(day_iso)
+        no_signal = build_no_signal_snapshot_summary(day_iso)
+        fill = build_fill_attribution_summary(day_iso)
+        latency = build_latency_attribution_summary(day_iso)
+        entry = build_entry_timing_efficiency(day_iso)
+        dual = build_dual_side_shadow_review(day_iso)
+        quote = build_quote_condition_quality_summary(day_iso)
+        tick = build_tick_replay(day_iso)
+        counts = [
+            f"gate rows={gate.get('rows')}",
+            f"no-signal rows={no_signal.get('rows')}",
+            f"fill rows={fill.get('rows')}",
+            f"latency rows={latency.get('rows')}",
+            f"entry-timing trades={entry.get('trades')}",
+            f"dual-side samples={sum((dual.get('counts') or {}).values()) if dual.get('counts') else 0}",
+            f"quote abnormal rows={quote.get('spread_abnormal_rows')}",
+            f"tick captures={(tick.get('summary') or {}).get('captures_analyzed')}",
+        ]
+        rows.append('Today\'s telemetry counts: ' + ', '.join(str(c) for c in counts if not str(c).endswith('=None')) + '.')
+    except Exception as e:
+        rows.append(f'Telemetry counts unavailable in the Google Doc summary: {e}')
+    return rows
+
+
+def _gdoc_next_session_watch_lines(day_iso, flags, tape, state=None):
+    try:
+        card = next_session_watch_card(day_iso, flags, tape, state=state)
+        rows = list(card.get('top_watch_items') or [])
+        hyp = hypothesis_preview(day_iso, tape)
+        hyp_by_id = {
+            h.get('id'): h for h in (hyp.get('active') or [])
+            if h.get('id')
+        }
+        for r in (card.get('building_evidence') or [])[:3]:
+            label = r.get('evidence') or r.get('rule') or r.get('key') or r.get('name')
+            if label in hyp_by_id:
+                label = hyp_by_id[label].get('monitor') or label
+            rows.append(f"Building evidence: {label}")
+    except Exception:
+        rows = []
+    if not rows:
+        rows = ['Keep collecting clean data; no urgent watch item cleared the evidence filter.']
+    return [_humanize_summary_item(r) for r in rows[:5]]
+
+
 def render_gdoc_summary(day_iso, flags, tape, state=None, mutate_hypotheses=False):
     """Short human-facing Google Doc body.
 
@@ -4947,6 +5518,11 @@ def render_gdoc_summary(day_iso, flags, tape, state=None, mutate_hypotheses=Fals
     roots = loser_root_cause_buckets(tape)
     hyp = hypothesis_preview(day_iso, tape)
     recs = strong_considerations(day_iso, tape, state=state)
+    try:
+        from review_artifacts import build_data_collection_coverage
+        data_coverage = build_data_collection_coverage(day_iso)
+    except Exception as e:
+        data_coverage = {'verdict': 'unavailable', 'trust_impact': str(e)}
 
     def worked_summary(items):
         if not winners:
@@ -4968,8 +5544,15 @@ def render_gdoc_summary(day_iso, flags, tape, state=None, mutate_hypotheses=Fals
             return 'The largest concern is whether exits reacted fast enough after the thesis weakened.'
         return 'The losing trades need more clean days before turning a pattern into a rule change.'
 
+    daily_verdict = _gdoc_daily_verdict(trust, total, winners, losers, flags, tape)
+    money_drivers = _gdoc_money_driver_lines(brief, roots)
+    learning_layers = _gdoc_learning_layer_lines(day_iso)
+    next_watch = _gdoc_next_session_watch_lines(day_iso, flags, tape, state=state)
+
+    out.append(f"Daily verdict: {daily_verdict}")
     out.append(f"Learning trust: {trust['trust']} ({trust['quality_score']}/100 {trust['quality_label']})")
     out.append(f"Why: {trust['reason']}")
+    out.append(f"Data coverage: {data_coverage.get('verdict')} - {data_coverage.get('trust_impact')}")
     out.append('')
 
     out.append('Daily human summary')
@@ -4981,7 +5564,7 @@ def render_gdoc_summary(day_iso, flags, tape, state=None, mutate_hypotheses=Fals
     out.append('What worked')
     out.append('')
     for item in worked_items:
-        out.append(f"• {item}")
+        out.append(f"• {_humanize_summary_item(item)}")
     out.append('')
     out.append(worked_summary(worked_items))
     out.append('')
@@ -4990,9 +5573,15 @@ def render_gdoc_summary(day_iso, flags, tape, state=None, mutate_hypotheses=Fals
     out.append("What didn't work")
     out.append('')
     for item in failed_items:
-        out.append(f"• {item}")
+        out.append(f"• {_humanize_summary_item(item)}")
     out.append('')
     out.append(failed_summary(failed_items))
+    out.append('')
+
+    out.append('Why the day made or lost money')
+    out.append('')
+    for line in money_drivers:
+        out.append(f"• {line}")
     if flags:
         out.append('')
         out.append('Data / ops notes')
@@ -5005,9 +5594,10 @@ def render_gdoc_summary(day_iso, flags, tape, state=None, mutate_hypotheses=Fals
     out.append('')
     if not recs:
         out.append('No strategy changes cleared the evidence threshold today.')
+        out.append('Evidence status: no live rule change. Needs 3+ clean evidence days or a high-confidence safety issue.')
         out.append('Keep collecting data. Do not alter rules from isolated losses.')
     else:
-        out.append('Human approval required. No automatic changes were made.')
+        out.append('Evidence status: multi-day evidence gate cleared. Human approval required; no automatic changes were made.')
         for rec in recs[:6]:
             out.append(f"• {rec}")
 
@@ -5034,6 +5624,7 @@ def render_gdoc_summary(day_iso, flags, tape, state=None, mutate_hypotheses=Fals
             stale = ' [STALE]' if h.get('stale') else ''
             monitor = str(h.get('monitor') or '')
             monitor = monitor.split(' If pattern holds')[0].strip()
+            monitor = _humanize_summary_item(monitor)
             out.append(f"• Hypothesis {idx}{stale}: {monitor}")
             first_seen = h.get('first_seen') or h.get('created') or ((h.get('seen_dates') or [None])[0])
             out.append(
@@ -5043,6 +5634,36 @@ def render_gdoc_summary(day_iso, flags, tape, state=None, mutate_hypotheses=Fals
             out.append('')
     else:
         out.append('No active hypothesis data available.')
+
+    if hyp.get('added') or hyp.get('updated') or hyp.get('retired'):
+        out.append('')
+        out.append('Hypothesis movement')
+        out.append('')
+        for row in (hyp.get('added') or [])[:3]:
+            out.append(f"• Added watch: {_humanize_summary_item(row.get('monitor') or row.get('key'))}")
+        for row in (hyp.get('updated') or [])[:3]:
+            out.append(f"• Updated watch: {_humanize_summary_item(row.get('monitor') or row.get('id'))}")
+        for row in (hyp.get('retired') or [])[:3]:
+            out.append(f"• Retired watch: {_humanize_summary_item(row.get('monitor') or row.get('id'))}")
+
+    out.append('')
+    out.append('Next session watchlist')
+    out.append('')
+    for line in next_watch:
+        out.append(f"• {line}")
+
+    out.append('')
+    out.append('New data now being tracked')
+    out.append('')
+    for line in learning_layers:
+        out.append(f"• {line}")
+
+    out.append('')
+    out.append('Do not overreact to')
+    out.append('')
+    out.append('• One-off loser clusters from a single day.')
+    out.append('• Low-confidence replay or missing broker/fill data.')
+    out.append('• Small samples under 10 trades unless the issue is a clear safety or execution problem.')
 
     out.append('')
     out.append('Local detail artifacts')
@@ -5055,7 +5676,7 @@ def render_gdoc_summary(day_iso, flags, tape, state=None, mutate_hypotheses=Fals
     return '\n'.join(out)
 
 
-def run(day_iso=None, write_gdoc=True, mutate_hypotheses=None, write_files=True,
+def run_legacy(day_iso=None, write_gdoc=True, mutate_hypotheses=None, write_files=True,
         detail_refresh=True, gdoc_mode='append', gdoc_full=False, quiet=False):
     day = today_iso(day_iso)
     if mutate_hypotheses is None:
@@ -5283,6 +5904,10 @@ def run(day_iso=None, write_gdoc=True, mutate_hypotheses=None, write_files=True,
     }
     if write_files:
         write_json_atomic(candidate_path, candidate_payload)
+        # Write the base postmortem before dependent learning artifacts run.
+        # Some downstream builders intentionally read postmortem_{day}.json
+        # from disk so official EOD artifacts must not see a stale prior run.
+        write_json_atomic(json_path, payload)
         try:
             from review_artifacts import write_all as write_review_artifacts
             review_artifact_paths, review_artifact_payloads = write_review_artifacts(day, postmortem_payload=payload)
@@ -5293,6 +5918,29 @@ def run(day_iso=None, write_gdoc=True, mutate_hypotheses=None, write_files=True,
                 'execution_summary': review_artifact_payloads.get('execution_summary'),
                 'shadow_exit_summary': review_artifact_payloads.get('shadow_exit_summary'),
                 'new_gate_attribution': review_artifact_payloads.get('new_gate_attribution'),
+                'market_tape_attribution': review_artifact_payloads.get('market_tape_attribution'),
+                'tick_replay': review_artifact_payloads.get('tick_replay'),
+                'setup_grade_review': review_artifact_payloads.get('setup_grade_review'),
+                'counterfactual_side_review': review_artifact_payloads.get('counterfactual_side_review'),
+                'rule_attribution_review': review_artifact_payloads.get('rule_attribution_review'),
+                'hypothesis_confidence': review_artifact_payloads.get('hypothesis_confidence'),
+                'daily_conclusion_ledger': review_artifact_payloads.get('daily_conclusion_ledger'),
+                'matched_control_review': review_artifact_payloads.get('matched_control_review'),
+                'exit_efficiency_review': review_artifact_payloads.get('exit_efficiency_review'),
+                'mae_mfe_timeline': review_artifact_payloads.get('mae_mfe_timeline'),
+                'hypothesis_counterexamples': review_artifact_payloads.get('hypothesis_counterexamples'),
+                'loser_fingerprints': review_artifact_payloads.get('loser_fingerprints'),
+                'postmortem_section_confidence': review_artifact_payloads.get('postmortem_section_confidence'),
+                'trade_verdicts': review_artifact_payloads.get('trade_verdicts'),
+                'best_avoided_loser_simulator': review_artifact_payloads.get('best_avoided_loser_simulator'),
+                'rolling_learning_dashboard': review_artifact_payloads.get('rolling_learning_dashboard'),
+                'true_counterfactual_replay': review_artifact_payloads.get('true_counterfactual_replay'),
+                'experiment_registry': review_artifact_payloads.get('experiment_registry'),
+                'feature_outcome_table': review_artifact_payloads.get('feature_outcome_table'),
+                'rule_confidence_decay': review_artifact_payloads.get('rule_confidence_decay'),
+                'human_feedback_summary': review_artifact_payloads.get('human_feedback_summary'),
+                'weekly_promotion_meeting': review_artifact_payloads.get('weekly_promotion_meeting'),
+                'market_regime_library': review_artifact_payloads.get('market_regime_library'),
             }
         except Exception as e:
             payload['review_artifacts'] = {'error': str(e)}
@@ -5320,6 +5968,7 @@ def run(day_iso=None, write_gdoc=True, mutate_hypotheses=None, write_files=True,
             payload['weekly_learning_summary'] = weekly_payload
         except Exception as e:
             payload['weekly_learning_summary'] = {'error': str(e)}
+        payload = externalize_postmortem_payloads(payload, day)
         write_json_atomic(json_path, payload)
 
     # Write TXT
@@ -5363,6 +6012,399 @@ def run(day_iso=None, write_gdoc=True, mutate_hypotheses=None, write_files=True,
         except Exception as e:
             if not quiet:
                 print(f'WARNING: Google Doc append failed: {e}')
+
+
+SIMPLE_MEMORY_PATH = os.path.join(OUT_DIR, 'postmortem_learning_memory.json')
+
+
+def _simple_float(value, default=0.0):
+    try:
+        if value is None:
+            return default
+        return float(value)
+    except Exception:
+        return default
+
+
+def _simple_ts(value):
+    try:
+        if value is None:
+            return None
+        return datetime.fromtimestamp(float(value), CT).isoformat(timespec='seconds')
+    except Exception:
+        return None
+
+
+def _simple_trade_row(trade):
+    opened = _simple_float(trade.get('opened_at'), None)
+    closed = _simple_float(trade.get('closed_at'), None)
+    duration = None
+    if opened is not None and closed is not None:
+        duration = round((closed - opened) / 60.0, 2)
+    return {
+        'trade_id': trade.get('trade_id') or trade.get('id'),
+        'ticker': trade.get('ticker') or trade.get('symbol'),
+        'side': trade.get('side'),
+        'qty': trade.get('qty') or trade.get('shares'),
+        'entry_price': trade.get('entry_price') or trade.get('entry'),
+        'exit_price': trade.get('exit_price') or trade.get('exit'),
+        'pnl': round(_simple_float(trade.get('pnl')), 2),
+        'pnl_pct': trade.get('pnl_pct'),
+        'exit_reason': trade.get('reason') or trade.get('exit_reason'),
+        'opened_at_ct': _simple_ts(opened),
+        'closed_at_ct': _simple_ts(closed),
+        'duration_minutes': duration,
+        'setup': trade.get('setup') or trade.get('setup_type') or trade.get('strategy'),
+    }
+
+
+def _simple_per_ticker(trades):
+    by_ticker = {}
+    for row in trades:
+        ticker = row.get('ticker') or 'UNKNOWN'
+        rec = by_ticker.setdefault(ticker, {
+            'ticker': ticker,
+            'trades': 0,
+            'wins': 0,
+            'losses': 0,
+            'net_pnl': 0.0,
+            'avg_pnl': 0.0,
+            'avg_hold_minutes': None,
+            'exit_reasons': {},
+        })
+        pnl = _simple_float(row.get('pnl'))
+        rec['trades'] += 1
+        rec['wins'] += 1 if pnl > 0 else 0
+        rec['losses'] += 1 if pnl < 0 else 0
+        rec['net_pnl'] = round(rec['net_pnl'] + pnl, 2)
+        reason = str(row.get('exit_reason') or 'unknown')
+        rec['exit_reasons'][reason] = rec['exit_reasons'].get(reason, 0) + 1
+    for rec in by_ticker.values():
+        rows = [r for r in trades if (r.get('ticker') or 'UNKNOWN') == rec['ticker']]
+        rec['avg_pnl'] = round(rec['net_pnl'] / rec['trades'], 2) if rec['trades'] else 0.0
+        holds = [_simple_float(r.get('duration_minutes'), None) for r in rows]
+        holds = [h for h in holds if h is not None]
+        rec['avg_hold_minutes'] = round(sum(holds) / len(holds), 2) if holds else None
+    return sorted(by_ticker.values(), key=lambda r: (r['ticker']))
+
+
+def _simple_memory_load():
+    try:
+        with open(SIMPLE_MEMORY_PATH, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        if isinstance(data, dict):
+            return data
+    except Exception:
+        pass
+    return {
+        'schema_version': 'simple_postmortem_memory_v1',
+        'created_after_legacy_archive': True,
+        'patterns': {},
+    }
+
+
+def _simple_memory_save(memory):
+    write_json_atomic(SIMPLE_MEMORY_PATH, memory)
+
+
+def _simple_issue_key(label):
+    key = re.sub(r'[^a-z0-9]+', '_', str(label).lower()).strip('_')
+    return key[:80] or 'unknown_issue'
+
+
+def _simple_issue(label, evidence, severity='watch', ticker=None):
+    return {
+        'key': _simple_issue_key(f'{ticker or ""} {label}'),
+        'label': label,
+        'ticker': ticker,
+        'severity': severity,
+        'evidence': evidence,
+    }
+
+
+def _simple_find_issues(trades, flags):
+    issues = []
+    losers = [r for r in trades if _simple_float(r.get('pnl')) < 0]
+    if not trades:
+        issues.append(_simple_issue(
+            'No closed trades to learn from',
+            'The session produced no closed trades, so strategy learning should focus on whether no-trade behavior was expected.',
+            'watch',
+        ))
+    for row in sorted(losers, key=lambda r: _simple_float(r.get('pnl')))[:5]:
+        label = f"Losing {row.get('ticker') or 'UNKNOWN'} {row.get('side') or ''} trade"
+        reason = row.get('exit_reason') or 'unknown exit'
+        issues.append(_simple_issue(
+            label,
+            f"P&L ${_simple_float(row.get('pnl')):+.2f}; exit reason: {reason}.",
+            'watch',
+            row.get('ticker'),
+        ))
+    for flag in flags[:5]:
+        issues.append(_simple_issue(
+            'Operational or data-quality flag',
+            str(flag),
+            'safety',
+        ))
+    per_ticker = _simple_per_ticker(trades)
+    for row in per_ticker:
+        if row['net_pnl'] < 0 and row['trades'] >= 2:
+            issues.append(_simple_issue(
+                f"{row['ticker']} negative ticker day",
+                f"{row['trades']} trades, {row['wins']} wins, {row['losses']} losses, net P&L ${row['net_pnl']:+.2f}.",
+                'watch',
+                row['ticker'],
+            ))
+    seen = set()
+    unique = []
+    for issue in issues:
+        if issue['key'] in seen:
+            continue
+        seen.add(issue['key'])
+        unique.append(issue)
+    return unique
+
+
+def _simple_update_memory(day, issues, mutate=True):
+    memory = _simple_memory_load()
+    patterns = memory.setdefault('patterns', {})
+    if mutate:
+        for issue in issues:
+            rec = patterns.setdefault(issue['key'], {
+                'key': issue['key'],
+                'label': issue['label'],
+                'ticker': issue.get('ticker'),
+                'severity': issue.get('severity', 'watch'),
+                'first_seen': day,
+                'last_seen': day,
+                'evidence_days': [],
+                'observations': [],
+                'status': 'active',
+            })
+            rec['label'] = issue['label']
+            rec['last_seen'] = day
+            rec['severity'] = issue.get('severity', rec.get('severity', 'watch'))
+            days = rec.setdefault('evidence_days', [])
+            if day not in days:
+                days.append(day)
+            observations = rec.setdefault('observations', [])
+            if not any(o.get('date_iso') == day and o.get('evidence') == issue.get('evidence') for o in observations):
+                observations.append({'date_iso': day, 'evidence': issue.get('evidence')})
+            rec['evidence_day_count'] = len(days)
+        memory['updated_at'] = datetime.now(CT).isoformat(timespec='seconds')
+        _simple_memory_save(memory)
+    active = list(patterns.values())
+    active.sort(key=lambda r: (-int(r.get('evidence_day_count') or len(r.get('evidence_days') or [])), r.get('key', '')))
+    return memory, active
+
+
+def _simple_what_worked(trades, flags):
+    winners = [r for r in trades if _simple_float(r.get('pnl')) > 0]
+    per_ticker = _simple_per_ticker(trades)
+    items = []
+    for row in sorted(per_ticker, key=lambda r: r['net_pnl'], reverse=True):
+        if row['net_pnl'] > 0:
+            items.append({
+                'label': f"{row['ticker']} was net profitable",
+                'evidence': f"{row['trades']} trade(s), {row['wins']} win(s), net P&L ${row['net_pnl']:+.2f}.",
+            })
+    if winners:
+        best = max(winners, key=lambda r: _simple_float(r.get('pnl')))
+        items.append({
+            'label': 'Best trade had positive follow-through',
+            'evidence': f"{best.get('ticker')} {best.get('side')} closed at ${_simple_float(best.get('pnl')):+.2f}.",
+        })
+    if not flags:
+        items.append({
+            'label': 'No postmortem health flags fired',
+            'evidence': 'The daily health layer did not report data or operations exceptions.',
+        })
+    fallback = [
+        {
+            'label': 'Useful clean data was collected',
+            'evidence': 'Keep this as observation only until the same pattern repeats across more sessions.',
+        },
+        {
+            'label': 'No one-day rule change was promoted',
+            'evidence': 'The postmortem kept today as evidence instead of treating one session as proof.',
+        },
+        {
+            'label': 'The next-session watchlist stayed focused',
+            'evidence': 'Open items remain in monitoring until they repeat across multiple market days.',
+        },
+    ]
+    for item in fallback:
+        if len(items) >= 3:
+            break
+        if item['label'] not in {existing['label'] for existing in items}:
+            items.append(item)
+    return items[:3]
+
+
+def _simple_next_steps(issues, active_patterns):
+    steps = []
+    mature = [
+        p for p in active_patterns
+        if int(p.get('evidence_day_count') or len(p.get('evidence_days') or [])) >= 3
+    ]
+    safety = [i for i in issues if i.get('severity') == 'safety']
+    for issue in safety[:2]:
+        steps.append({
+            'action': f"Resolve safety/data issue: {issue['label']}",
+            'evidence': issue.get('evidence'),
+            'status': 'actionable_now',
+        })
+    for pattern in mature[:3]:
+        steps.append({
+            'action': f"Investigate repeated pattern: {pattern.get('label')}",
+            'evidence': f"Seen on {len(pattern.get('evidence_days') or [])} separate day(s): {', '.join(pattern.get('evidence_days') or [])}.",
+            'status': 'multi_day_evidence',
+        })
+    if not steps:
+        steps.append({
+            'action': 'Monitor current issues without changing rules yet',
+            'evidence': 'No non-safety pattern has reached the 3-day evidence threshold.',
+            'status': 'watch_only',
+        })
+    steps.append({
+        'action': 'Carry active watch items into the next market day',
+        'evidence': 'The bot should look for repeats of unresolved items before recommending rule changes.',
+        'status': 'continuous_monitoring',
+    })
+    return steps
+
+
+def _simple_render_text(payload):
+    lines = []
+    lines.append(f"Daily Postmortem - {payload['date_iso']}")
+    lines.append('=' * 72)
+    lines.append('')
+    totals = payload['totals']
+    lines.append(
+        f"Trades: {totals['trades']} | Wins: {totals['wins']} | "
+        f"Losses: {totals['losses']} | Net P&L: ${totals['net_pnl']:+.2f}"
+    )
+    lines.append('')
+    lines.append('Trades Per Ticker')
+    lines.append('-' * 72)
+    if payload['per_ticker_summary']:
+        for row in payload['per_ticker_summary']:
+            lines.append(
+                f"{row['ticker']}: trades={row['trades']} wins={row['wins']} "
+                f"losses={row['losses']} net=${row['net_pnl']:+.2f} "
+                f"avg=${row['avg_pnl']:+.2f} exits={row['exit_reasons']}"
+            )
+    else:
+        lines.append('No closed trades.')
+    lines.append('')
+    lines.append('Three Things That Worked')
+    lines.append('-' * 72)
+    for idx, item in enumerate(payload['what_worked'], start=1):
+        lines.append(f"{idx}. {item['label']} - {item['evidence']}")
+    lines.append('')
+    lines.append("Things That Did Not Go Well")
+    lines.append('-' * 72)
+    for item in payload['what_did_not_go_well']:
+        lines.append(f"- {item['label']}: {item['evidence']}")
+    lines.append('')
+    lines.append('Suggested Next Steps')
+    lines.append('-' * 72)
+    for item in payload['suggested_next_steps']:
+        lines.append(f"- {item['action']} ({item['status']}): {item['evidence']}")
+    lines.append('')
+    lines.append('Active Watchlist')
+    lines.append('-' * 72)
+    for item in payload['active_watchlist'][:8]:
+        count = int(item.get('evidence_day_count') or len(item.get('evidence_days') or []))
+        lines.append(f"- {item.get('label')}: seen {count} day(s), last {item.get('last_seen')}")
+    lines.append('')
+    lines.append('Evidence Rule')
+    lines.append('-' * 72)
+    lines.append(payload['evidence_rule'])
+    return '\n'.join(lines)
+
+
+def build_simple_postmortem(day, flags, notes, tape, mutate_memory=True):
+    trades = [_simple_trade_row(t) for t in tape]
+    winners = [r for r in trades if _simple_float(r.get('pnl')) > 0]
+    losers = [r for r in trades if _simple_float(r.get('pnl')) < 0]
+    issues = _simple_find_issues(trades, flags)
+    _, active = _simple_update_memory(day, issues, mutate=mutate_memory)
+    payload = {
+        'schema_version': 'simple_daily_postmortem_v1',
+        'date_iso': day,
+        'generated_at_ct': datetime.now(CT).isoformat(timespec='seconds'),
+        'legacy_corpus_archived': True,
+        'evidence_rule': 'Do not recommend strategy changes from one day of action. Non-safety changes require at least 3 separate evidence days; safety/data issues can be acted on immediately.',
+        'totals': {
+            'trades': len(trades),
+            'wins': len(winners),
+            'losses': len(losers),
+            'net_pnl': round(sum(_simple_float(r.get('pnl')) for r in trades), 2),
+        },
+        'per_ticker_summary': _simple_per_ticker(trades),
+        'trades': trades,
+        'what_worked': _simple_what_worked(trades, flags),
+        'what_did_not_go_well': issues or [
+            _simple_issue('Nothing material failed', 'No losing trades or health flags were present.', 'watch')
+        ],
+        'suggested_next_steps': _simple_next_steps(issues, active),
+        'active_watchlist': active,
+        'flags': flags,
+        'notes': notes,
+        'files': {
+            'learning_memory': SIMPLE_MEMORY_PATH,
+        },
+    }
+    return payload
+
+
+def run(day_iso=None, write_gdoc=True, mutate_hypotheses=None, write_files=True,
+        detail_refresh=True, gdoc_mode='append', gdoc_full=False, quiet=False):
+    day = today_iso(day_iso)
+    if mutate_hypotheses is None:
+        mutate_hypotheses = (day == today_iso(None))
+    if not quiet:
+        print(f'simple post-mortem for {day}')
+    state = load_state()
+    log_hits = parse_log_for_day(day, {
+        'signal_source': 'signal_source=',
+        'time_stop': 'TIME-STOP ',
+        'open': ' OPEN ',
+        'close': ' CLOSE ',
+        'orphans': 'orphan',
+        'broker_block': 'BROKER_EXPOSURE_BLOCK',
+        'close_failed': 'held_for_orders',
+        'extended_hours': 'extended-hours',
+    })
+    flags, notes = layer1_health(state, day, log_hits)
+    tape = layer2_tape(state, day, log_hits)
+    payload = build_simple_postmortem(day, flags, notes, tape, mutate_memory=(write_files and mutate_hypotheses))
+    report = _simple_render_text(payload)
+    json_path = os.path.join(OUT_DIR, f'postmortem_{day}.json')
+    txt_path = os.path.join(OUT_DIR, f'postmortem_{day}.txt')
+    payload['files']['json'] = json_path
+    payload['files']['txt'] = txt_path
+    if write_files:
+        write_json_atomic(json_path, payload)
+        with open(txt_path, 'w', encoding='utf-8') as f:
+            f.write(report)
+    if not quiet:
+        print(report)
+        if write_files:
+            print(f'written: {json_path}')
+            print(f'written: {txt_path}')
+    if write_gdoc:
+        try:
+            from gdocs_writer import append_postmortem
+            body = report
+            res = append_postmortem(date_iso=day, body_text=body, mode=gdoc_mode)
+            if not quiet:
+                print(f"wrote Google Doc ({gdoc_mode}): {res['inserted']} chars inserted")
+        except Exception as e:
+            if not quiet:
+                print(f'WARNING: Google Doc append failed: {e}')
+    return payload
 
 
 if __name__ == '__main__':

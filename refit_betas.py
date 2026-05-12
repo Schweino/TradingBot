@@ -50,9 +50,9 @@ def flask_up() -> bool:
 
 
 def start_flask():
-    log.info('Starting Flask...')
+    log.info('Starting local server...')
     subprocess.Popen(
-        [PYTHON, str(APP_PY)],
+        [PYTHON, str(APP_DIR / 'local_server.py')],
         cwd=str(APP_DIR),
         creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | 0x00000008,  # DETACHED
     )
@@ -61,7 +61,7 @@ def start_flask():
         if flask_up():
             log.info('Flask is up.')
             return
-    raise RuntimeError('Flask did not start within 20s')
+    raise RuntimeError('Local server did not start within 20s')
 
 
 def restart_flask():

@@ -354,4 +354,6 @@ def main():
         print(f'  {r["name"]:<42} longs={r["longs"]:>4}  shorts={r["shorts"]:>4}')
 
 if __name__ == '__main__':
+    import canonical_command_registry as _canonical_commands
+    _canonical_commands.enforce_direct_script_allowed(__file__)
     main()
