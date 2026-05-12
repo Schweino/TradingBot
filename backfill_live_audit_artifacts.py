@@ -6,6 +6,8 @@ trade corpus, not original first-class runtime emissions.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import hashlib
 import json
@@ -30,7 +32,7 @@ import unified_decision_ledger
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, "postmortem")
+POSTMORTEM_DIR = output_path("postmortem")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 1
 SOURCE = "legacy_audit_backfill"
@@ -660,7 +662,7 @@ def _lifecycle_rows(day: str, audit_rows: list[dict[str, Any]], live_rows: list[
 def backfill(day: str) -> dict[str, Any]:
     config = _read_json(os.path.join(HERE, "trading_config.json"), {}) or {}
     identity = _identity(config)
-    audit_path = os.path.join(HERE, "audit", f"trade_lifecycle_{day}.jsonl")
+    audit_path = output_path("audit", f"trade_lifecycle_{day}.jsonl")
     trade_path = os.path.join(POSTMORTEM_DIR, "trades", f"trades_{day}.jsonl")
     audit_rows = _read_jsonl(audit_path)
     trade_rows = _read_jsonl(trade_path)

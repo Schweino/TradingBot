@@ -1,6 +1,8 @@
 """Classify Live-vs-Step2 parity gaps into actionable buckets."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 from collections import Counter
@@ -15,7 +17,7 @@ except ImportError:  # pragma: no cover
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-OUT_DIR = os.path.join(HERE, 'postmortem', 'parity_diff_classifier')
+OUT_DIR = output_path('postmortem', 'parity_diff_classifier')
 SCHEMA_VERSION = 1
 
 

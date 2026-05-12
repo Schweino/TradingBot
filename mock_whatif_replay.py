@@ -7,6 +7,8 @@ settings.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import json
@@ -23,10 +25,10 @@ except ImportError:  # pragma: no cover
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-TRADE_DIR = os.path.join(HERE, 'postmortem', 'trades')
-SKIP_DIR = os.path.join(HERE, 'postmortem', 'skipped_signals')
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'mock_whatif_replay')
-EVENT_TAPE_DIR = os.path.join(HERE, 'data_cache', 'alpaca_engine_replay_tapes')
+TRADE_DIR = output_path('postmortem', 'trades')
+SKIP_DIR = output_path('postmortem', 'skipped_signals')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'mock_whatif_replay')
+EVENT_TAPE_DIR = output_path('data_cache', 'alpaca_engine_replay_tapes')
 TICKERS = ['CLSK', 'MARA', 'RIOT']
 BRACKETS = {
     'CLSK': {'tp': 0.0035, 'sl': 0.0045},

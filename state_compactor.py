@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -14,9 +16,9 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-STATE_PATH = os.path.join(HERE, 'mock_trader_state.json')
-SKIPPED_DIR = os.path.join(HERE, 'postmortem', 'skipped_signals')
-TRADE_CORPUS_DIR = os.path.join(HERE, 'postmortem', 'trades')
+STATE_PATH = output_path('mock_trader_state.json')
+SKIPPED_DIR = output_path('postmortem', 'skipped_signals')
+TRADE_CORPUS_DIR = output_path('postmortem', 'trades')
 CT = ZoneInfo('America/Chicago')
 
 

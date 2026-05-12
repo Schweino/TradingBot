@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import hashlib
 import json
@@ -16,7 +18,7 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem')
+OUT_DIR = output_path('postmortem')
 CT = ZoneInfo('America/Chicago')
 _POSTMORTEM_OVERRIDES: dict[str, dict] = {}
 _MISSING = object()
@@ -127,7 +129,7 @@ def _skipped_signal_rows(day: str) -> list[dict]:
 
 
 def _audit_rows(day: str) -> list[dict]:
-    path = os.path.join(HERE, 'audit', f'trade_lifecycle_{day}.jsonl')
+    path = output_path('audit', f'trade_lifecycle_{day}.jsonl')
     return list(_iter_jsonl(path))
 
 
@@ -299,7 +301,7 @@ def _manifest_paths(day: str) -> list[str]:
         os.path.join(OUT_DIR, f'exit_policy_replay_rolling_{day}_5d.json'),
         os.path.join(OUT_DIR, f'exit_policy_candidate_config_{day}.json'),
         os.path.join(OUT_DIR, f'ev_table_{day}.json'),
-        os.path.join(HERE, 'audit', f'trade_lifecycle_{day}.jsonl'),
+        output_path('audit', f'trade_lifecycle_{day}.jsonl'),
         os.path.join(OUT_DIR, 'skipped_signals', f'skipped_signals_{day}.jsonl'),
         os.path.join(OUT_DIR, 'shadow_decisions', f'shadow_decisions_{day}.jsonl'),
         os.path.join(OUT_DIR, 'shadow_exits', f'shadow_exits_{day}.jsonl'),

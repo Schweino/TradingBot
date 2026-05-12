@@ -1,6 +1,8 @@
 """Lightweight real-time parity alert sink."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import hashlib
 import json
 import os
@@ -15,7 +17,7 @@ except ImportError:  # pragma: no cover
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem', 'realtime_parity_alerts')
+OUT_DIR = output_path('postmortem', 'realtime_parity_alerts')
 CT = ZoneInfo('America/Chicago')
 SCHEMA_VERSION = 1
 

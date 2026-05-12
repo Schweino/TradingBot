@@ -7,6 +7,8 @@ manifest exists for the day.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import hashlib
@@ -26,7 +28,7 @@ import market_data_integrity_gate
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, "postmortem")
+POSTMORTEM_DIR = output_path("postmortem")
 OUT_DIR = os.path.join(POSTMORTEM_DIR, "market_data_freshness")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 1
@@ -77,7 +79,7 @@ def _compare_path(day: str) -> str:
 
 
 def _incremental_manifest_path(day: str) -> str:
-    return os.path.join(HERE, "data_cache", "incremental_market_store", day, "manifest.json")
+    return output_path("data_cache", "incremental_market_store", day, "manifest.json")
 
 
 def _file_meta(path: str) -> dict[str, Any]:

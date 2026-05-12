@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -9,7 +11,7 @@ from ws_scalp import detect_signal
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, 'postmortem')
+POSTMORTEM_DIR = output_path('postmortem')
 
 PROFIT_TRIGGER_PCT = 0.45
 PROFIT_GIVEBACK_PCT = 0.55

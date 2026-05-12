@@ -42,10 +42,11 @@ import step2_score_cache
 import step2_statistical_validation
 import step2_world_class_audit
 import tournament_safety
+from output_paths import output_path
 
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_OUT = HERE / "postmortem" / "backtests" / "step2_combo_hunter"
+DEFAULT_OUT = Path(output_path("postmortem", "backtests", "step2_combo_hunter"))
 TICKERS = ("CLSK", "MARA", "RIOT")
 PHASES = ("open", "midday", "late")
 ACTION_SET = ("score", "force_long", "force_short")

@@ -1,4 +1,4 @@
-﻿"""
+"""
 Daily post-mortem for mock_trader. Runs at 15:05 CT after force-flat.
 
 Three-layer report (per session design):
@@ -22,6 +22,8 @@ a NEW dated section in the Doc (we don't dedup the Doc â€” manual cleanup i
 you re-run for testing).
 """
 from __future__ import annotations
+
+from output_paths import output_path
 import sys, os, json, re, hashlib
 from collections import Counter
 from datetime import datetime, timedelta, timezone
@@ -36,9 +38,9 @@ except ImportError:
 
 CT = ZoneInfo('America/Chicago')
 HERE = os.path.dirname(os.path.abspath(__file__))
-STATE_PATH = os.path.join(HERE, 'mock_trader_state.json')
-LOG_PATH   = os.path.join(HERE, 'mock_trader.log')
-OUT_DIR    = os.path.join(HERE, 'postmortem')
+STATE_PATH = output_path('mock_trader_state.json')
+LOG_PATH   = output_path('mock_trader.log')
+OUT_DIR    = output_path('postmortem')
 ARCHIVE_DIR = os.path.join(OUT_DIR, 'archive')
 EMBEDDED_ARCHIVE_DIR = os.path.join(ARCHIVE_DIR, 'embedded_payloads')
 SKIPPED_DIR = os.path.join(OUT_DIR, 'skipped_signals')
@@ -46,7 +48,7 @@ SHADOW_DIR = os.path.join(OUT_DIR, 'shadow_decisions')
 SHADOW_EXIT_DIR = os.path.join(OUT_DIR, 'shadow_exits')
 NEAR_SIGNAL_DIR = os.path.join(OUT_DIR, 'near_signals')
 TRADE_CORPUS_DIR = os.path.join(OUT_DIR, 'trades')
-AUDIT_DIR = os.path.join(HERE, 'audit')
+AUDIT_DIR = output_path('audit')
 os.makedirs(OUT_DIR, exist_ok=True)
 
 JSON_DETAIL_ROW_LIMIT = 250

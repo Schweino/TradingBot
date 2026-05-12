@@ -6,6 +6,8 @@ candidate variants. They do not mutate live config.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 from pathlib import Path
@@ -22,7 +24,7 @@ import variant_tournament_runner as tournament
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_CONFIG = os.path.join(HERE, 'trading_config.json')
-MIGRATION_SNAPSHOT_DIR = os.path.join(HERE, 'postmortem', 'config_change_journal', 'snapshots')
+MIGRATION_SNAPSHOT_DIR = output_path('postmortem', 'config_change_journal', 'snapshots')
 
 
 def _read_json(path: str) -> dict:

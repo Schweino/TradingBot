@@ -7,6 +7,8 @@ only behavior outside this module.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -35,7 +37,7 @@ import step2_world_class_audit
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, "postmortem", "promotion_gates")
+OUT_DIR = output_path("postmortem", "promotion_gates")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 1
 

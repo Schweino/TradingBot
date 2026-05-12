@@ -6,6 +6,8 @@ not modify the live engine.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import json
@@ -28,7 +30,7 @@ import ws_scalp
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'decision_tapes')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'decision_tapes')
 
 
 def _read_jsonl(path: str) -> list[dict]:

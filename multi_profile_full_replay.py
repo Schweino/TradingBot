@@ -6,6 +6,8 @@ by the normal Step 3 path unless explicitly invoked.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -27,9 +29,9 @@ import ws_scalp
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'multi_profile_full_replay')
-DEFAULT_SHARED_CACHE_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'multi_profile_exact_cache')
-DEFAULT_PARITY_CACHE_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'multi_profile_parity_cache')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'multi_profile_full_replay')
+DEFAULT_SHARED_CACHE_DIR = output_path('postmortem', 'backtests', 'multi_profile_exact_cache')
+DEFAULT_PARITY_CACHE_DIR = output_path('postmortem', 'backtests', 'multi_profile_parity_cache')
 
 
 @dataclass

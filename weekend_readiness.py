@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import hashlib
 import json
 import os
@@ -15,7 +17,7 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem')
+OUT_DIR = output_path('postmortem')
 SNAPSHOT_DIR = os.path.join(OUT_DIR, 'broker_safety_snapshots')
 CT = ZoneInfo('America/Chicago')
 CURRENT_ERA_START = '2026-05-04'
@@ -137,7 +139,7 @@ def _tape(day: str) -> list[dict]:
 
 
 def _audit_rows(day: str) -> list[dict]:
-    return _iter_jsonl(os.path.join(HERE, 'audit', f'trade_lifecycle_{day}.jsonl'))
+    return _iter_jsonl(output_path('audit', f'trade_lifecycle_{day}.jsonl'))
 
 
 def _skipped_rows(day: str) -> list[dict]:
@@ -2696,7 +2698,7 @@ def build_postmarket_artifact_validation(day: Optional[str] = None, mode: str = 
         os.path.join(OUT_DIR, 'parity_sentinel', f'parity_sentinel_{day}.json'),
         os.path.join(OUT_DIR, 'step2_decision_parity', f'step2_decision_parity_{day}.jsonl'),
         os.path.join(OUT_DIR, 'step2_decision_parity', f'step2_decision_parity_{day}.summary.json'),
-        os.path.join(HERE, 'data_cache', 'incremental_market_store', day, 'manifest.json'),
+        output_path('data_cache', 'incremental_market_store', day, 'manifest.json'),
         _compiled_step2_paths(day)['compiled_manifest'],
         _compiled_step2_paths(day)['compiled_chunk_manifest'],
         _compiled_step2_paths(day)['step2_score'],
@@ -2707,11 +2709,11 @@ def build_postmarket_artifact_validation(day: Optional[str] = None, mode: str = 
         _compiled_step2_paths(day)['unified_live_signal_parity_summary'],
         _compiled_step2_paths(day)['golden_parity_suite'],
         _compiled_step2_paths(day)['run_supervisor_cleanup'],
-        os.path.join(HERE, 'audit', f'trade_lifecycle_{day}.jsonl'),
+        output_path('audit', f'trade_lifecycle_{day}.jsonl'),
         os.path.join(OUT_DIR, 'health_heartbeats', f'health_heartbeats_{day}.jsonl'),
     ]
     intraday_optional = [
-        os.path.join(HERE, 'audit', f'trade_lifecycle_{day}.jsonl'),
+        output_path('audit', f'trade_lifecycle_{day}.jsonl'),
         os.path.join(OUT_DIR, 'health_heartbeats', f'health_heartbeats_{day}.jsonl'),
     ]
     expected = list(pre_market_expected)

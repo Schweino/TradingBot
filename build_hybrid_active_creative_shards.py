@@ -1,6 +1,8 @@
 """Build a hybrid Step 1 shard around active-local and Step 2 survivors."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import json
@@ -14,7 +16,7 @@ import tournament_safety
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'variant_index_shards')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'variant_index_shards')
 CORE_NAMES = [
     'relative',
     'vwap',

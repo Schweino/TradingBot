@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -9,7 +11,7 @@ from ws_scalp import BTC_SYMBOL, SymbolState, compute_indicators, detect_signal,
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TICK_LOG_DIR = os.path.join(HERE, 'tick_logs')
+TICK_LOG_DIR = output_path('tick_logs')
 
 
 def _infer_symbol(path: str) -> str:

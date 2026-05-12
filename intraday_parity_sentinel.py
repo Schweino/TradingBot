@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -21,7 +23,7 @@ import step2_latency_model
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, 'postmortem')
+POSTMORTEM_DIR = output_path('postmortem')
 OUT_DIR = os.path.join(POSTMORTEM_DIR, 'parity_sentinel')
 CT = ZoneInfo('America/Chicago')
 DEFAULT_TICKERS = ('CLSK', 'MARA', 'RIOT')

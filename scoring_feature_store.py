@@ -8,6 +8,8 @@ arrays every time.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import csv
 import gzip
@@ -27,7 +29,7 @@ import tournament_safety
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_STORE_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'scoring_feature_store')
+DEFAULT_STORE_DIR = output_path('postmortem', 'backtests', 'scoring_feature_store')
 SCHEMA_VERSION = 1
 
 

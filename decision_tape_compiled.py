@@ -8,6 +8,8 @@ setup/side cooldown, compounding balance, wins/losses, and P/L.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 from collections import Counter
 from typing import Any
 
@@ -51,8 +53,8 @@ SIDE_LONG = 1
 SIDE_SKIP = 0
 SIDE_SHORT = -1
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_TAPE_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'decision_tapes')
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'compiled_decision_tapes')
+DEFAULT_TAPE_DIR = output_path('postmortem', 'backtests', 'decision_tapes')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'compiled_decision_tapes')
 CODE_HASH_INPUTS = list(compiled_tape_lineage.DEFAULT_COMPILED_TAPE_CODE_HASH_INPUTS)
 
 
@@ -379,7 +381,7 @@ def _source_exit_replay_models(source_paths: list[str]) -> dict[str, str]:
         r"^decision_tape_(?P<feed>[^_]+)_(?P<quote>[^_]+)_(?P<btc>[^_]+)_(?P<indicator>[^_]+)_"
         r"(?P<tickers>.+)_(?P<day>\d{4}-\d{2}-\d{2})\.jsonl\.gz$"
     )
-    artifact_root = os.path.join(HERE, "postmortem", "backtests", "replay_artifacts", "manifests")
+    artifact_root = output_path("postmortem", "backtests", "replay_artifacts", "manifests")
     for path in source_paths:
         model = ""
         try:

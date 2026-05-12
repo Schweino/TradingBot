@@ -12,6 +12,8 @@ Output:
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import csv
 import gzip
@@ -52,9 +54,9 @@ from bracket_rounding import round_exit_brackets
 ET = ZoneInfo('America/New_York')
 CT = ZoneInfo('America/Chicago')
 BTC_SYMBOL = ws_scalp.BTC_SYMBOL
-DEFAULT_CACHE_DIR = os.path.join(HERE, 'data_cache', 'alpaca_engine_replay')
-DEFAULT_PREPARED_DIR = os.path.join(HERE, 'data_cache', 'alpaca_engine_replay_tapes')
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests')
+DEFAULT_CACHE_DIR = output_path('data_cache', 'alpaca_engine_replay')
+DEFAULT_PREPARED_DIR = output_path('data_cache', 'alpaca_engine_replay_tapes')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests')
 
 
 class ReplayClock:

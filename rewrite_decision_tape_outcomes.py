@@ -6,6 +6,8 @@ slow live indicator scan for every TP/SL or bracket hypothesis.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import json
@@ -24,8 +26,8 @@ import worker_policy
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_TAPE_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'decision_tapes')
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'decision_tapes_step3_policy')
+DEFAULT_TAPE_DIR = output_path('postmortem', 'backtests', 'decision_tapes')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'decision_tapes_step3_policy')
 
 
 def _num(value: Any, default: float | None = None) -> float | None:

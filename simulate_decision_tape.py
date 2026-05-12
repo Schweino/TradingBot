@@ -1,6 +1,8 @@
 """Simulate scoring profiles against reusable decision tapes."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import json
@@ -13,8 +15,8 @@ import scoring_profiles
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_TAPE_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'decision_tapes')
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests')
+DEFAULT_TAPE_DIR = output_path('postmortem', 'backtests', 'decision_tapes')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests')
 
 
 def _read_tape(path: str) -> list[dict]:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import hashlib
 import json
 import os
@@ -13,7 +15,7 @@ import tournament_safety
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_ROOT = os.path.join(HERE, 'postmortem', 'backtests', 'opportunity_outcome_cache')
+DEFAULT_ROOT = output_path('postmortem', 'backtests', 'opportunity_outcome_cache')
 SCHEMA_VERSION = 1
 
 

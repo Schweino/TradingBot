@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -15,7 +17,7 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, 'postmortem')
+POSTMORTEM_DIR = output_path('postmortem')
 OUT_DIR = os.path.join(POSTMORTEM_DIR, 'latency_model')
 DEFAULT_MODEL_PATH = os.path.join(OUT_DIR, 'step2_latency_model.json')
 CT = ZoneInfo('America/Chicago')

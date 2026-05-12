@@ -23,12 +23,14 @@ not firing — daily samples are tiny and false-positive hypotheses pollute
 the watchlist faster than they help.
 """
 from __future__ import annotations
+
+from output_paths import output_path
 import os, json
 from datetime import datetime, timedelta
 from typing import Optional
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-HYP_PATH = os.path.join(HERE, 'postmortem', 'hypotheses.json')
+HYP_PATH = output_path('postmortem', 'hypotheses.json')
 
 STALE_AFTER_DAYS = 5
 DROP_AFTER_DAYS  = 10

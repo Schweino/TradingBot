@@ -10,6 +10,8 @@ They do not change live trading behavior.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import gzip
 import hashlib
 import json
@@ -26,7 +28,7 @@ import step2_latency_model
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_ARTIFACT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'replay_artifacts')
+DEFAULT_ARTIFACT_DIR = output_path('postmortem', 'backtests', 'replay_artifacts')
 PRICE_SCHEMA_VERSION = 1
 OUTCOME_SCHEMA_VERSION = 1
 LATENCY_OUTCOME_SCHEMA_VERSION = 1

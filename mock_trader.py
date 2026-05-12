@@ -15,6 +15,8 @@ relative-volume and broad-market context, but they do not fire trades.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import logging
 import os
@@ -123,7 +125,7 @@ except Exception as e:
 CT = ZoneInfo('America/Chicago')
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            'trading_config.json')
-AUDIT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'audit')
+AUDIT_DIR = output_path('audit')
 SKIPPED_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            'postmortem', 'skipped_signals')
 SHADOW_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -469,7 +471,7 @@ log = logging.getLogger('mock_trader')
 log.setLevel(logging.INFO)
 if not log.handlers:
     h = RotatingFileHandler(
-        os.path.join(os.path.dirname(__file__), 'mock_trader.log'),
+        output_path('mock_trader.log'),
         maxBytes=2_000_000,
         backupCount=5,
         encoding='utf-8',
@@ -1806,8 +1808,7 @@ class MockTrader:
     def _latest_flat_broker_safety_snapshot(self, symbols: list[str],
                                             max_age_sec: int = 900) -> Optional[dict]:
         """Find a recent same-day broker safety snapshot that proves flat exposure."""
-        snapshot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    'postmortem', 'broker_safety_snapshots')
+        snapshot_dir = output_path('postmortem', 'broker_safety_snapshots')
         day = datetime.now(CT).date().isoformat()
         pattern = os.path.join(snapshot_dir, f'broker_safety_{day}_*.json')
         try:

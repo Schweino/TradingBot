@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import gzip
 import json
 import os
@@ -21,7 +23,7 @@ import ws_scalp
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-DEFAULT_ROOT = os.path.join(HERE, 'postmortem', 'backtests', 'replay_state_checkpoints')
+DEFAULT_ROOT = output_path('postmortem', 'backtests', 'replay_state_checkpoints')
 SCHEMA_VERSION = 1
 DEFAULT_BUCKET_SEC = 300
 

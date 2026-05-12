@@ -1,6 +1,8 @@
 """Append-only source-of-truth decision rows from the live/mock engine."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 from datetime import datetime
@@ -13,7 +15,7 @@ except ImportError:  # pragma: no cover
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem', 'unified_decision_ledger')
+OUT_DIR = output_path('postmortem', 'unified_decision_ledger')
 CT = ZoneInfo('America/Chicago')
 SCHEMA_VERSION = 1
 

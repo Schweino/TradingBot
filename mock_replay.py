@@ -7,6 +7,8 @@ fills instead of inventing a cleaner historical trading path.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import csv
 import json
@@ -26,8 +28,8 @@ import scoring_profiles
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'mock_replay')
-TRADE_DIR = os.path.join(HERE, 'postmortem', 'trades')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'mock_replay')
+TRADE_DIR = output_path('postmortem', 'trades')
 
 
 def _parse_day(value: str) -> date:

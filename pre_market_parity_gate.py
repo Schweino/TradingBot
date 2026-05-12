@@ -1,6 +1,8 @@
 """Pre-market guardrail for Live/Step 2 parity."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -23,9 +25,9 @@ import step2_parity_contract
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem', 'pre_market_parity_gate')
+OUT_DIR = output_path('postmortem', 'pre_market_parity_gate')
 CONFIG_PATH = os.path.join(HERE, 'trading_config.json')
-REGISTRY_DIR = os.path.join(HERE, 'postmortem', 'promotions', 'active_scoring_profiles')
+REGISTRY_DIR = output_path('postmortem', 'promotions', 'active_scoring_profiles')
 STATUS_URL = 'http://127.0.0.1:5000/mock/status'
 CT = ZoneInfo('America/Chicago')
 SCHEMA_VERSION = 1

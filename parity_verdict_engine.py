@@ -6,6 +6,8 @@ to trust the candidate?
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -24,7 +26,7 @@ import execution_lifecycle
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, "postmortem", "parity_verdict")
+OUT_DIR = output_path("postmortem", "parity_verdict")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 1
 
@@ -223,7 +225,7 @@ def _compare_entry_packets(live: dict[str, dict[str, Any]],
 
 
 def _lifecycle_rows(day: str) -> list[dict[str, Any]]:
-    path = os.path.join(HERE, "postmortem", "execution_lifecycle", day, f"execution_lifecycle_{day}.jsonl")
+    path = output_path("postmortem", "execution_lifecycle", day, f"execution_lifecycle_{day}.jsonl")
     rows = _read_jsonl(path)
     if rows:
         return rows

@@ -1,6 +1,8 @@
 """Layered Step 2 cache manifests and rebuild diagnostics."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import gzip
 import hashlib
 import json
@@ -26,7 +28,7 @@ import tournament_safety
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-OUT_DIR = os.path.join(HERE, 'postmortem', 'cache_layers')
+OUT_DIR = output_path('postmortem', 'cache_layers')
 
 LAYER_CODE_INPUTS = {
     'market_events': [

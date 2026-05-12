@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import json
@@ -78,7 +80,7 @@ def _prepared_watermark(path: str) -> dict:
 
 
 def _near_signal_summary(day: str, start_ts: int = 0) -> dict:
-    path = os.path.join(HERE, 'postmortem', 'near_signals', f'near_signals_{day}.jsonl')
+    path = output_path('postmortem', 'near_signals', f'near_signals_{day}.jsonl')
     if not os.path.exists(path):
         return {'exists': False, 'rows': 0}
     reasons = Counter()
@@ -115,7 +117,7 @@ def _near_signal_summary(day: str, start_ts: int = 0) -> dict:
 
 
 def _write_refresh_report(day: str, payload: dict) -> str:
-    out_dir = os.path.join(HERE, 'postmortem', 'step2_freshness')
+    out_dir = output_path('postmortem', 'step2_freshness')
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, f'step2_freshness_{day}.json')
     tmp = f'{path}.tmp'

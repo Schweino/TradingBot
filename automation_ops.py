@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -50,7 +52,7 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem')
+OUT_DIR = output_path('postmortem')
 CT = ZoneInfo('America/Chicago')
 PID_PATH = os.path.join(OUT_DIR, 'live_monitor.pid')
 RUN_LEDGER_PATH = os.path.join(OUT_DIR, 'automation_run_ledger.json')
@@ -128,13 +130,13 @@ def _automation_artifact_path(phase: str, day: str) -> str:
 def _prepared_replay_tape_path(day: str) -> str:
     ticker_part = '-'.join(REPLAY_TICKERS)
     filename = f'{REPLAY_FEED}_{REPLAY_QUOTE_MODE}_{REPLAY_BTC_MODE}_{ticker_part}_{day}.events.json.gz'
-    return os.path.join(HERE, 'data_cache', 'alpaca_engine_replay_tapes', filename)
+    return output_path('data_cache', 'alpaca_engine_replay_tapes', filename)
 
 
 def _intraday_replay_tape_path(day: str) -> str:
     ticker_part = '-'.join(REPLAY_TICKERS)
     filename = f'{REPLAY_FEED}_{REPLAY_QUOTE_MODE}_{REPLAY_BTC_MODE}_{ticker_part}_{day}.events.json.gz'
-    return os.path.join(HERE, 'data_cache', 'live_intraday_tapes', filename)
+    return output_path('data_cache', 'live_intraday_tapes', filename)
 
 
 def _compiled_step2_manifest_path(day: str) -> str:
@@ -337,7 +339,7 @@ def _post_close_architecture_required_files(day: str) -> list[str]:
         os.path.join(OUT_DIR, 'parity_diff_classifier', f'parity_diff_classifier_{day}.json'),
         os.path.join(OUT_DIR, 'artifact_registry', f'artifact_registry_{day}.json'),
         os.path.join(OUT_DIR, 'parity_sentinel', f'parity_sentinel_{day}.json'),
-        os.path.join(HERE, 'data_cache', 'incremental_market_store', day, 'manifest.json'),
+        output_path('data_cache', 'incremental_market_store', day, 'manifest.json'),
         os.path.join(OUT_DIR, 'step2_decision_parity', f'step2_decision_parity_{day}.jsonl'),
         os.path.join(OUT_DIR, 'step2_decision_parity', f'step2_decision_parity_{day}.summary.json'),
         _compiled_step2_manifest_path(day),
@@ -706,7 +708,7 @@ def _step2_decision_parity_step(
         REPLAY_BTC_MODE,
         '--use-prepared-events',
         '--prepared-cache-dir',
-        prepared_cache_dir or os.path.join(HERE, 'data_cache', 'alpaca_prepared_events'),
+        prepared_cache_dir or output_path('data_cache', 'alpaca_prepared_events'),
         '--resume-days',
         '--rebuild-missing-opportunities',
         '--write-step2-decision-parity',
@@ -719,7 +721,7 @@ def _step2_decision_parity_step(
         '--step2-latency-mode',
         'entry-exit',
         '--step2-latency-model',
-        os.path.join(HERE, 'postmortem', 'latency_model', 'step2_latency_model.json'),
+        output_path('postmortem', 'latency_model', 'step2_latency_model.json'),
         '--step2-latency-percentile',
         'p75',
     ]
@@ -731,14 +733,14 @@ def _step2_decision_parity_step(
             'reason': 'validate_only_avoids_step2_replay',
             'expected_ledger': ledger_path,
             'expected_summary': summary_path,
-            'prepared_cache_dir': prepared_cache_dir or os.path.join(HERE, 'data_cache', 'alpaca_prepared_events'),
+            'prepared_cache_dir': prepared_cache_dir or output_path('data_cache', 'alpaca_prepared_events'),
             'ledger_exists': os.path.exists(ledger_path),
             'summary_exists': os.path.exists(summary_path),
         }
     result = _run(cmd, timeout=900)
     result['expected_ledger'] = ledger_path
     result['expected_summary'] = summary_path
-    result['prepared_cache_dir'] = prepared_cache_dir or os.path.join(HERE, 'data_cache', 'alpaca_prepared_events')
+    result['prepared_cache_dir'] = prepared_cache_dir or output_path('data_cache', 'alpaca_prepared_events')
     result['ledger_exists'] = os.path.exists(ledger_path)
     result['summary_exists'] = os.path.exists(summary_path)
     if result.get('ok') and not result.get('ledger_exists'):
@@ -752,7 +754,7 @@ def _fast_live_signal_step2_parity_step(day: str, pure_validation: bool = False)
     summary_path = os.path.join(OUT_DIR, 'step2_decision_parity', f'step2_decision_parity_{day}.summary.json')
     unified_path = _unified_live_signal_parity_path(day)
     unified_summary_path = _unified_live_signal_parity_summary_path(day)
-    prepared_cache_dir = os.path.join(HERE, 'data_cache', 'live_intraday_tapes')
+    prepared_cache_dir = output_path('data_cache', 'live_intraday_tapes')
     cmd = [
         sys.executable,
         'live_signal_step2_parity.py',
@@ -769,7 +771,7 @@ def _fast_live_signal_step2_parity_step(day: str, pure_validation: bool = False)
         '--prepared-cache-dir',
         prepared_cache_dir,
         '--latency-model',
-        os.path.join(HERE, 'postmortem', 'latency_model', 'step2_latency_model.json'),
+        output_path('postmortem', 'latency_model', 'step2_latency_model.json'),
         '--latency-percentile',
         'p75',
     ]
@@ -807,7 +809,7 @@ def _fast_live_signal_step2_parity_step(day: str, pure_validation: bool = False)
 
 
 def _step2_latency_model_step(day: str, pure_validation: bool = False) -> dict:
-    out_path = os.path.join(HERE, 'postmortem', 'latency_model', 'step2_latency_model.json')
+    out_path = output_path('postmortem', 'latency_model', 'step2_latency_model.json')
     cmd = [
         sys.executable,
         'step2_latency_model.py',
@@ -858,7 +860,7 @@ def _latency_outcome_shards_step(day: str, pure_validation: bool = False) -> dic
         '--step2-latency-mode',
         'entry-exit',
         '--step2-latency-model',
-        os.path.join(HERE, 'postmortem', 'latency_model', 'step2_latency_model.json'),
+        output_path('postmortem', 'latency_model', 'step2_latency_model.json'),
         '--step2-latency-percentile',
         'p75',
     ]
@@ -1324,7 +1326,7 @@ def _shadow_variant_step(day: str, pure_validation: bool = False) -> dict:
             feed=REPLAY_FEED,
             quote_mode=REPLAY_QUOTE_MODE,
             btc_mode=REPLAY_BTC_MODE,
-            prepared_cache_dir=os.path.join(HERE, 'data_cache', 'live_intraday_tapes'),
+            prepared_cache_dir=output_path('data_cache', 'live_intraday_tapes'),
             max_profiles=100,
         )
         return {
@@ -1588,7 +1590,7 @@ def _intraday_step2_refresh_step(day: str, pure_validation: bool = False) -> dic
         '--step2-latency-mode',
         'entry-exit',
         '--step2-latency-model',
-        os.path.join(HERE, 'postmortem', 'latency_model', 'step2_latency_model.json'),
+        output_path('postmortem', 'latency_model', 'step2_latency_model.json'),
         '--step2-latency-percentile',
         'p75',
     ]
@@ -1657,7 +1659,7 @@ def _post_close_compiled_step2_step(day: str, pure_validation: bool = False) -> 
         '--step2-latency-mode',
         'entry-exit',
         '--step2-latency-model',
-        os.path.join(HERE, 'postmortem', 'latency_model', 'step2_latency_model.json'),
+        output_path('postmortem', 'latency_model', 'step2_latency_model.json'),
         '--step2-latency-percentile',
         'p75',
         '--write-unified-ledger',
@@ -2680,7 +2682,7 @@ def _verify_day_steps(day: str, market: dict) -> list[dict]:
         os.path.join(OUT_DIR, f'session_checkpoint_{day}_pre_flat_auto.json'),
         _prepared_replay_tape_path(day),
         _intraday_replay_tape_path(day),
-        os.path.join(HERE, 'data_cache', 'incremental_market_store', day, 'manifest.json'),
+        output_path('data_cache', 'incremental_market_store', day, 'manifest.json'),
         os.path.join(OUT_DIR, 'step2_freshness', f'step2_freshness_{day}.json'),
         os.path.join(OUT_DIR, 'step2_freshness', f'intraday_vs_canonical_{day}.json'),
         os.path.join(OUT_DIR, f'monday_close_packet_{day}.json'),

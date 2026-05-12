@@ -6,6 +6,8 @@ produced by the same replay configuration.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import hashlib
 import json
 import os
@@ -14,7 +16,7 @@ from typing import Any
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_CACHE_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'full_replay_exact_cache')
+DEFAULT_CACHE_DIR = output_path('postmortem', 'backtests', 'full_replay_exact_cache')
 SCHEMA_VERSION = 1
 
 

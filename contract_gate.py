@@ -1,6 +1,8 @@
 """Hard contract gate for Live/Step 2 parity-critical configuration."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -21,7 +23,7 @@ import step2_parity_contract
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(HERE, "trading_config.json")
-OUT_DIR = os.path.join(HERE, "postmortem", "contract_gate")
+OUT_DIR = output_path("postmortem", "contract_gate")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 1
 

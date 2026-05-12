@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import gzip
 import json
 import os
@@ -25,7 +27,7 @@ import tournament_safety
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'unified_decision_ledger')
+DEFAULT_OUT_DIR = output_path('postmortem', 'unified_decision_ledger')
 SCHEMA_VERSION = 1
 
 

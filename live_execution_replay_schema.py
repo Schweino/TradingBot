@@ -1,6 +1,8 @@
 """Canonical Live execution replay input schema for parity investigations."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 from datetime import datetime
@@ -14,7 +16,7 @@ except ImportError:  # pragma: no cover
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-OUT_DIR = os.path.join(HERE, 'postmortem', 'execution_replay_inputs')
+OUT_DIR = output_path('postmortem', 'execution_replay_inputs')
 
 SCHEMA_VERSION = 1
 REQUIRED_FIELDS = (

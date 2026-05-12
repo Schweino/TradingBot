@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import json
@@ -17,10 +19,10 @@ except ImportError:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-LIVE_EVENT_DIR = os.path.join(HERE, 'postmortem', 'live_step2_events')
+LIVE_EVENT_DIR = output_path('postmortem', 'live_step2_events')
 BTC_SYMBOL = 'BTC/USD'
-CANONICAL_PREPARED_DIR = os.path.join(HERE, 'data_cache', 'alpaca_engine_replay_tapes')
-DEFAULT_PREPARED_DIR = os.path.join(HERE, 'data_cache', 'live_intraday_tapes')
+CANONICAL_PREPARED_DIR = output_path('data_cache', 'alpaca_engine_replay_tapes')
+DEFAULT_PREPARED_DIR = output_path('data_cache', 'live_intraday_tapes')
 SESSION_START_CT = dt_time(8, 30)
 SESSION_END_CT = dt_time(15, 1)
 

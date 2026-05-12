@@ -10,11 +10,12 @@ from pathlib import Path
 from typing import Any
 
 import step2_warm_scorer
+from output_paths import output_path
 
 
 HERE = Path(__file__).resolve().parent
-RUNTIME_DIR = HERE / 'runtime'
-LOG_DIR = HERE / 'logs'
+RUNTIME_DIR = Path(output_path('runtime'))
+LOG_DIR = Path(output_path('logs'))
 PID_PATH = RUNTIME_DIR / 'step2_warm_scorer.pid'
 LOG_PATH = LOG_DIR / 'step2_warm_scorer.log'
 

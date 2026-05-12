@@ -6,6 +6,8 @@ was true at any moment.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import hashlib
 import json
 import os
@@ -23,7 +25,7 @@ import execution_state_reducer
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem', 'execution_lifecycle')
+OUT_DIR = output_path('postmortem', 'execution_lifecycle')
 CT = ZoneInfo('America/Chicago')
 SCHEMA_VERSION = 1
 
@@ -73,7 +75,7 @@ def _summary_path(day: str) -> str:
 
 
 def _audit_path(day: str) -> str:
-    return os.path.join(HERE, 'audit', f'trade_lifecycle_{day}.jsonl')
+    return output_path('audit', f'trade_lifecycle_{day}.jsonl')
 
 
 def _read_jsonl(path: str) -> list[dict[str, Any]]:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import hashlib
 import json
 import os
@@ -17,7 +19,7 @@ import canonical_decision_packet
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem', 'step2_decision_parity')
+OUT_DIR = output_path('postmortem', 'step2_decision_parity')
 CT = ZoneInfo('America/Chicago')
 
 

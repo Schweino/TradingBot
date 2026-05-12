@@ -6,6 +6,8 @@ backfill and preserves the archived result where available.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -20,7 +22,7 @@ except ImportError:  # pragma: no cover
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, "postmortem")
+POSTMORTEM_DIR = output_path("postmortem")
 ARCHIVE_DIR = os.path.join(POSTMORTEM_DIR, "archive", "legacy_pre_simple_postmortem_20260509_144531")
 RUN_LEDGER_PATH = os.path.join(POSTMORTEM_DIR, "automation_run_ledger.json")
 CT = ZoneInfo("America/Chicago")

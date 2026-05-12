@@ -5,6 +5,8 @@ side. It does not alter the live engine and it does not rebuild market replay.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import csv
 import hashlib
@@ -19,7 +21,7 @@ import simulate_decision_tape
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'entry_gate_variants')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'entry_gate_variants')
 DEFAULT_MODES = [
     'ticker-negative',
     'ticker-negative-below-vwap',

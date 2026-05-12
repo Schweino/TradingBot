@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 import re
@@ -14,8 +16,8 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem')
-TICK_DIR = os.path.join(HERE, 'tick_logs')
+OUT_DIR = output_path('postmortem')
+TICK_DIR = output_path('tick_logs')
 CONFIG_PATH = os.path.join(HERE, 'trading_config.json')
 CT = ZoneInfo('America/Chicago')
 DATE_DIR_RE = re.compile(r'^\d{4}-\d{2}-\d{2}$')

@@ -6,6 +6,8 @@ promotion checks can fail fast when Live/Mock and Step 2 drift.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -23,7 +25,7 @@ import canonical_decision_packet
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, "postmortem")
+OUT_DIR = output_path("postmortem")
 CT = ZoneInfo("America/Chicago")
 DEFAULT_TICKERS = ("CLSK", "MARA", "RIOT")
 DEFAULT_START_BALANCE = 100000.0

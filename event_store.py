@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 import sqlite3
@@ -15,7 +17,7 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(HERE, 'postmortem', 'trading_events.sqlite')
+DB_PATH = output_path('postmortem', 'trading_events.sqlite')
 CT = ZoneInfo('America/Chicago')
 _CONN: Optional[sqlite3.Connection] = None
 _CONN_LOCK = threading.RLock()

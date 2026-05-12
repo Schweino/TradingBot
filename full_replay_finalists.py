@@ -6,6 +6,8 @@ surface. The old synthetic full-replay engine is no longer a promotion gate.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
@@ -31,8 +33,8 @@ DEFAULT_IN = os.path.join(
     'backtests',
     'decision_tape_validation_2026-04-06_2026-05-01_top10000.json',
 )
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'full_replay_finalists')
-STEP3_RUN_INDEX = os.path.join(HERE, 'postmortem', 'backtests', 'step3_run_index.jsonl')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'full_replay_finalists')
+STEP3_RUN_INDEX = output_path('postmortem', 'backtests', 'step3_run_index.jsonl')
 FINGERPRINT_FILES = [
     'mock_replay.py',
     'ws_scalp.py',

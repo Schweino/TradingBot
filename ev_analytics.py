@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 from collections import defaultdict
@@ -13,7 +15,7 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, 'postmortem')
+POSTMORTEM_DIR = output_path('postmortem')
 CT = ZoneInfo('America/Chicago')
 
 

@@ -8,6 +8,8 @@ mechanical side-flip P/L proxy as scoring_variant_lab_fast.py, not full replay.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import heapq
 import itertools
@@ -25,8 +27,8 @@ import tournament_safety
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_CSV = os.path.join(HERE, 'postmortem', 'backtests', 'engine_replay_2026-04-06_2026-05-01_trades.csv')
-DEFAULT_OUT = os.path.join(HERE, 'postmortem', 'backtests', 'scoring_variant_lab_massive_top10000.json')
+DEFAULT_CSV = output_path('postmortem', 'backtests', 'engine_replay_2026-04-06_2026-05-01_trades.csv')
+DEFAULT_OUT = output_path('postmortem', 'backtests', 'scoring_variant_lab_massive_top10000.json')
 
 
 def _signature(weights: dict, bias: float = 0.0) -> tuple:

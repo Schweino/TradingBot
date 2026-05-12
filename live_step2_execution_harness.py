@@ -7,6 +7,8 @@ and terminal lifecycle events.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import copy
 import json
@@ -30,7 +32,7 @@ import step2_execution_contract
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, "postmortem", "execution_contract_harness")
+OUT_DIR = output_path("postmortem", "execution_contract_harness")
 CONFIG_PATH = os.path.join(HERE, "trading_config.json")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 1

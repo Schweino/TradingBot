@@ -1,6 +1,8 @@
 """Partitioned incremental market-data store for Step 2 rebuild planning."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import gzip
 import hashlib
 import json
@@ -17,7 +19,7 @@ except ImportError:  # pragma: no cover
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-DEFAULT_ROOT = os.path.join(HERE, 'data_cache', 'incremental_market_store')
+DEFAULT_ROOT = output_path('data_cache', 'incremental_market_store')
 SCHEMA_VERSION = 1
 DEFAULT_BUCKET_SEC = 300
 SESSION_START_CT = dt_time(8, 30)

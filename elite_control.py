@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import copy
 import json
 import os
@@ -15,7 +17,7 @@ from engine_scoreboard import build_scoreboard
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(HERE, 'trading_config.json')
-POSTMORTEM_DIR = os.path.join(HERE, 'postmortem')
+POSTMORTEM_DIR = output_path('postmortem')
 CT = ZoneInfo('America/Chicago')
 WATCHED = ('CLSK', 'MARA', 'RIOT')
 

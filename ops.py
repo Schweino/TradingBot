@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -21,7 +23,7 @@ from automation_ops import ensure_app_running, run_phase, start_live_monitor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = Path(HERE)
-OUT_DIR = os.path.join(HERE, "postmortem")
+OUT_DIR = output_path("postmortem")
 CT = ZoneInfo("America/Chicago")
 STATUS_URL = "http://127.0.0.1:5000/mock/status"
 PYTHON = sys.executable

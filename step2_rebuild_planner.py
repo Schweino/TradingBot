@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import gzip
 import json
 import os
@@ -20,7 +22,7 @@ import step2_cache_layers
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-OUT_DIR = os.path.join(HERE, 'postmortem', 'rebuild_plans')
+OUT_DIR = output_path('postmortem', 'rebuild_plans')
 SCHEMA_VERSION = 1
 ACTION_COST = {
     'score_only': {'rank': 0, 'estimate_sec': 1, 'quality': 'certified_existing_cache'},
@@ -274,7 +276,7 @@ def plan(
             day=day,
             tickers=tickers,
             decision_tape_path=paths['decision_tape'],
-            artifact_dir=artifact_dir or os.path.join(HERE, 'postmortem', 'backtests', 'replay_artifacts'),
+            artifact_dir=artifact_dir or output_path('postmortem', 'backtests', 'replay_artifacts'),
             feed=feed,
             quote_mode=quote_mode,
             btc_mode=btc_mode,

@@ -10,6 +10,8 @@ one artifact so we do not confuse a mechanical lab score with a full backtest.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import csv
 import hashlib
@@ -36,7 +38,7 @@ import worker_policy
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'variant_tournaments')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'variant_tournaments')
 DEFAULT_SOURCE_CSV = os.path.join(
     HERE,
     'postmortem',

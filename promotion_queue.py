@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 from datetime import datetime
@@ -12,7 +14,7 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem')
+OUT_DIR = output_path('postmortem')
 QUEUE_PATH = os.path.join(OUT_DIR, 'promotion_queue.json')
 CT = ZoneInfo('America/Chicago')
 

@@ -7,6 +7,8 @@ their companion manifests/comparison artifacts.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import hashlib
@@ -23,7 +25,7 @@ except ImportError:  # pragma: no cover
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, "postmortem", "market_data_integrity")
+OUT_DIR = output_path("postmortem", "market_data_integrity")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 1
 DEFAULT_TICKERS = ("CLSK", "MARA", "RIOT")
@@ -38,7 +40,7 @@ def prepared_path(day: str, tickers: list[str] | tuple[str, ...] = DEFAULT_TICKE
     tickers_part = "-".join(str(t).upper() for t in tickers)
     filename = f"{feed}_{quote_mode}_{btc_mode}_{tickers_part}_{day}.events.json.gz"
     folder = "alpaca_engine_replay_tapes" if source == "canonical" else "live_intraday_tapes"
-    return os.path.join(HERE, "data_cache", folder, filename)
+    return output_path("data_cache", folder, filename)
 
 
 def output_paths(day: str) -> dict[str, str]:
@@ -55,11 +57,11 @@ def _manifest_path(path: str) -> str:
 
 
 def _compare_path(day: str) -> str:
-    return os.path.join(HERE, "postmortem", "step2_freshness", f"intraday_vs_canonical_{day}.json")
+    return output_path("postmortem", "step2_freshness", f"intraday_vs_canonical_{day}.json")
 
 
 def _incremental_manifest_path(day: str) -> str:
-    return os.path.join(HERE, "data_cache", "incremental_market_store", day, "manifest.json")
+    return output_path("data_cache", "incremental_market_store", day, "manifest.json")
 
 
 def _read_json(path: str, default: Any = None) -> Any:

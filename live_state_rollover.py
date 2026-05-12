@@ -6,6 +6,8 @@ locks, setup pauses, or stale runtime latches.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import copy
 import hashlib
@@ -27,8 +29,8 @@ except Exception:  # pragma: no cover
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-STATE_PATH = os.path.join(HERE, "mock_trader_state.json")
-OUT_DIR = os.path.join(HERE, "postmortem", "live_state_rollover")
+STATE_PATH = output_path("mock_trader_state.json")
+OUT_DIR = output_path("postmortem", "live_state_rollover")
 LATEST_PATH = os.path.join(OUT_DIR, "LIVE_STATE_ROLLOVER_LATEST.json")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 1

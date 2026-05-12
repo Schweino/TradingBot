@@ -6,6 +6,8 @@ chain, which rows are missing joins, and where broker/live behavior diverged.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import glob
 import json
@@ -25,7 +27,7 @@ import broker_lifecycle_guard
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, "postmortem")
+POSTMORTEM_DIR = output_path("postmortem")
 OUT_DIR = os.path.join(POSTMORTEM_DIR, "order_lifecycle_reconciliation")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 2
@@ -91,7 +93,7 @@ def paths(day: str) -> dict[str, str]:
         "live_signal_parity": os.path.join(POSTMORTEM_DIR, "live_signal_parity", f"live_signal_parity_{day}.jsonl"),
         "trades": os.path.join(POSTMORTEM_DIR, "trades", f"trades_{day}.jsonl"),
         "latency_attribution": os.path.join(POSTMORTEM_DIR, "latency_attribution", f"latency_attribution_{day}.jsonl"),
-        "legacy_audit": os.path.join(HERE, "audit", f"trade_lifecycle_{day}.jsonl"),
+        "legacy_audit": output_path("audit", f"trade_lifecycle_{day}.jsonl"),
         "json": os.path.join(OUT_DIR, f"order_lifecycle_reconciliation_{day}.json"),
         "txt": os.path.join(OUT_DIR, f"order_lifecycle_reconciliation_{day}.txt"),
     }

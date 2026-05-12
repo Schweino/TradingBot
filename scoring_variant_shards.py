@@ -6,6 +6,8 @@ assigned variant references directly without replaying/skipping the generator.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import gzip
 import json
@@ -20,7 +22,7 @@ import tournament_safety
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'variant_index_shards')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'variant_index_shards')
 SCHEMA_VERSION = 1
 
 

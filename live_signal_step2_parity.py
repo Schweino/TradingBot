@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import bisect
 import gzip
@@ -21,10 +23,10 @@ import execution_kernel
 import unified_decision_ledger
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, 'postmortem')
+POSTMORTEM_DIR = output_path('postmortem')
 LIVE_SIGNAL_DIR = os.path.join(POSTMORTEM_DIR, 'live_signal_parity')
 OUT_DIR = os.path.join(POSTMORTEM_DIR, 'step2_decision_parity')
-DEFAULT_PREPARED_DIR = os.path.join(HERE, 'data_cache', 'live_intraday_tapes')
+DEFAULT_PREPARED_DIR = output_path('data_cache', 'live_intraday_tapes')
 CONFIG_PATH = os.path.join(HERE, 'trading_config.json')
 CT = ZoneInfo('America/Chicago')
 QUOTE_AWARE_EXIT_MODEL_VERSION = 'quote_aware_exit_v1'

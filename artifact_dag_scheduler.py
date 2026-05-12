@@ -1,6 +1,8 @@
 """Content-aware artifact DAG planner for Step 2/Live parity artifacts."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 import sys
@@ -20,7 +22,7 @@ import worker_policy
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem', 'artifact_dag')
+OUT_DIR = output_path('postmortem', 'artifact_dag')
 CT = ZoneInfo('America/Chicago')
 SCHEMA_VERSION = 1
 DEFAULT_TICKERS = ['CLSK', 'MARA', 'RIOT']

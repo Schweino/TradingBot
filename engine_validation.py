@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import csv
 import json
@@ -14,8 +16,8 @@ from scalp_replay import replay_day
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, 'postmortem')
-TICK_LOG_DIR = os.path.join(HERE, 'tick_logs')
+POSTMORTEM_DIR = output_path('postmortem')
+TICK_LOG_DIR = output_path('tick_logs')
 CT = ZoneInfo('America/Chicago')
 
 

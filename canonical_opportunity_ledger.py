@@ -1,6 +1,8 @@
 """Canonical opportunity ledger for Live, shadow, and Step 2 parity review."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 import time
@@ -16,7 +18,7 @@ except ImportError:  # pragma: no cover
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-OUT_DIR = os.path.join(HERE, 'postmortem', 'canonical_opportunities')
+OUT_DIR = output_path('postmortem', 'canonical_opportunities')
 SCHEMA_VERSION = 1
 
 
@@ -147,7 +149,7 @@ def append_live_decision(row: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _trade_by_id(day: str) -> dict[str, dict[str, Any]]:
-    path = os.path.join(HERE, 'postmortem', 'trades', f'trades_{day}.jsonl')
+    path = output_path('postmortem', 'trades', f'trades_{day}.jsonl')
     return {
         str(row.get('trade_id')): row
         for row in _jsonl_rows(path)
@@ -156,7 +158,7 @@ def _trade_by_id(day: str) -> dict[str, dict[str, Any]]:
 
 
 def _step2_by_key(day: str) -> dict[str, dict[str, Any]]:
-    path = os.path.join(HERE, 'postmortem', 'step2_decision_parity', f'step2_decision_parity_{day}.jsonl')
+    path = output_path('postmortem', 'step2_decision_parity', f'step2_decision_parity_{day}.jsonl')
     return {
         str(row.get('parity_key')): row
         for row in _jsonl_rows(path)
@@ -165,7 +167,7 @@ def _step2_by_key(day: str) -> dict[str, dict[str, Any]]:
 
 
 def _live_by_key(day: str) -> dict[str, dict[str, Any]]:
-    live_signal_path = os.path.join(HERE, 'postmortem', 'live_signal_parity', f'live_signal_parity_{day}.jsonl')
+    live_signal_path = output_path('postmortem', 'live_signal_parity', f'live_signal_parity_{day}.jsonl')
     rows = [normalize_live_decision(row) for row in _jsonl_rows(live_signal_path)]
     shadow_rows = _jsonl_rows(_live_path(day))
     merged: dict[str, dict[str, Any]] = {}

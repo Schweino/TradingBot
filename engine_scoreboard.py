@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 
@@ -16,7 +18,7 @@ from scalp_replay import replay_day
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, 'postmortem')
+OUT_DIR = output_path('postmortem')
 
 
 def build_scoreboard(day: str) -> dict:

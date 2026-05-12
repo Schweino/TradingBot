@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -27,7 +29,7 @@ except ImportError:
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, 'postmortem')
+POSTMORTEM_DIR = output_path('postmortem')
 OUT_DIR = os.path.join(POSTMORTEM_DIR, 'live_step2_parity')
 CT = ZoneInfo('America/Chicago')
 APP_URL = 'http://127.0.0.1:5000/mock/status'

@@ -40,6 +40,8 @@ import time
 from datetime import datetime, timezone
 from logging.handlers import RotatingFileHandler
 
+from output_paths import output_path
+
 try:
     from runtime_guard import append_runtime_event
 except Exception:
@@ -49,8 +51,7 @@ log = logging.getLogger('proc_monitor')
 log.setLevel(logging.INFO)
 if not log.handlers:
     _h = RotatingFileHandler(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                     'proc_monitor.log'),
+        output_path('proc_monitor.log'),
         maxBytes=1_500_000,
         backupCount=5,
         encoding='utf-8',
@@ -58,10 +59,8 @@ if not log.handlers:
     _h.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     log.addHandler(_h)
 
-HEARTBEAT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              'proc_heartbeat.json')
-CRASH_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              'proc_crash.log')
+HEARTBEAT_PATH = output_path('proc_heartbeat.json')
+CRASH_LOG_PATH = output_path('proc_crash.log')
 HEARTBEAT_INTERVAL = 10  # seconds
 
 

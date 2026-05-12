@@ -1,6 +1,8 @@
 """Version registry for replay, Step 2, and parity artifacts."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import hashlib
 import json
 import os
@@ -23,7 +25,7 @@ import tournament_safety
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CT = ZoneInfo('America/Chicago')
-OUT_DIR = os.path.join(HERE, 'postmortem', 'artifact_registry')
+OUT_DIR = output_path('postmortem', 'artifact_registry')
 SCHEMA_VERSION = 1
 
 
@@ -57,7 +59,7 @@ def _config() -> dict[str, Any]:
 def _artifact_paths(day: str, tickers: list[str]) -> dict[str, str]:
     tickers_part = '-'.join(tickers)
     compiled_name = f'compiled_step2_live_mockparity_{tickers_part}_{day}_intraday'
-    promotion_dir = os.path.join(HERE, 'postmortem', 'promotions', 'active_scoring_profiles')
+    promotion_dir = output_path('postmortem', 'promotions', 'active_scoring_profiles')
     promotion_entries = []
     if os.path.isdir(promotion_dir):
         promotion_entries = [
@@ -69,7 +71,7 @@ def _artifact_paths(day: str, tickers: list[str]) -> dict[str, str]:
         promotion_dir,
         'missing_active_profile_promotion_registry.json',
     )
-    reproducibility_dir = os.path.join(HERE, 'postmortem', 'candidate_reproducibility')
+    reproducibility_dir = output_path('postmortem', 'candidate_reproducibility')
     reproducibility_entries = []
     if os.path.isdir(reproducibility_dir):
         reproducibility_entries = [
@@ -82,7 +84,7 @@ def _artifact_paths(day: str, tickers: list[str]) -> dict[str, str]:
         if reproducibility_entries
         else os.path.join(reproducibility_dir, 'missing_candidate_reproducibility.json')
     )
-    promotion_manifest_dir = os.path.join(HERE, 'postmortem', 'promotions', 'manifests')
+    promotion_manifest_dir = output_path('postmortem', 'promotions', 'manifests')
     promotion_manifest_entries = []
     if os.path.isdir(promotion_manifest_dir):
         promotion_manifest_entries = [
@@ -95,7 +97,7 @@ def _artifact_paths(day: str, tickers: list[str]) -> dict[str, str]:
         if promotion_manifest_entries
         else os.path.join(promotion_manifest_dir, 'missing_promotion_manifest.json')
     )
-    promotion_preflight_dir = os.path.join(HERE, 'postmortem', 'promotion_preflight')
+    promotion_preflight_dir = output_path('postmortem', 'promotion_preflight')
     promotion_preflight_entries = []
     if os.path.isdir(promotion_preflight_dir):
         promotion_preflight_entries = [

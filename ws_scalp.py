@@ -1,4 +1,5 @@
-﻿"""
+# -*- coding: cp1252 -*-
+"""
 Alpaca WebSocket scalp engine.
 
 Two persistent WS connections:
@@ -13,6 +14,8 @@ Scalp indicators + signal engine consume the 1s bar stream and expose current
 state via get_snapshot(). Flask polls this snapshot for the UI.
 """
 from __future__ import annotations
+
+from output_paths import output_path
 
 import json
 import logging
@@ -36,9 +39,9 @@ try:
 except ImportError:  # py<3.9 fallback
     from backports.zoneinfo import ZoneInfo  # type: ignore
 
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 # Config
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 STOCKS_WS_URL = 'wss://stream.data.alpaca.markets/v2/sip'
 CRYPTO_WS_URL = 'wss://stream.data.alpaca.markets/v1beta3/crypto/us'
 BTC_SYMBOL = 'BTC/USD'
@@ -64,7 +67,7 @@ SCALP_TICKER_BRACKETS = {
 log = logging.getLogger('scalp')
 log.setLevel(logging.INFO)
 if not log.handlers:
-    h = RotatingFileHandler(os.path.join(os.path.dirname(__file__), 'scalp.log'),
+    h = RotatingFileHandler(output_path('scalp.log'),
                             maxBytes=2_000_000, backupCount=5, encoding='utf-8')
     h.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     log.addHandler(h)
@@ -124,14 +127,10 @@ NEAR_TICK_CAPTURE_ENABLED = bool(SMART_ENTRY.get('near_tick_capture_enabled', Tr
 NEAR_TICK_CAPTURE_MIN_SCORE = float(SMART_ENTRY.get('near_tick_capture_min_score', 4.0))
 NEAR_TICK_CAPTURE_PRE_SEC = int(SMART_ENTRY.get('near_tick_capture_pre_seconds', 60))
 NEAR_TICK_CAPTURE_POST_SEC = int(SMART_ENTRY.get('near_tick_capture_post_seconds', 180))
-NEAR_SIGNAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               'postmortem', 'near_signals')
-GATE_TIMELINE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                 'postmortem', 'gate_timeline')
-NO_SIGNAL_SNAPSHOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                      'postmortem', 'no_signal_snapshots')
-RUNTIME_EVENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                 'postmortem', 'runtime')
+NEAR_SIGNAL_DIR = output_path('postmortem', 'near_signals')
+GATE_TIMELINE_DIR = output_path('postmortem', 'gate_timeline')
+NO_SIGNAL_SNAPSHOT_DIR = output_path('postmortem', 'no_signal_snapshots')
+RUNTIME_EVENT_DIR = output_path('postmortem', 'runtime')
 GATE_TIMELINE_INTERVAL_SEC = float(SMART_ENTRY.get('gate_timeline_interval_sec', 15))
 NO_SIGNAL_SNAPSHOT_INTERVAL_SEC = float(SMART_ENTRY.get('no_signal_snapshot_interval_sec', 30))
 SIGNAL_LOOP_STALE_SEC = float(SMART_ENTRY.get('signal_loop_stale_sec', 20))
@@ -322,9 +321,9 @@ def _apply_active_scoring_profile(sig: dict, ind: dict, btc_ind: Optional[dict])
     return final_sig
 
 
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 # Per-symbol live state
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 @dataclass
 class SymbolState:
     symbol: str
@@ -567,9 +566,9 @@ def _quote_event_dict(symbol: str, phase: str, row) -> dict:
     return out
 
 
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 # Engine
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 class ScalpEngine:
     def __init__(self, api_key: str, secret_key: str):
         self.api_key = api_key
@@ -1012,7 +1011,7 @@ class ScalpEngine:
 
         date_str = datetime.now(ET).strftime('%Y-%m-%d')
         ts_str   = datetime.now(ET).strftime('%H%M%S')
-        out_dir  = os.path.join(os.path.dirname(__file__), 'tick_logs', date_str)
+        out_dir  = output_path('tick_logs', date_str)
         os.makedirs(out_dir, exist_ok=True)
         capture_key = capture_id or f'{ticker}-{ts_str}-{int(now_ms)}'
         safe_key = ''.join(ch if ch.isalnum() or ch in ('-', '_') else '_' for ch in capture_key)
@@ -1688,9 +1687,9 @@ class ScalpEngine:
         self._append_postmortem_jsonl(NO_SIGNAL_SNAPSHOT_DIR, 'no_signal_snapshots', row)
 
 
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 # Indicators (pure functions on SymbolState)
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 def compute_indicators(st: SymbolState) -> dict:
     with st.lock:
         bars = list(st.bars_1s)
@@ -1803,11 +1802,11 @@ def compute_indicators(st: SymbolState) -> dict:
 
     # VWAP
     vwap = round(pv_sum / v_sum, 4) if v_sum > 0 else None
-    # σ-band estimate from recent 5-min stddev of prices
+    # s-band estimate from recent 5-min stddev of prices
     # 2026-04-20: added two guards after live RIOT produced a bogus
-    # "-18.36σ" signal from tiny early-session stddev:
+    # "-18.36s" signal from tiny early-session stddev:
     #   (1) Floor sd at 5 bps of price — prevents div-by-tiny
-    #   (2) Clamp output to ±5σ — anything larger is an artifact
+    #   (2) Clamp output to ±5s — anything larger is an artifact
     if len(closes) >= 300:
         recent = closes[-300:]
         m = sum(recent) / len(recent)
@@ -1818,7 +1817,7 @@ def compute_indicators(st: SymbolState) -> dict:
         sd = 0
     if vwap and sd > 0:
         raw = (price - vwap) / sd
-        raw = max(-5.0, min(5.0, raw))   # clamp to ±5σ
+        raw = max(-5.0, min(5.0, raw))   # clamp to ±5s
         vwap_dist_sigma = round(raw, 2)
     else:
         vwap_dist_sigma = None
@@ -2006,9 +2005,9 @@ def compute_indicators(st: SymbolState) -> dict:
     }
 
 
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 # Signal detection
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 def _btc_signal_context(ticker: str, ind: dict, btc_ind: Optional[dict]) -> dict:
     stale = False
     stale_reason = None
@@ -3038,7 +3037,7 @@ def detect_signal(ticker: str, ind: dict, btc_ind: Optional[dict],
     return _apply_active_scoring_profile(sig, ind, btc_ind)
 
 # helpers
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 def _alpaca_ts_to_ms(ts: str) -> int:
     """Alpaca WS trade timestamps come as ISO with nanosecond precision."""
     if not ts: return int(time.time() * 1000)
@@ -3058,9 +3057,9 @@ def _alpaca_ts_to_ms(ts: str) -> int:
         return int(time.time() * 1000)
 
 
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 # Module-level singleton
-# ────────────────────────────────────────────────────────────────────────
+# ------------------------------------------------------------------------
 _engine: Optional[ScalpEngine] = None
 
 def get_engine(api_key: Optional[str] = None,

@@ -1,6 +1,8 @@
 """Immediate shadow Step 2 comparison for live signal decisions."""
 from __future__ import annotations
 
+from output_paths import output_path
+
 import json
 import os
 import time
@@ -17,7 +19,7 @@ import realtime_parity_alerts
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POSTMORTEM_DIR = os.path.join(HERE, 'postmortem')
+POSTMORTEM_DIR = output_path('postmortem')
 LIVE_SIGNAL_DIR = os.path.join(POSTMORTEM_DIR, 'live_signal_parity')
 OUT_DIR = os.path.join(POSTMORTEM_DIR, 'intraday_shadow_step2')
 CT = ZoneInfo('America/Chicago')

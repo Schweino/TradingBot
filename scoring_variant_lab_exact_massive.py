@@ -13,6 +13,8 @@ The scoring metric is still the Step-1 lab proxy, not full replay P/L.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import csv
 import gzip
@@ -41,7 +43,7 @@ import worker_policy
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_OUT_DIR = os.path.join(HERE, 'postmortem', 'backtests', 'exact_massive_scoring')
+DEFAULT_OUT_DIR = output_path('postmortem', 'backtests', 'exact_massive_scoring')
 DEFAULT_CSV = massive.DEFAULT_CSV
 DEFAULT_ACTIVE_FEATURE_STORE_POINTER = os.path.join(
     HERE,

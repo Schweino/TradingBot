@@ -6,6 +6,8 @@ append packets in real time; Step 2 can write the same shape after replay.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import argparse
 import json
 import os
@@ -22,7 +24,7 @@ except ImportError:  # pragma: no cover
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT_DIR = os.path.join(HERE, "postmortem", "canonical_decision_packets")
+OUT_DIR = output_path("postmortem", "canonical_decision_packets")
 CT = ZoneInfo("America/Chicago")
 SCHEMA_VERSION = 1
 
@@ -541,7 +543,7 @@ def write_step2_packets(day: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _unified_ledger_path(day: str, label: str) -> str:
-    return os.path.join(HERE, "postmortem", "unified_decision_ledger", day, f"{label}_{day}.jsonl")
+    return output_path("postmortem", "unified_decision_ledger", day, f"{label}_{day}.jsonl")
 
 
 def _coerce_unified_step2_row(row: dict[str, Any]) -> dict[str, Any]:
@@ -567,13 +569,13 @@ def _coerce_unified_step2_row(row: dict[str, Any]) -> dict[str, Any]:
 
 def build_from_existing(day: str, replace: bool = True) -> dict[str, Any]:
     del replace  # retained for CLI/API clarity; build is always deterministic.
-    live_rows = _read_jsonl(os.path.join(HERE, "postmortem", "live_signal_parity", f"live_signal_parity_{day}.jsonl"))
+    live_rows = _read_jsonl(output_path("postmortem", "live_signal_parity", f"live_signal_parity_{day}.jsonl"))
     if not live_rows:
         live_rows = _read_jsonl(_unified_ledger_path(day, "live_signal_parity"))
-    step2_rows = _read_jsonl(os.path.join(HERE, "postmortem", "step2_decision_parity", f"step2_decision_parity_{day}.jsonl"))
+    step2_rows = _read_jsonl(output_path("postmortem", "step2_decision_parity", f"step2_decision_parity_{day}.jsonl"))
     if not step2_rows:
         step2_rows = [_coerce_unified_step2_row(r) for r in _read_jsonl(_unified_ledger_path(day, "step2_current_trace"))]
-    trade_rows = _read_jsonl(os.path.join(HERE, "postmortem", "trades", f"trades_{day}.jsonl"))
+    trade_rows = _read_jsonl(output_path("postmortem", "trades", f"trades_{day}.jsonl"))
     summaries = {
         "live_decision_packets": write_packets(day, [from_live_signal_parity(r) for r in live_rows], "live_decision_packets"),
         "step2_decision_packets": write_packets(day, [from_step2_decision(r) for r in step2_rows], "step2_decision_packets"),

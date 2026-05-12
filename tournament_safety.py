@@ -6,6 +6,8 @@ records so model selection is auditable across the four-stage workflow.
 """
 from __future__ import annotations
 
+from output_paths import output_path
+
 import csv
 import hashlib
 import json
@@ -18,8 +20,8 @@ import replay_artifacts
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_REGISTRY = os.path.join(HERE, 'postmortem', 'backtests', 'tournament_registry.csv')
-HASH_CACHE_PATH = os.path.join(HERE, 'data_cache', 'file_hash_cache.json')
+DEFAULT_REGISTRY = output_path('postmortem', 'backtests', 'tournament_registry.csv')
+HASH_CACHE_PATH = output_path('data_cache', 'file_hash_cache.json')
 _HASH_CACHE: dict[str, Any] | None = None
 CODE_INPUTS = [
     'ws_scalp.py',

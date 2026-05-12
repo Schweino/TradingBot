@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
+from output_paths import output_path
 try:
     from zoneinfo import ZoneInfo
 except ImportError:
@@ -3678,8 +3679,7 @@ def _watcher_exit_impl():
 # ─── Scalp engine (WS-driven 1s bars) ──────────────────────────────────
 import ws_scalp
 _scalp_engine = None
-_SCALP_STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                 'scalp_state.json')
+_SCALP_STATE_FILE = output_path('scalp_state.json')
 _scalp_state_cache = None
 _scalp_state_mtime = None
 
@@ -3762,8 +3762,7 @@ def _scalp_autostart():
 
 
 # ─── Watcher persistence + autostart ────────────────────────────────────
-_WATCHER_STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   'watcher_prefs.json')
+_WATCHER_STATE_FILE = output_path('watcher_prefs.json')
 
 def _load_watcher_prefs():
     try:
@@ -3835,8 +3834,7 @@ def _daily_beta_refit_startup():
 
 # ─── Mock Trader (paper-trading on 1s scalp signals) ────────────────────
 import mock_trader
-_MOCK_STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                'mock_trader_state.json')
+_MOCK_STATE_FILE = output_path('mock_trader_state.json')
 _mock_trader = None
 
 def _get_mock_trader():
