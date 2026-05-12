@@ -11,6 +11,8 @@ mock_trader_state.json.tmp
 *.log
 *.log.*
 *.err
+*.pid
+*.tmp
 proc_heartbeat.json
 scalp_state.json
 signal_debug.json
@@ -18,7 +20,13 @@ watcher_prefs.json
 .last_refit.txt
 tick_logs/
 tmp_tests/
+tmp*/
+.test_tmp/
+.test_work/
+pytest-cache-files-*/
+logs/
 runtime/
+okay_to_delete/
 
 # Large/generated trading artifacts
 postmortem/
@@ -27,6 +35,8 @@ audit/
 archive/
 data_cache_*.pkl
 data_cache/
+*.sqlite
+*.db
 *.zip
 backtest_*.csv
 repro_*.csv
@@ -45,3 +55,13 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
